@@ -8,25 +8,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.segundoentregable.ui.components.ImagePlaceholderCircle
-import com.example.segundoentregable.viewmodel.UserViewModel
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-
-
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController, userVM: UserViewModel) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var inProgress by remember { mutableStateOf(false) }
-    var errorMsg by remember { mutableStateOf<String?>(null) }
+fun LoginScreen(
+    navController: NavController,
+    loginViewModel: LoginViewModel = viewModel()
+) {
+    val uiState by loginViewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        loginViewModel.loginSuccessEvent.collect {
+            navController.navigate("home") {
+                popUpTo("login") { inclusive = true }
+            }
+        }
+    }
 
     Scaffold(topBar = {
         CenterAlignedTopAppBar(title = { Text("Inicio") })
-
     }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -39,24 +44,26 @@ fun LoginScreen(navController: NavController, userVM: UserViewModel) {
             ImagePlaceholderCircle()
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+                value = uiState.email, // <-- Lee del estado
+                onValueChange = { loginViewModel.onEmailChanged(it) },
                 label = { Text("Correo") },
                 singleLine = true,
                 leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = uiState.errorMessage != null // <-- El VM nos dice si hay error
             )
             Spacer(Modifier.height(8.dp))
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = uiState.password,
+                onValueChange = { loginViewModel.onPasswordChanged(it) },
                 label = { Text("Contraseña") },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = uiState.errorMessage != null
             )
 
-            errorMsg?.let {
+            uiState.errorMessage?.let {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = it, color = MaterialTheme.colorScheme.error)
             }
@@ -64,34 +71,26 @@ fun LoginScreen(navController: NavController, userVM: UserViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    // basic client-side validation
-                    errorMsg = when {
-                        email.isBlank() -> "El correo es obligatorio"
-                        !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Formato de correo inválido"
-                        password.length < 6 -> "La contraseña debe tener al menos 6 caracteres"
-                        else -> null
-                    }
-                    if (errorMsg == null && !inProgress) {
-                        inProgress = true
-                        userVM.login(email, password) { ok ->
-                            inProgress = false
-                            if (ok) {
-                                navController.navigate("home") {
-                                    popUpTo("login") { inclusive = true }
-                                }
-                            } else {
-                                errorMsg = "Credenciales incorrectas"
-                            }
-                        }
-                    }
+                    loginViewModel.onLoginClicked()
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !uiState.isLoading
             ) {
-                Text("Ingresar")
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text("Ingresar")
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-            TextButton(onClick = { navController.navigate("register") }) {
+            TextButton(
+                onClick = { navController.navigate("register") },
+                enabled = !uiState.isLoading
+            ) {
                 Text("¿No tienes cuenta? Regístrate")
             }
         }

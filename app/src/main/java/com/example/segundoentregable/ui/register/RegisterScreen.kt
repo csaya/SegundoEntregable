@@ -8,26 +8,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.segundoentregable.ui.components.ImagePlaceholderCircle
-import com.example.segundoentregable.viewmodel.UserViewModel
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-
-
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(navController: NavController, userVM: UserViewModel) {
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var errorMsg by remember { mutableStateOf<String?>(null) }
-    var inProgress by remember { mutableStateOf(false) }
+fun RegisterScreen(
+    navController: NavController,
+    registerViewModel: RegisterViewModel = viewModel()
+) {
+    val uiState by registerViewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        registerViewModel.registerSuccessEvent.collect {
+            navController.popBackStack()
+        }
+    }
 
     Scaffold(topBar = {
-        CenterAlignedTopAppBar(title = { Text("Inicio") })
-
+        CenterAlignedTopAppBar(title = { Text("Registro") }) // Título actualizado
     }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -40,40 +40,53 @@ fun RegisterScreen(navController: NavController, userVM: UserViewModel) {
             ImagePlaceholderCircle()
             Spacer(Modifier.height(12.dp))
 
-            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(
+                value = uiState.name,
+                onValueChange = { registerViewModel.onNameChanged(it) },
+                label = { Text("Nombre") },
+                modifier = Modifier.fillMaxWidth(),
+                isError = uiState.errorMessage != null
+            )
             Spacer(Modifier.height(8.dp))
-            OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Correo") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(
+                value = uiState.email,
+                onValueChange = { registerViewModel.onEmailChanged(it) },
+                label = { Text("Correo") },
+                modifier = Modifier.fillMaxWidth(),
+                isError = uiState.errorMessage != null
+            )
             Spacer(Modifier.height(8.dp))
-            OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Contraseña") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+            OutlinedTextField(
+                value = uiState.password,
+                onValueChange = { registerViewModel.onPasswordChanged(it) },
+                label = { Text("Contraseña") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                isError = uiState.errorMessage != null
+            )
 
-            errorMsg?.let {
-                Spacer(Modifier.height(8.dp))
+            uiState.errorMessage?.let {
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(text = it, color = MaterialTheme.colorScheme.error)
             }
 
             Spacer(Modifier.height(16.dp))
-            Button(onClick = {
-                errorMsg = when {
-                    name.isBlank() -> "El nombre es obligatorio"
-                    email.isBlank() -> "El correo es obligatorio"
-                    !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Formato de correo inválido"
-                    password.length < 6 -> "La contraseña debe tener al menos 6 caracteres"
-                    else -> null
+            Button(
+                onClick = {
+                    registerViewModel.onRegisterClicked()
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !uiState.isLoading // Deshabilitado mientras carga
+            ) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Text("Registrar")
                 }
-                if (errorMsg == null && !inProgress) {
-                    inProgress = true
-                    userVM.register(name, email, password) { ok ->
-                        inProgress = false
-                        if (ok) {
-                            // show simple success and go back to login
-                            navController.popBackStack()
-                        } else {
-                            errorMsg = "Correo ya registrado"
-                        }
-                    }
-                }
-            }, modifier = Modifier.fillMaxWidth()) {
-                Text("Registrar")
             }
         }
     }
