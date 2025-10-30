@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-// 1. Estado de la UI: Todo lo que la vista necesita "recordar"
 data class LoginUiState(
     val email: String = "",
     val password: String = "",
