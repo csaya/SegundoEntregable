@@ -3,7 +3,6 @@ package com.example.segundoentregable.ui.home
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.segundoentregable.data.model.User
 import com.example.segundoentregable.data.repository.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
