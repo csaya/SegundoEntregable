@@ -18,12 +18,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun LoginScreen(
     navController: NavController,
-    loginViewModel: LoginViewModel = viewModel()
+    loginViewModel: LoginViewModel = viewModel(),
+    onLoginSuccess: () -> Unit
 ) {
     val uiState by loginViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         loginViewModel.loginSuccessEvent.collect {
+            onLoginSuccess()
             navController.navigate("home") {
                 popUpTo("login") { inclusive = true }
             }

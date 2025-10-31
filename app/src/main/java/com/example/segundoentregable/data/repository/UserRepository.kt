@@ -3,6 +3,7 @@ package com.example.segundoentregable.data.repository
 import android.content.Context
 import com.example.segundoentregable.data.local.SharedPrefManager
 import com.example.segundoentregable.data.model.User
+import kotlinx.coroutines.Dispatchers
 
 class UserRepository(context: Context) {
 
@@ -30,4 +31,14 @@ class UserRepository(context: Context) {
     }
 
     fun getCurrentUserEmail(): String? = prefs.getCurrentUserEmail()
+
+    fun isUserLoggedIn(): Boolean {
+        // Comprueba si ya hay un email guardado
+        return (getCurrentUserEmail() != null)
+    }
+
+    fun logout() {
+        // setCurrentUser(null) ya existe, esto es solo un alias
+        setCurrentUser(null)
+    }
 }

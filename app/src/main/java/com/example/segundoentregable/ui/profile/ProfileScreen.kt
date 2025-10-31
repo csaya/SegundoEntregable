@@ -21,12 +21,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.segundoentregable.ui.components.AppBottomBar
+import androidx.compose.material.icons.filled.Logout
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    viewModel: ProfileViewModel = viewModel()
+    viewModel: ProfileViewModel = viewModel(),
+    onLogout: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -69,6 +71,19 @@ fun ProfileScreen(
                 notificationsEnabled = uiState.notificationsEnabled,
                 onNotificationsToggled = { viewModel.onNotificationsToggled(it) }
             )
+
+            Spacer(Modifier.height(24.dp))
+            Button(
+                onClick = onLogout, // <-- 3. LLAMAR AL CALLBACK
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Icon(Icons.Filled.Logout, contentDescription = "Cerrar Sesión")
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text("Cerrar Sesión")
+            }
         }
     }
 }

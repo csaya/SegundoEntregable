@@ -9,16 +9,21 @@ import com.example.segundoentregable.ui.map.MapScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.segundoentregable.ui.detail.AttractionDetailScreen
-
+import com.example.segundoentregable.ui.login.LoginScreen
 import com.example.segundoentregable.ui.components.BottomBarScreen
 import com.example.segundoentregable.ui.list.AttractionListScreen
 import com.example.segundoentregable.ui.favorites.FavoritesScreen
 import com.example.segundoentregable.ui.profile.ProfileScreen
-
+import com.example.segundoentregable.ui.session.SessionViewModel
+import com.example.segundoentregable.ui.register.RegisterScreen
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 @Composable
-fun AppNavGraph(navController: NavHostController) {
-
+fun AppNavGraph(
+    navController: NavHostController,
+    sessionViewModel: SessionViewModel
+) {
     NavHost(
         navController = navController,
         startDestination = BottomBarScreen.Home.route
@@ -51,8 +56,39 @@ fun AppNavGraph(navController: NavHostController) {
             FavoritesScreen(navController = navController)
         }
 
-        composable(BottomBarScreen.Perfil.route) {
-            ProfileScreen(navController = navController)
+        composable(BottomBarScreen.Perfil.route) { // Ruta "perfil"
+            // 2. Observamos el estado de la sesión
+            val isLoggedIn by sessionViewModel.isLoggedIn.collectAsState()
+
+            // 3. Decidimos qué pantalla mostrar
+            if (isLoggedIn) {
+                // Si está logueado, va al Perfil
+                ProfileScreen(
+                    navController = navController,
+                    onLogout = {
+                        sessionViewModel.logout()
+                        // (Opcional) Navegar a home tras logout
+                        // navController.navigate(BottomBarScreen.Home.route) { popUpTo(0) }
+                    }
+                )
+            } else {
+                // Si es invitado, va al Login
+                LoginScreen(
+                    navController = navController,
+                    onLoginSuccess = {
+                        sessionViewModel.login()
+                        // (LoginScreen ya navega, aquí solo actualizamos el estado)
+                    }
+                )
+            }
+        }
+
+        // --- Ruta independiente para Registro ---
+        composable("register") {
+            RegisterScreen(
+                navController = navController
+                // (RegisterScreen ya navega de vuelta a Login)
+            )
         }
     }
 }
