@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.segundoentregable.data.model.AtractivoTuristico
 
@@ -85,6 +86,61 @@ fun CercanoItemRow(
         Column(Modifier.weight(1f)) {
             Text(atractivo.nombre, style = MaterialTheme.typography.titleMedium)
             Text(atractivo.distanciaTexto, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+        }
+    }
+}
+
+@Composable
+fun AttractionListItem(
+    atractivo: AtractivoTuristico,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 8.dp), // Espacio vertical entre ítems
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Columna de Info
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            // Mostramos la categoría (como en el mockup)
+            Text(
+                atractivo.categoria,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                atractivo.nombre,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                atractivo.descripcionCorta,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+        }
+
+        Spacer(Modifier.width(16.dp))
+
+        // Imagen (Placeholder)
+        Box(
+            modifier = Modifier
+                .size(80.dp) // Imagen más pequeña
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color.LightGray),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                Icons.Filled.PhotoCamera,
+                contentDescription = null,
+                modifier = Modifier.size(30.dp),
+                tint = Color.Gray
+            )
         }
     }
 }

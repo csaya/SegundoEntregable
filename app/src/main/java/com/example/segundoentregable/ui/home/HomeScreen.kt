@@ -51,7 +51,7 @@ fun HomeScreen(
                 query = searchQuery,
                 onQueryChange = { searchQuery = it },
                 onSearchClicked = {
-                    // navController.navigate("search_list")
+                    navController.navigate("list")
                 },
                 placeholder = "Buscar atractivos, restaurantes..."
             )

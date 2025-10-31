@@ -8,6 +8,7 @@ import com.example.segundoentregable.ui.home.HomeScreen
 import com.example.segundoentregable.ui.map.MapScreen
 // Importamos los componentes de navegación que creamos
 import com.example.segundoentregable.ui.components.BottomBarScreen
+import com.example.segundoentregable.ui.list.AttractionListScreen
 
 // --- Importa aquí tus otras pantallas (Favoritos, Perfil) cuando las crees ---
 // import com.example.segundoentregable.ui.favorites.FavoritesScreen
@@ -31,6 +32,10 @@ fun AppNavGraph(navController: NavHostController) {
         // --- Ruta de la Pantalla de Mapa (¡NUEVA!) ---
         composable(BottomBarScreen.Mapa.route) {
             MapScreen(navController = navController)
+        }
+
+        composable("list") {
+            AttractionListScreen(navController = navController)
         }
 
         // --- Marcadores de posición para las otras pantallas ---
