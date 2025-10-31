@@ -13,6 +13,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +37,18 @@ fun LoginScreen(
     }
 
     Scaffold(topBar = {
-        CenterAlignedTopAppBar(title = { Text("Inicio") })
+        CenterAlignedTopAppBar(
+            title = { Text("Iniciar Sesión") },
+            // 2. Añadimos el icono de "Atrás"
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Volver"
+                    )
+                }
+            }
+        )
     }) { innerPadding ->
         Column(
             modifier = Modifier
