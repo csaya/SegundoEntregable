@@ -13,7 +13,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 
@@ -34,7 +33,6 @@ fun RegisterScreen(
     Scaffold(topBar = {
         CenterAlignedTopAppBar(
             title = { Text("Registro") },
-            // 2. Añadimos el icono de "Atrás"
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(

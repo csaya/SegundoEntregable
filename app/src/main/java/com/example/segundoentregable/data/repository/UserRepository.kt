@@ -3,7 +3,6 @@ package com.example.segundoentregable.data.repository
 import android.content.Context
 import com.example.segundoentregable.data.local.SharedPrefManager
 import com.example.segundoentregable.data.model.User
-import kotlinx.coroutines.Dispatchers
 
 class UserRepository(context: Context) {
 
