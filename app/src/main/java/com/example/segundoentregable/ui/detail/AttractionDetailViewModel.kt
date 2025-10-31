@@ -19,24 +19,22 @@ data class DetailUiState(
 )
 
 class AttractionDetailViewModel(
-    savedStateHandle: SavedStateHandle // Inyectado automáticamente
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val repo = FakeAttractionRepository
 
-    // 1. Obtenemos el ID del atractivo desde la navegación
     private val attractionId: String = checkNotNull(savedStateHandle["attractionId"])
 
     private val _uiState = MutableStateFlow(DetailUiState())
     val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
 
     init {
-        // 2. Cargamos los datos de ESE atractivo
         loadData()
     }
 
     private fun loadData() {
-        viewModelScope.launch { // (Aunque es falso, simulamos que es asíncrono)
+        viewModelScope.launch {
             _uiState.update {
                 it.copy(
                     atractivo = repo.getAtractivoPorId(attractionId),
@@ -47,7 +45,6 @@ class AttractionDetailViewModel(
         }
     }
 
-    // 3. Lógica para el botón "Guardar"
     fun onToggleFavorite() {
         repo.toggleFavorito(attractionId)
         _uiState.update {

@@ -26,21 +26,21 @@ import com.example.segundoentregable.data.model.Review
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
-    query: String, // Recibe el estado
-    onQueryChange: (String) -> Unit, // Recibe el callback
+    query: String,
+    onQueryChange: (String) -> Unit,
     onSearchClicked: () -> Unit,
     placeholder: String = "Buscar..."
 ) {
     OutlinedTextField(
         value = query,
-        onValueChange = onQueryChange, // Llama al callback
+        onValueChange = onQueryChange,
         placeholder = { Text(placeholder) },
         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Buscar") },
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(30.dp))
             .clickable { onSearchClicked() },
-        enabled = false, // Sigue deshabilitado para actuar como botón
+        enabled = false,
         colors = TextFieldDefaults.colors(
             disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
             disabledIndicatorColor = Color.Transparent
@@ -48,13 +48,12 @@ fun SearchBar(
     )
 }
 
-// Composable para mostrar las estrellas de rating
 @Composable
 fun RatingBar(
     modifier: Modifier = Modifier,
     rating: Float,
     starSize: Dp = 16.dp,
-    starColor: Color = Color(0xFFFFC107) // Amarillo
+    starColor: Color = Color(0xFFFFC107)
 ) {
     Row(modifier = modifier) {
         (1..5).forEach { index ->
@@ -73,7 +72,6 @@ fun RatingBar(
     }
 }
 
-// Tarjeta para una sola reseña
 @Composable
 fun ReviewCard(
     review: Review,

@@ -46,7 +46,6 @@ fun AttractionDetailScreen(
         floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
 
-        // Si el atractivo aún no se carga (o falla), no mostramos nada
         if (atractivo == null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
@@ -54,7 +53,6 @@ fun AttractionDetailScreen(
             return@Scaffold
         }
 
-        // Usamos LazyColumn para que toda la pantalla sea "scrolleable"
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -73,7 +71,6 @@ fun AttractionDetailScreen(
                 }
             }
 
-            // 2. Título, Rating y Descripción
             item {
                 Column(Modifier.padding(16.dp)) {
                     Text(atractivo.nombre, style = MaterialTheme.typography.headlineMedium)
@@ -92,12 +89,10 @@ fun AttractionDetailScreen(
                 }
             }
 
-            // 3. Horario y Entrada
             item {
                 InfoSection(atractivo.horario, "S/ ${atractivo.precio} por persona")
             }
 
-            // 4. Botones de Acción
             item {
                 ActionButtonsSection(
                     isFavorito = uiState.isFavorito,
@@ -105,7 +100,6 @@ fun AttractionDetailScreen(
                 )
             }
 
-            // 5. Sección de Reseñas
             item {
                 Text(
                     "Reseñas",
@@ -121,14 +115,10 @@ fun AttractionDetailScreen(
                 )
             }
 
-            // Espacio al final para que el FAB no tape la última reseña
             item { Spacer(Modifier.height(80.dp)) }
         }
     }
 }
-
-
-// --- Componentes Internos de la Pantalla ---
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

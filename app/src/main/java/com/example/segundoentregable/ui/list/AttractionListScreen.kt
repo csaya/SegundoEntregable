@@ -39,7 +39,6 @@ fun AttractionListScreen(
         ) {
             Spacer(Modifier.height(16.dp))
 
-            // 1. Barra de Búsqueda (¡Esta es funcional!)
             OutlinedTextField(
                 value = uiState.searchQuery,
                 onValueChange = { viewModel.onSearchQueryChanged(it) },
@@ -56,7 +55,6 @@ fun AttractionListScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            // 2. Filtros
             FilterChips(
                 categorias = uiState.categoriasDisponibles,
                 selectedCategory = uiState.selectedCategory,
@@ -65,7 +63,6 @@ fun AttractionListScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            // 3. Lista de Resultados
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(bottom = 16.dp) // Espacio al final
@@ -83,15 +80,12 @@ fun AttractionListScreen(
     }
 }
 
-// --- Componentes Internos ---
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ListTopBar(navController: NavController) {
     TopAppBar(
         title = { Text("Arequipa", fontWeight = FontWeight.Bold) },
         navigationIcon = {
-            // El botón de "Atrás" que vimos en el mockup
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(Icons.Filled.ArrowBack, contentDescription = "Atrás")
             }
@@ -108,7 +102,6 @@ private fun FilterChips(
     onCategorySelected: (String) -> Unit
 ) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        // (Simulamos los filtros de Distancia y Precio como desactivados)
         item {
             FilterChip(
                 selected = false,
@@ -126,7 +119,6 @@ private fun FilterChips(
             )
         }
 
-        // Filtros de Categoría (Funcionales)
         items(categorias) { categoria ->
             FilterChip(
                 selected = (categoria == selectedCategory),

@@ -23,7 +23,7 @@ fun RecomendacionCard(
 ) {
     Card(
         modifier = Modifier
-            .width(220.dp) // Ancho fijo para las tarjetas horizontales
+            .width(220.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -64,7 +64,6 @@ fun CercanoItemRow(
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Placeholder de Imagen
         Box(
             modifier = Modifier
                 .size(60.dp)
@@ -107,7 +106,6 @@ fun AttractionListItem(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            // Mostramos la categoría (como en el mockup)
             Text(
                 atractivo.categoria,
                 style = MaterialTheme.typography.bodySmall,
@@ -127,10 +125,9 @@ fun AttractionListItem(
 
         Spacer(Modifier.width(16.dp))
 
-        // Imagen (Placeholder)
         Box(
             modifier = Modifier
-                .size(80.dp) // Imagen más pequeña
+                .size(80.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .background(Color.LightGray),
             contentAlignment = Alignment.Center

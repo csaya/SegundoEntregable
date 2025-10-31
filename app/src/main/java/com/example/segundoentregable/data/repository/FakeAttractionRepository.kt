@@ -3,14 +3,12 @@ package com.example.segundoentregable.data.repository
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.model.Review
 
-// Singleton que simula nuestra base de datos en memoria
 object FakeAttractionRepository {
 
-    // Lista temporal de IDs de favoritos
     private val favoritos = mutableSetOf<String>()
 
     private val allReviews = mapOf(
-        "a1" to listOf( // Reseñas para "Plaza de Armas"
+        "a1" to listOf(
             Review(
                 id = "r1",
                 userName = "Sophia Clark",
@@ -30,9 +28,9 @@ object FakeAttractionRepository {
                 dislikes = 1
             )
         ),
-        "a2" to listOf( // Reseñas para "Cañón del Colca"
+        "a2" to listOf(
             Review(
-                id = "r1", // Se puede repetir ID si es por atractivo
+                id = "r1",
                 userName = "Sophia Clark",
                 date = "Hace 2 meses",
                 rating = 5f,
@@ -50,12 +48,9 @@ object FakeAttractionRepository {
                 dislikes = 1
             )
         )
-        // (Añade más reseñas para 'a3', 'a4', 'a5' si lo deseas)
     )
 
-    // DATOS FALSOS (ahora coinciden con el mockup)
     private val todosLosAtractivos = listOf(
-        // Para "Recomendaciones"
         AtractivoTuristico(
             id = "a1",
             nombre = "Plaza de Armas",
@@ -74,7 +69,6 @@ object FakeAttractionRepository {
             categoria = "Aventura",
             idImagen = "img_colca"
         ),
-        // Para "Cercanos a ti"
         AtractivoTuristico(
             id = "a3",
             nombre = "Museo Santuarios Andinos",
@@ -107,10 +101,7 @@ object FakeAttractionRepository {
         )
     )
 
-    // --- Funciones que llamarán nuestros ViewModels ---
-
     fun getRecomendaciones(): List<AtractivoTuristico> {
-        // Devolvemos los 2 primeros (Plaza y Colca)
         return todosLosAtractivos.filter { it.id == "a1" || it.id == "a2" }
     }
 
@@ -119,7 +110,6 @@ object FakeAttractionRepository {
     }
 
     fun getCercanos(): List<AtractivoTuristico> {
-        // Devolvemos los otros 3
         return todosLosAtractivos.filter { it.id in listOf("a3", "a4", "a5") }
     }
 
@@ -128,10 +118,8 @@ object FakeAttractionRepository {
     }
 
     fun getReviewsForAttraction(attractionId: String): List<Review> {
-        return allReviews[attractionId] ?: emptyList() // Devuelve la lista o una vacía
+        return allReviews[attractionId] ?: emptyList()
     }
-
-    // --- Lógica de Favoritos (Simulación) ---
 
     fun toggleFavorito(id: String) {
         if (favoritos.contains(id)) favoritos.remove(id) else favoritos.add(id)

@@ -8,22 +8,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-// Estado de la UI: Las listas que la pantalla mostrará
 data class HomeUiState(
     val recomendaciones: List<AtractivoTuristico> = emptyList(),
     val cercanos: List<AtractivoTuristico> = emptyList()
 )
 
-class HomeViewModel : ViewModel() { // No necesitamos Application, así que usamos ViewModel simple
+class HomeViewModel : ViewModel() {
 
-    // Usamos el repositorio falso
     private val repo = FakeAttractionRepository
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
-        // Cargar los datos falsos al iniciar el ViewModel
         cargarDatosDeInicio()
     }
 
@@ -36,8 +33,7 @@ class HomeViewModel : ViewModel() { // No necesitamos Application, así que usam
         }
     }
 
-    // Dejaremos la lógica de búsqueda para más adelante
     fun onSearchQueryChanged(query: String) {
-        // Lógica de búsqueda (Criterio 2)
+        // Lógica de búsqueda
     }
 }
