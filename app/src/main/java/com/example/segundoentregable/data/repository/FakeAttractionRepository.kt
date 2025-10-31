@@ -69,6 +69,10 @@ object FakeAttractionRepository {
         return todosLosAtractivos.filter { it.id == "a1" || it.id == "a2" }
     }
 
+    fun getTodosLosAtractivos(): List<AtractivoTuristico> {
+        return todosLosAtractivos
+    }
+
     fun getCercanos(): List<AtractivoTuristico> {
         // Devolvemos los otros 3
         return todosLosAtractivos.filter { it.id in listOf("a3", "a4", "a5") }

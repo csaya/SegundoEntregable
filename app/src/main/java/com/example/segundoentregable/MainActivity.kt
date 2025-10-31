@@ -14,6 +14,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SegundoEntregableTheme {
                 val navController = rememberNavController()
+                // Simplemente llamamos al AppNavGraph actualizado
                 AppNavGraph(navController = navController)
             }
         }
