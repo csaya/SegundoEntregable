@@ -59,7 +59,7 @@ fun MapScreen(
                 AttractionDetailSheet(
                     atractivo = atractivo,
                     onVerMasClicked = {
-                        // navController.navigate("detail/${atractivo.id}")
+                        navController.navigate("detail/${atractivo.id}")
                     }
                 )
             }

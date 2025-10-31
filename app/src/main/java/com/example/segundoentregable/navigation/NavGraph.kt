@@ -6,6 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.segundoentregable.ui.home.HomeScreen
 import com.example.segundoentregable.ui.map.MapScreen
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.example.segundoentregable.ui.detail.AttractionDetailScreen
 // Importamos los componentes de navegación que creamos
 import com.example.segundoentregable.ui.components.BottomBarScreen
 import com.example.segundoentregable.ui.list.AttractionListScreen
@@ -38,6 +41,16 @@ fun AppNavGraph(navController: NavHostController) {
             AttractionListScreen(navController = navController)
         }
 
+
+        composable(
+            route = "detail/{attractionId}", // Ruta con un argumento
+            arguments = listOf(navArgument("attractionId") {
+                type = NavType.StringType // Definimos el tipo de argumento
+            })
+        ) {
+            // El ViewModel tomará el 'attractionId' automáticamente
+            AttractionDetailScreen(navController = navController)
+        }
         // --- Marcadores de posición para las otras pantallas ---
 
         composable(BottomBarScreen.Favoritos.route) {

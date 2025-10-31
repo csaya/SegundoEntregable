@@ -74,7 +74,7 @@ fun AttractionListScreen(
                     AttractionListItem(
                         atractivo = atractivo,
                         onClick = {
-                            // navController.navigate("detail/${atractivo.id}")
+                            navController.navigate("detail/${atractivo.id}")
                         }
                     )
                 }

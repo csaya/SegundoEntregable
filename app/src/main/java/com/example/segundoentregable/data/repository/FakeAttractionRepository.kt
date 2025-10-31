@@ -1,12 +1,57 @@
 package com.example.segundoentregable.data.repository
 
 import com.example.segundoentregable.data.model.AtractivoTuristico
+import com.example.segundoentregable.data.model.Review
 
 // Singleton que simula nuestra base de datos en memoria
 object FakeAttractionRepository {
 
     // Lista temporal de IDs de favoritos
     private val favoritos = mutableSetOf<String>()
+
+    private val allReviews = mapOf(
+        "a1" to listOf( // Reseñas para "Plaza de Armas"
+            Review(
+                id = "r1",
+                userName = "Sophia Clark",
+                date = "Hace 2 meses",
+                rating = 5f,
+                comment = "¡Unas vistas absolutamente impresionantes! El corazón de la ciudad.",
+                likes = 12,
+                dislikes = 2
+            ),
+            Review(
+                id = "r2",
+                userName = "Ethan Carter",
+                date = "Hace 3 meses",
+                rating = 4f,
+                comment = "El sillar es espectacular. Sin embargo, estaba muy concurrido. Recomiendo ir de noche.",
+                likes = 8,
+                dislikes = 1
+            )
+        ),
+        "a2" to listOf( // Reseñas para "Cañón del Colca"
+            Review(
+                id = "r1", // Se puede repetir ID si es por atractivo
+                userName = "Sophia Clark",
+                date = "Hace 2 meses",
+                rating = 5f,
+                comment = "¡Unas vistas absolutamente impresionantes! El Cañón del Colca es un destino que no te puedes perder. La caminata fue difícil, pero mereció la pena y el paisaje era incomparable. ¡Muy recomendable!",
+                likes = 12,
+                dislikes = 2
+            ),
+            Review(
+                id = "r2",
+                userName = "Ethan Carter",
+                date = "Hace 3 meses",
+                rating = 3f,
+                comment = "El cañón es impresionante y las vistas son espectaculares. Sin embargo, la visita me pareció un poco apresurada y me hubiera gustado tener más tiempo para explorarlo. En general, fue una buena experiencia, pero se podría mejorar.",
+                likes = 8,
+                dislikes = 1
+            )
+        )
+        // (Añade más reseñas para 'a3', 'a4', 'a5' si lo deseas)
+    )
 
     // DATOS FALSOS (ahora coinciden con el mockup)
     private val todosLosAtractivos = listOf(
@@ -80,6 +125,10 @@ object FakeAttractionRepository {
 
     fun getAtractivoPorId(id: String): AtractivoTuristico? {
         return todosLosAtractivos.find { it.id == id }
+    }
+
+    fun getReviewsForAttraction(attractionId: String): List<Review> {
+        return allReviews[attractionId] ?: emptyList() // Devuelve la lista o una vacía
     }
 
     // --- Lógica de Favoritos (Simulación) ---

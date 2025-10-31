@@ -61,7 +61,7 @@ fun HomeScreen(
             RecomendacionesSection(
                 lista = uiState.recomendaciones,
                 onAtractivoClicked = { atractivoId ->
-                    // navController.navigate("detail/$atractivoId")
+                    navController.navigate("detail/$atractivoId")
                 }
             )
 
@@ -70,7 +70,7 @@ fun HomeScreen(
             CercanosSection(
                 lista = uiState.cercanos,
                 onAtractivoClicked = { atractivoId ->
-                    // navController.navigate("detail/$atractivoId")
+                    navController.navigate("detail/$atractivoId")
                 }
             )
 
