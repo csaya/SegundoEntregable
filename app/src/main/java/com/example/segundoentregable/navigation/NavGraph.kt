@@ -13,7 +13,7 @@ import com.example.segundoentregable.ui.detail.AttractionDetailScreen
 import com.example.segundoentregable.ui.components.BottomBarScreen
 import com.example.segundoentregable.ui.list.AttractionListScreen
 import com.example.segundoentregable.ui.favorites.FavoritesScreen
-// import com.example.segundoentregable.ui.profile.ProfileScreen
+import com.example.segundoentregable.ui.profile.ProfileScreen
 
 
 @Composable
@@ -52,7 +52,7 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable(BottomBarScreen.Perfil.route) {
-            // ProfileScreen(navController = navController)
+            ProfileScreen(navController = navController)
         }
     }
 }
