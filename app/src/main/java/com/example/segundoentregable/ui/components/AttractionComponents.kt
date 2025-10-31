@@ -15,6 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.segundoentregable.data.model.AtractivoTuristico
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 
 @Composable
 fun RecomendacionCard(
@@ -137,6 +139,65 @@ fun AttractionListItem(
                 contentDescription = null,
                 modifier = Modifier.size(30.dp),
                 tint = Color.Gray
+            )
+        }
+    }
+}
+
+@Composable
+fun FavoriteListItem(
+    atractivo: AtractivoTuristico,
+    onItemClick: () -> Unit,
+    onFavoriteClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onItemClick() }
+            .padding(vertical = 8.dp, horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(60.dp) // Imagen cuadrada
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color.LightGray),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                Icons.Filled.PhotoCamera,
+                contentDescription = null,
+                modifier = Modifier.size(30.dp),
+                tint = Color.Gray
+            )
+        }
+
+        Spacer(Modifier.width(16.dp))
+
+        // Columna de Info
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                atractivo.nombre,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                atractivo.categoria,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+        }
+
+        Spacer(Modifier.width(16.dp))
+
+        IconButton(onClick = onFavoriteClick) {
+            Icon(
+                Icons.Filled.Favorite,
+                contentDescription = "Quitar de favoritos",
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }
