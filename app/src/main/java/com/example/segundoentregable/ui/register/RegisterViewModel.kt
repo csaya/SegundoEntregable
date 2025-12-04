@@ -63,14 +63,18 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            val ok = withContext(Dispatchers.IO) {
-                repo.register(User(state.name.trim(), state.email.trim(), state.password))
-            }
+            try {
+                val ok = withContext(Dispatchers.IO) {
+                    repo.register(User(state.name.trim(), state.email.trim(), state.password))
+                }
 
-            if (ok) {
-                _registerSuccessEvent.emit(Unit)
-            } else {
-                _uiState.update { it.copy(errorMessage = "Correo ya registrado") }
+                if (ok) {
+                    _registerSuccessEvent.emit(Unit)
+                } else {
+                    _uiState.update { it.copy(errorMessage = "Correo ya registrado") }
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(errorMessage = "Error al registrar: ${e.message}") }
             }
 
             _uiState.update { it.copy(isLoading = false) }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -87,7 +88,7 @@ private fun ListTopBar(navController: NavController) {
         title = { Text("Arequipa", fontWeight = FontWeight.Bold) },
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Atrás")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)

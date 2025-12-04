@@ -19,7 +19,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             SegundoEntregableTheme {
                 val navController = rememberNavController()
-                // 2. Lo pasamos al NavGraph
                 AppNavGraph(
                     navController = navController,
                     sessionViewModel = sessionViewModel

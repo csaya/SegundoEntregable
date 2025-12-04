@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Person
@@ -22,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.segundoentregable.ui.components.AppBottomBar
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material3.HorizontalDivider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,7 +82,7 @@ fun ProfileScreen(
                     containerColor = MaterialTheme.colorScheme.error
                 )
             ) {
-                Icon(Icons.Filled.Logout, contentDescription = "Cerrar Sesión")
+                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Cerrar Sesión")
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text("Cerrar Sesión")
             }
@@ -142,7 +144,7 @@ private fun SettingsSection(
             onClick = { /* TODO */ }
         )
 
-        Divider()
+        HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
         SettingsClickableItem(
             title = "Descargas offline",
@@ -150,7 +152,7 @@ private fun SettingsSection(
             onClick = { /* TODO */ }
         )
 
-        Divider()
+        HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
         SettingsSwitchItem(
             title = "Notificaciones",
@@ -158,7 +160,7 @@ private fun SettingsSection(
             onCheckedChange = onNotificationsToggled
         )
 
-        Divider()
+        HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
         SettingsClickableItem(
             title = "Ayuda y privacidad",

@@ -1,11 +1,12 @@
 package com.example.segundoentregable.ui.detail
 
+import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.PhotoCamera
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.compose.ui.platform.LocalContext
 import com.example.segundoentregable.ui.components.AppBottomBar
 import com.example.segundoentregable.ui.components.RatingBar
 import com.example.segundoentregable.ui.components.ReviewCard
@@ -28,8 +30,14 @@ import com.example.segundoentregable.ui.components.ReviewCard
 @Composable
 fun AttractionDetailScreen(
     navController: NavController,
-    viewModel: AttractionDetailViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    val application = context.applicationContext as Application
+
+    val viewModel: AttractionDetailViewModel = viewModel(
+        factory = AttractionDetailViewModelFactory(application)
+    )
+
     val uiState by viewModel.uiState.collectAsState()
     val atractivo = uiState.atractivo // El atractivo que estamos viendo
 
@@ -127,7 +135,7 @@ private fun DetailTopBar(navController: NavController) {
         title = { Text("Arequipa", fontWeight = FontWeight.Bold) },
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Atrás")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)

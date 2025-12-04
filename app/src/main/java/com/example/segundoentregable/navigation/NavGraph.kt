@@ -56,18 +56,15 @@ fun AppNavGraph(
             FavoritesScreen(navController = navController)
         }
 
-        composable(BottomBarScreen.Perfil.route) { // Ruta "perfil"
-            // 2. Observamos el estado de la sesión
+        composable(BottomBarScreen.Perfil.route) {
             val isLoggedIn by sessionViewModel.isLoggedIn.collectAsState()
 
-            // 3. Decidimos qué pantalla mostrar
             if (isLoggedIn) {
                 // Si está logueado, va al Perfil
                 ProfileScreen(
                     navController = navController,
                     onLogout = {
                         sessionViewModel.logout()
-                        // (Opcional) Navegar a home tras logout
                         // navController.navigate(BottomBarScreen.Home.route) { popUpTo(0) }
                     }
                 )
@@ -83,11 +80,9 @@ fun AppNavGraph(
             }
         }
 
-        // --- Ruta independiente para Registro ---
         composable("register") {
             RegisterScreen(
                 navController = navController
-                // (RegisterScreen ya navega de vuelta a Login)
             )
         }
     }

@@ -1,28 +1,32 @@
 package com.example.segundoentregable.data.repository
 
 import android.content.Context
+import com.example.segundoentregable.data.local.AppDatabase
 import com.example.segundoentregable.data.local.SharedPrefManager
+import com.example.segundoentregable.data.local.entity.UserEntity
 import com.example.segundoentregable.data.model.User
 
 class UserRepository(context: Context) {
 
+    private val db = AppDatabase.getInstance(context)
+    private val userDao = db.userDao()
     private val prefs = SharedPrefManager.getInstance(context)
 
-    fun register(user: User): Boolean {
-        val users = prefs.getUsers()
-        if (users.any { it.email.equals(user.email, ignoreCase = true) }) return false
-        users.add(user)
-        prefs.saveUsers(users)
+    suspend fun register(user: User): Boolean {
+        val existingUser = userDao.getUserByEmail(user.email)
+        if (existingUser != null) return false
+        userDao.insertUser(UserEntity(user.email, user.name, user.password))
         return true
     }
 
-    fun login(email: String, password: String): Boolean {
-        val users = prefs.getUsers()
-        return users.any { it.email.equals(email, ignoreCase = true) && it.password == password }
+    suspend fun login(email: String, password: String): Boolean {
+        val user = userDao.getUserByEmail(email)
+        return user != null && user.password == password
     }
 
-    fun getUser(email: String): User? {
-        return prefs.getUsers().find { it.email.equals(email, ignoreCase = true) }
+    suspend fun getUser(email: String): User? {
+        val userEntity = userDao.getUserByEmail(email)
+        return userEntity?.let { User(it.name, it.email, it.password) }
     }
 
     fun setCurrentUser(email: String?) {
@@ -32,12 +36,10 @@ class UserRepository(context: Context) {
     fun getCurrentUserEmail(): String? = prefs.getCurrentUserEmail()
 
     fun isUserLoggedIn(): Boolean {
-        // Comprueba si ya hay un email guardado
         return (getCurrentUserEmail() != null)
     }
 
     fun logout() {
-        // setCurrentUser(null) ya existe, esto es solo un alias
         setCurrentUser(null)
     }
 }

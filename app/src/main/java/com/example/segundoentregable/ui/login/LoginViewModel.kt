@@ -68,20 +68,26 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            val ok = withContext(Dispatchers.IO) {
-                repo.login(state.email.trim(), state.password)
-            }
-
-            if (ok) {
-                // Guarda la sesión
-                withContext(Dispatchers.IO) {
-                    repo.setCurrentUser(state.email.trim())
+            try {
+                val ok = withContext(Dispatchers.IO) {
+                    repo.login(state.email.trim(), state.password)
                 }
-                // Emite el evento de éxito para que la Vista navegue
-                _loginSuccessEvent.emit(Unit)
-            } else {
+
+                if (ok) {
+                    // Guarda la sesión
+                    withContext(Dispatchers.IO) {
+                        repo.setCurrentUser(state.email.trim())
+                    }
+                    // Emite el evento de éxito para que la Vista navegue
+                    _loginSuccessEvent.emit(Unit)
+                } else {
+                    _uiState.update {
+                        it.copy(errorMessage = "Credenciales incorrectas")
+                    }
+                }
+            } catch (e: Exception) {
                 _uiState.update {
-                    it.copy(errorMessage = "Credenciales incorrectas")
+                    it.copy(errorMessage = "Error al iniciar sesión: ${e.message}")
                 }
             }
 

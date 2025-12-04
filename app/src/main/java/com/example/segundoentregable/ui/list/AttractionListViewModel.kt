@@ -1,36 +1,59 @@
 package com.example.segundoentregable.ui.list
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.data.model.AtractivoTuristico
-import com.example.segundoentregable.data.repository.FakeAttractionRepository
+import com.example.segundoentregable.data.repository.AttractionRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 data class AttractionListUiState(
     val searchQuery: String = "",
     val selectedCategory: String? = null,
     val categoriasDisponibles: List<String> = emptyList(),
-    val listaFiltrada: List<AtractivoTuristico> = emptyList()
+    val listaFiltrada: List<AtractivoTuristico> = emptyList(),
+    val isLoading: Boolean = false
 )
 
-class AttractionListViewModel : ViewModel() {
+class AttractionListViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repo = FakeAttractionRepository
+    private val repo = AttractionRepository(application.applicationContext)
 
     private val _uiState = MutableStateFlow(AttractionListUiState())
     val uiState: StateFlow<AttractionListUiState> = _uiState.asStateFlow()
 
-    private val todosLosAtractivos = repo.getTodosLosAtractivos()
+    private var todosLosAtractivos: List<AtractivoTuristico> = emptyList()
 
     init {
-        _uiState.update {
-            it.copy(
-                listaFiltrada = todosLosAtractivos,
-                // Simulamos obtener las categorías del repo
-                categoriasDisponibles = todosLosAtractivos.map { a -> a.categoria }.distinct()
-            )
+        loadAtractivos()
+    }
+
+    private fun loadAtractivos() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            try {
+                withContext(Dispatchers.IO) {
+                    repo.initializeData()
+                }
+                todosLosAtractivos = withContext(Dispatchers.IO) {
+                    repo.getTodosLosAtractivos()
+                }
+                _uiState.update {
+                    it.copy(
+                        listaFiltrada = todosLosAtractivos,
+                        categoriasDisponibles = todosLosAtractivos.map { a -> a.categoria }.distinct(),
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false) }
+            }
         }
     }
 

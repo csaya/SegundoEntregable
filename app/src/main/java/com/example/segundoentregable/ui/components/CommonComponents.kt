@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.* // ← para Row, Column, Spacer, siz
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.StarHalf
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
@@ -59,7 +60,7 @@ fun RatingBar(
         (1..5).forEach { index ->
             val icon = when {
                 rating >= index -> Icons.Filled.Star
-                rating >= (index - 0.5f) -> Icons.Filled.StarHalf
+                rating >= (index - 0.5f) -> Icons.AutoMirrored.Filled.StarHalf
                 else -> Icons.Filled.StarBorder
             }
             Icon(

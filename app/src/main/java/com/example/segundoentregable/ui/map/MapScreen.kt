@@ -83,7 +83,7 @@ fun MapScreen(
                     .background(Color.LightGray) // El fondo que simula el mapa
             ) {
                 Text(
-                    "AQUÍ IRÍA EL MAPA INTERACTIVO",
+                    "MAPA INTERACTIVO",
                     modifier = Modifier.align(Alignment.Center),
                     color = Color.Gray,
                     style = MaterialTheme.typography.titleLarge
