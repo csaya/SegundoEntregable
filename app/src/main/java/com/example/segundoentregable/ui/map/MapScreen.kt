@@ -19,6 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.ui.components.AppBottomBar
+import com.example.segundoentregable.ui.components.AttractionMapView // <--- Importa tu componente aquí
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,9 +27,11 @@ fun MapScreen(
     navController: NavController,
     mapViewModel: MapViewModel = viewModel()
 ) {
+    // 1. Obtenemos el estado (la lista de atractivos reales desde Room)
     val uiState by mapViewModel.uiState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
+    // Configuración del BottomSheet (hoja inferior de detalles)
     val sheetState = rememberStandardBottomSheetState(
         initialValue = SheetValue.Hidden,
         skipHiddenState = false
@@ -37,6 +40,7 @@ fun MapScreen(
         bottomSheetState = sheetState
     )
 
+    // Efecto para abrir/cerrar el sheet cuando seleccionas un marcador
     LaunchedEffect(uiState.selectedAttraction) {
         if (uiState.selectedAttraction != null) {
             sheetState.expand()
@@ -53,7 +57,6 @@ fun MapScreen(
                 onQueryChange = { searchQuery = it }
             )
         },
-
         sheetContent = {
             uiState.selectedAttraction?.let { atractivo ->
                 AttractionDetailSheet(
@@ -69,10 +72,12 @@ fun MapScreen(
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
 
     ) { topLevelPadding ->
+
         Scaffold(
             bottomBar = { AppBottomBar(navController = navController) }
         ) { innerContentPadding ->
 
+            // 2. Aquí integramos el MAPA REAL
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -80,38 +85,21 @@ fun MapScreen(
                         top = topLevelPadding.calculateTopPadding(),
                         bottom = innerContentPadding.calculateBottomPadding()
                     )
-                    .background(Color.LightGray) // El fondo que simula el mapa
             ) {
-                Text(
-                    "MAPA INTERACTIVO",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = Color.Gray,
-                    style = MaterialTheme.typography.titleLarge
+                AttractionMapView(
+                    atractivos = uiState.atractivos, // Pasamos la lista real de ROOM
+                    onMarkerClick = { atractivo ->
+                        // Al hacer clic en un pin de Google Maps, actualizamos el ViewModel
+                        mapViewModel.selectAttraction(atractivo)
+                    },
+                    modifier = Modifier.fillMaxSize()
                 )
-
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        "Simular Clic en Marcador:",
-                        fontWeight = FontWeight.Bold,
-                        color = Color.DarkGray
-                    )
-
-                    uiState.atractivos.forEach { atractivo ->
-                        Button(onClick = { mapViewModel.selectAttraction(atractivo) }) {
-                            Text(atractivo.nombre)
-                        }
-                    }
-                }
             }
         }
     }
 }
 
+// ... (El resto de tus componentes: MapTopBar y AttractionDetailSheet se mantienen igual)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MapTopBar(
@@ -140,7 +128,7 @@ private fun MapTopBar(
                 )
             )
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White.copy(alpha = 0.9f)) // Le puse un poco de fondo para que se lea sobre el mapa
     )
 }
 
@@ -195,7 +183,7 @@ private fun AttractionDetailSheet(
 
         Spacer(Modifier.width(16.dp))
 
-        // Imagen
+        // Imagen (Aquí deberías usar tu nuevo componente AttractionImage con Coil)
         Box(
             modifier = Modifier
                 .size(100.dp)
@@ -203,6 +191,7 @@ private fun AttractionDetailSheet(
                 .background(Color.LightGray),
             contentAlignment = Alignment.Center
         ) {
+            // TIP: Reemplaza esto con: AttractionImage(imageUrl = atractivo.imagenUrl, modifier = ...)
             Icon(
                 Icons.Filled.PhotoCamera,
                 contentDescription = null,

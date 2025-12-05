@@ -2,6 +2,7 @@ package com.example.segundoentregable.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -13,6 +14,9 @@ import androidx.room.PrimaryKey
             childColumns = ["attractionId"],
             onDelete = ForeignKey.CASCADE
         )
+    ],
+    indices = [
+        Index("attractionId")
     ]
 )
 data class ReviewEntity(

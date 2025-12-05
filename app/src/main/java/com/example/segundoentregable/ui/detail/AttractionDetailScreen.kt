@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.segundoentregable.ui.components.AppBottomBar
 import com.example.segundoentregable.ui.components.RatingBar
 import com.example.segundoentregable.ui.components.ReviewCard
+import com.example.segundoentregable.ui.components.AttractionImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,15 +69,10 @@ fun AttractionDetailScreen(
         ) {
             // 1. Imagen Principal
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp) // Imagen grande
-                        .background(Color.LightGray),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Filled.PhotoCamera, null, Modifier.size(50.dp), Color.Gray)
-                }
+                AttractionImage(
+                    imageUrl = atractivo.idImagen,
+                    contentDescription = atractivo.nombre
+                )
             }
 
             item {

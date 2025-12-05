@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.segundoentregable.data.model.AtractivoTuristico
@@ -29,21 +30,15 @@ fun RecomendacionCard(
         shape = RoundedCornerShape(12.dp)
     ) {
         Column {
-            // Placeholder para la Imagen
-            Box(
+            // Imagen real con AttractionImage
+            AttractionImage(
+                imageUrl = atractivo.idImagen,
+                contentDescription = atractivo.nombre,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(140.dp)
-                    .background(Color.LightGray),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    Icons.Filled.PhotoCamera,
-                    contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    tint = Color.Gray
-                )
-            }
+                    .height(140.dp),
+                contentScale = ContentScale.Crop
+            )
 
             Column(Modifier.padding(12.dp)) {
                 Text(atractivo.nombre, style = MaterialTheme.typography.titleMedium)
@@ -65,20 +60,14 @@ fun CercanoItemRow(
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
+        AttractionImage(
+            imageUrl = atractivo.idImagen,
+            contentDescription = atractivo.nombre,
             modifier = Modifier
                 .size(60.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.LightGray),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                Icons.Filled.PhotoCamera,
-                contentDescription = null,
-                modifier = Modifier.size(30.dp),
-                tint = Color.Gray
-            )
-        }
+                .clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.Crop
+        )
 
         Spacer(Modifier.width(16.dp))
 
@@ -126,20 +115,14 @@ fun AttractionListItem(
 
         Spacer(Modifier.width(16.dp))
 
-        Box(
+        AttractionImage(
+            imageUrl = atractivo.idImagen,
+            contentDescription = atractivo.nombre,
             modifier = Modifier
                 .size(80.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.LightGray),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                Icons.Filled.PhotoCamera,
-                contentDescription = null,
-                modifier = Modifier.size(30.dp),
-                tint = Color.Gray
-            )
-        }
+                .clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.Crop
+        )
     }
 }
 
@@ -156,20 +139,14 @@ fun FavoriteListItem(
             .padding(vertical = 8.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
+        AttractionImage(
+            imageUrl = atractivo.idImagen,
+            contentDescription = atractivo.nombre,
             modifier = Modifier
-                .size(60.dp) // Imagen cuadrada
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.LightGray),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                Icons.Filled.PhotoCamera,
-                contentDescription = null,
-                modifier = Modifier.size(30.dp),
-                tint = Color.Gray
-            )
-        }
+                .size(60.dp)
+                .clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.Crop
+        )
 
         Spacer(Modifier.width(16.dp))
 
