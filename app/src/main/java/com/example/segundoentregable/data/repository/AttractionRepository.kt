@@ -1,17 +1,16 @@
 package com.example.segundoentregable.data.repository
 
-import android.content.Context
-import com.example.segundoentregable.data.local.AppDatabase
+import com.example.segundoentregable.data.local.dao.AtractivoDao
+import com.example.segundoentregable.data.local.dao.ReviewDao
 import com.example.segundoentregable.data.local.entity.AtractivoEntity
 import com.example.segundoentregable.data.local.entity.ReviewEntity
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.model.Review
 
-class AttractionRepository(context: Context) {
-
-    private val db = AppDatabase.getInstance(context)
-    private val atractivoDao = db.atractivoDao()
-    private val reviewDao = db.reviewDao()
+class AttractionRepository(
+    private val atractivoDao: AtractivoDao,
+    private val reviewDao: ReviewDao
+) {
 
     suspend fun initializeData() {
         val existingAtractivos = atractivoDao.getAllAtractivos()
@@ -35,7 +34,7 @@ class AttractionRepository(context: Context) {
                 precio = 40.0,
                 horario = "09:00 - 17:00",
                 rating = 4.8f,
-                idImagen = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Monasterio_de_Santa_Catalina%2C_Arequipa%2C_Per%C3%BA%2C_2015-07-29%2C_DD_15.JPG/1280px-Monasterio_de_Santa_Catalina%2C_Arequipa%2C_Per%C3%BA%2C_2015-07-29%2C_DD_15.JPG",
+                idImagen = "https://upload.wikimedia.org/wikipedia/commons/a/ae/Monasterio_de_Santa_Catalina%2C_Arequipa.jpg",
                 distanciaTexto = "Centro"
             ),
             AtractivoEntity(
@@ -50,7 +49,7 @@ class AttractionRepository(context: Context) {
                 precio = 0.0,
                 horario = "06:00 - 20:00",
                 rating = 4.7f,
-                idImagen = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Arequipa_-_Yanahuara_-_Mirador_-_01.jpg/1280px-Arequipa_-_Yanahuara_-_Mirador_-_01.jpg",
+                idImagen = "https://upload.wikimedia.org/wikipedia/commons/a/ae/Monasterio_de_Santa_Catalina%2C_Arequipa.jpg",
                 distanciaTexto = "2.5 km"
             ),
             AtractivoEntity(
@@ -65,7 +64,7 @@ class AttractionRepository(context: Context) {
                 precio = 60.0,
                 horario = "24 horas",
                 rating = 4.9f,
-                idImagen = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Colca_Canyon%2C_Peru.jpg/1280px-Colca_Canyon%2C_Peru.jpg",
+                idImagen = "https://upload.wikimedia.org/wikipedia/commons/a/ae/Monasterio_de_Santa_Catalina%2C_Arequipa.jpg",
                 distanciaTexto = "160 km"
             ),
             AtractivoEntity(
@@ -80,7 +79,7 @@ class AttractionRepository(context: Context) {
                 precio = 0.0,
                 horario = "24 horas",
                 rating = 4.6f,
-                idImagen = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Arequipa_Cathedral_and_Plaza_de_Armas.jpg/1280px-Arequipa_Cathedral_and_Plaza_de_Armas.jpg",
+                idImagen = "https://upload.wikimedia.org/wikipedia/commons/a/ae/Monasterio_de_Santa_Catalina%2C_Arequipa.jpg",
                 distanciaTexto = "Centro"
             ),
             AtractivoEntity(
@@ -95,7 +94,7 @@ class AttractionRepository(context: Context) {
                 precio = 80.0,
                 horario = "24 horas",
                 rating = 4.8f,
-                idImagen = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Misti_volcano.jpg/1280px-Misti_volcano.jpg",
+                idImagen = "https://upload.wikimedia.org/wikipedia/commons/a/ae/Monasterio_de_Santa_Catalina%2C_Arequipa.jpg",
                 distanciaTexto = "17 km"
             ),
             AtractivoEntity(
@@ -110,7 +109,7 @@ class AttractionRepository(context: Context) {
                 precio = 25.0,
                 horario = "09:00 - 17:00",
                 rating = 4.5f,
-                idImagen = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Casa_del_Fundador%2C_Arequipa.jpg/1280px-Casa_del_Fundador%2C_Arequipa.jpg",
+                idImagen = "https://upload.wikimedia.org/wikipedia/commons/a/ae/Monasterio_de_Santa_Catalina%2C_Arequipa.jpg",
                 distanciaTexto = "Centro"
             )
         )

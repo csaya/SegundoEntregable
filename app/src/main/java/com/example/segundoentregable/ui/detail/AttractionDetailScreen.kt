@@ -1,7 +1,6 @@
 package com.example.segundoentregable.ui.detail
 
 import android.app.Application
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,7 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -17,17 +16,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.compose.ui.platform.LocalContext
 import com.example.segundoentregable.ui.components.AppBottomBar
 import com.example.segundoentregable.ui.components.RatingBar
 import com.example.segundoentregable.ui.components.ReviewCard
 import com.example.segundoentregable.ui.components.AttractionImage
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttractionDetailScreen(
     navController: NavController,
@@ -40,16 +38,18 @@ fun AttractionDetailScreen(
     )
 
     val uiState by viewModel.uiState.collectAsState()
-    val atractivo = uiState.atractivo // El atractivo que estamos viendo
+    val atractivo = uiState.atractivo
 
     Scaffold(
         topBar = { DetailTopBar(navController = navController) },
         bottomBar = { AppBottomBar(navController = navController) },
         floatingActionButton = {
+            // Reemplazamos el FAB genérico por uno que lleve al mapa directamente si se desea,
+            // o lo dejamos como "Añadir a ruta".
             ExtendedFloatingActionButton(
-                onClick = { /* TODO */ },
-                text = { Text("Añadir a mi ruta") },
-                icon = { /* Icono opcional */ }
+                onClick = { navController.navigate("map") }, // Navegar al mapa general
+                text = { Text("Ver en Mapa") },
+                icon = { Icon(Icons.Filled.Map, contentDescription = null) }
             )
         },
         floatingActionButtonPosition = FabPosition.Center
@@ -67,14 +67,15 @@ fun AttractionDetailScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // 1. Imagen Principal
+            // 1. Imagen
             item {
                 AttractionImage(
-                    imageUrl = atractivo.idImagen,
+                    imageUrl = atractivo.idImagen, // Usamos idImagen que ahora contiene la URL
                     contentDescription = atractivo.nombre
                 )
             }
 
+            // 2. Info Principal
             item {
                 Column(Modifier.padding(16.dp)) {
                     Text(atractivo.nombre, style = MaterialTheme.typography.headlineMedium)
@@ -93,14 +94,20 @@ fun AttractionDetailScreen(
                 }
             }
 
+            // 3. Sección de Horarios
             item {
-                InfoSection(atractivo.horario, "S/ ${atractivo.precio} por persona")
+                InfoSection(atractivo.horario, "S/ ${atractivo.precio} aprox.")
             }
 
+            // 4. Botones de Acción (Favorito y Mapa)
             item {
                 ActionButtonsSection(
                     isFavorito = uiState.isFavorito,
-                    onToggleFavorite = { viewModel.onToggleFavorite() }
+                    onToggleFavorite = { viewModel.onToggleFavorite() },
+                    onGoToMap = {
+                        // Navegación al mapa
+                        navController.navigate("map")
+                    }
                 )
             }
 
@@ -115,7 +122,7 @@ fun AttractionDetailScreen(
             items(uiState.reviews) { review ->
                 ReviewCard(
                     review = review,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 )
             }
 
@@ -128,7 +135,7 @@ fun AttractionDetailScreen(
 @Composable
 private fun DetailTopBar(navController: NavController) {
     TopAppBar(
-        title = { Text("Arequipa", fontWeight = FontWeight.Bold) },
+        title = { Text("Detalle", fontWeight = FontWeight.Bold) },
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
@@ -141,15 +148,15 @@ private fun DetailTopBar(navController: NavController) {
 @Composable
 private fun InfoSection(horario: String, admision: String) {
     Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-        Text("Horario y entrada", style = MaterialTheme.typography.headlineSmall)
-        Spacer(Modifier.height(16.dp))
+        Text("Información", style = MaterialTheme.typography.headlineSmall)
+        Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth()) {
             Column(Modifier.weight(1f)) {
                 Text("Horario", style = MaterialTheme.typography.labelMedium, color = Color.Gray)
-                Text(horario, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+                Text(horario.ifEmpty { "09:00 - 18:00" }, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
             }
             Column(Modifier.weight(1f)) {
-                Text("Admisión", style = MaterialTheme.typography.labelMedium, color = Color.Gray)
+                Text("Precio", style = MaterialTheme.typography.labelMedium, color = Color.Gray)
                 Text(admision, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
             }
         }
@@ -157,7 +164,11 @@ private fun InfoSection(horario: String, admision: String) {
 }
 
 @Composable
-private fun ActionButtonsSection(isFavorito: Boolean, onToggleFavorite: () -> Unit) {
+private fun ActionButtonsSection(
+    isFavorito: Boolean,
+    onToggleFavorite: () -> Unit,
+    onGoToMap: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -172,18 +183,21 @@ private fun ActionButtonsSection(isFavorito: Boolean, onToggleFavorite: () -> Un
             Icon(
                 if (isFavorito) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
                 contentDescription = "Guardar",
-                modifier = Modifier.size(ButtonDefaults.IconSize)
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+                tint = if(isFavorito) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
             )
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(if (isFavorito) "Guardado" else "Guardar")
         }
 
-        // Botón Indicaciones
+        // Botón Indicaciones (Mapa)
         Button(
-            onClick = { /* TODO */ },
+            onClick = onGoToMap,
             modifier = Modifier.weight(1f)
         ) {
-            Text("Obtener indicaciones")
+            Icon(Icons.Filled.Map, contentDescription = null, Modifier.size(16.dp))
+            Spacer(Modifier.width(8.dp))
+            Text("Ver Ubicación")
         }
     }
 }

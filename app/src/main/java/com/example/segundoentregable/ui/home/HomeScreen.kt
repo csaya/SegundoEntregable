@@ -1,5 +1,6 @@
 package com.example.segundoentregable.ui.home
 
+import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -12,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,9 +29,17 @@ import com.example.segundoentregable.ui.components.SearchBar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navController: NavController,
-    homeViewModel: HomeViewModel = viewModel()
+    navController: NavController
 ) {
+    // 1. Obtener contexto y Application para la Factory
+    val context = LocalContext.current
+    val application = context.applicationContext as Application
+
+    // 2. Inyectar el ViewModel usando la Factory
+    val homeViewModel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(application)
+    )
+
     val uiState by homeViewModel.uiState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
@@ -51,6 +61,7 @@ fun HomeScreen(
                 query = searchQuery,
                 onQueryChange = { searchQuery = it },
                 onSearchClicked = {
+                    // Navegamos a la lista pasando el query si quisieras filtrar allá
                     navController.navigate("list")
                 },
                 placeholder = "Buscar atractivos, restaurantes..."
@@ -58,6 +69,7 @@ fun HomeScreen(
 
             Spacer(Modifier.height(24.dp))
 
+            // RECOMENDACIONES
             RecomendacionesSection(
                 lista = uiState.recomendaciones,
                 onAtractivoClicked = { atractivoId ->
@@ -67,6 +79,7 @@ fun HomeScreen(
 
             Spacer(Modifier.height(24.dp))
 
+            // CERCANOS
             CercanosSection(
                 lista = uiState.cercanos,
                 onAtractivoClicked = { atractivoId ->
@@ -78,8 +91,6 @@ fun HomeScreen(
         }
     }
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,15 +122,22 @@ private fun RecomendacionesSection(
     lista: List<AtractivoTuristico>,
     onAtractivoClicked: (String) -> Unit
 ) {
-    Column {
-        Text("Recomendaciones", style = MaterialTheme.typography.titleLarge)
-        Spacer(Modifier.height(12.dp))
+    if (lista.isEmpty()) {
+        // Opcional: Mostrar loading o mensaje vacío
+        Box(Modifier.fillMaxWidth().height(100.dp), contentAlignment = androidx.compose.ui.Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else {
+        Column {
+            Text("Recomendaciones", style = MaterialTheme.typography.titleLarge)
+            Spacer(Modifier.height(12.dp))
 
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(lista) { atractivo ->
-                RecomendacionCard(atractivo, onClick = { onAtractivoClicked(atractivo.id) })
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(lista) { atractivo ->
+                    RecomendacionCard(atractivo, onClick = { onAtractivoClicked(atractivo.id) })
+                }
             }
         }
     }
@@ -130,15 +148,17 @@ private fun CercanosSection(
     lista: List<AtractivoTuristico>,
     onAtractivoClicked: (String) -> Unit
 ) {
-    Column {
-        Text("Cercanos a ti", style = MaterialTheme.typography.titleLarge)
-        Spacer(Modifier.height(12.dp))
+    if (lista.isNotEmpty()) {
+        Column {
+            Text("Cercanos a ti", style = MaterialTheme.typography.titleLarge)
+            Spacer(Modifier.height(12.dp))
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            lista.forEach { atractivo ->
-                CercanoItemRow(atractivo, onClick = { onAtractivoClicked(atractivo.id) })
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                lista.forEach { atractivo ->
+                    CercanoItemRow(atractivo, onClick = { onAtractivoClicked(atractivo.id) })
+                }
             }
         }
     }

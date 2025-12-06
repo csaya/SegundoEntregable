@@ -1,15 +1,16 @@
 package com.example.segundoentregable.data.repository
 
 import android.content.Context
-import com.example.segundoentregable.data.local.AppDatabase
 import com.example.segundoentregable.data.local.SharedPrefManager
+import com.example.segundoentregable.data.local.dao.UserDao
 import com.example.segundoentregable.data.local.entity.UserEntity
 import com.example.segundoentregable.data.model.User
 
-class UserRepository(context: Context) {
-
-    private val db = AppDatabase.getInstance(context)
-    private val userDao = db.userDao()
+// RECIBE DAO Y CONTEXTO (Para SharedPrefs)
+class UserRepository(
+    private val userDao: UserDao,
+    context: Context
+) {
     private val prefs = SharedPrefManager.getInstance(context)
 
     suspend fun register(user: User): Boolean {

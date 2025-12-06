@@ -1,7 +1,6 @@
 package com.example.segundoentregable.ui.map
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.repository.AttractionRepository
@@ -19,9 +18,9 @@ data class MapUiState(
     val isLoading: Boolean = false
 )
 
-class MapViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repo = AttractionRepository(application.applicationContext)
+class MapViewModel(
+    private val repo: AttractionRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MapUiState())
     val uiState: StateFlow<MapUiState> = _uiState.asStateFlow()
@@ -34,16 +33,22 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
+                // Ya no necesitamos llamar a initializeData() aquí obligatoriamente
+                // porque HomeViewModel ya lo hizo al abrir la app,
+                // pero no hace daño dejarlo por seguridad.
                 withContext(Dispatchers.IO) {
                     repo.initializeData()
                 }
+
                 val atractivos = withContext(Dispatchers.IO) {
                     repo.getTodosLosAtractivos()
                 }
+
                 _uiState.update {
                     it.copy(atractivos = atractivos, isLoading = false)
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 _uiState.update { it.copy(isLoading = false) }
             }
         }

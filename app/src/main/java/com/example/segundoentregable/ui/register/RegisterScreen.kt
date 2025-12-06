@@ -1,32 +1,38 @@
 package com.example.segundoentregable.ui.register
 
+import android.app.Application
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.segundoentregable.ui.components.ImagePlaceholderCircle
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
-    navController: NavController,
-    registerViewModel: RegisterViewModel = viewModel()
+    navController: NavController
 ) {
+    // 1. Configurar Factory
+    val context = LocalContext.current
+    val application = context.applicationContext as Application
+
+    val registerViewModel: RegisterViewModel = viewModel(
+        factory = RegisterViewModelFactory(application)
+    )
+
     val uiState by registerViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         registerViewModel.registerSuccessEvent.collect {
+            // Al registrarse con éxito, volvemos atrás (al login)
             navController.popBackStack()
         }
     }
@@ -92,7 +98,7 @@ fun RegisterScreen(
                     registerViewModel.onRegisterClicked()
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !uiState.isLoading // Deshabilitado mientras carga
+                enabled = !uiState.isLoading
             ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(

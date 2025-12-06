@@ -1,11 +1,10 @@
 package com.example.segundoentregable.ui.map
 
-import androidx.compose.foundation.background
+import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,25 +12,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.ui.components.AppBottomBar
-import com.example.segundoentregable.ui.components.AttractionMapView // <--- Importa tu componente aquí
+import com.example.segundoentregable.ui.components.AttractionMapView
+import com.example.segundoentregable.ui.components.AttractionImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
-    navController: NavController,
-    mapViewModel: MapViewModel = viewModel()
+    navController: NavController
 ) {
-    // 1. Obtenemos el estado (la lista de atractivos reales desde Room)
+    // 1. Configuración del Factory
+    val context = LocalContext.current
+    val application = context.applicationContext as Application
+
+    // 2. Inyección del ViewModel
+    val mapViewModel: MapViewModel = viewModel(
+        factory = MapViewModelFactory(application)
+    )
+
     val uiState by mapViewModel.uiState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
-    // Configuración del BottomSheet (hoja inferior de detalles)
+    // Configuración del BottomSheet
     val sheetState = rememberStandardBottomSheetState(
         initialValue = SheetValue.Hidden,
         skipHiddenState = false
@@ -40,7 +49,7 @@ fun MapScreen(
         bottomSheetState = sheetState
     )
 
-    // Efecto para abrir/cerrar el sheet cuando seleccionas un marcador
+    // Efecto para abrir/cerrar el sheet
     LaunchedEffect(uiState.selectedAttraction) {
         if (uiState.selectedAttraction != null) {
             sheetState.expand()
@@ -77,7 +86,6 @@ fun MapScreen(
             bottomBar = { AppBottomBar(navController = navController) }
         ) { innerContentPadding ->
 
-            // 2. Aquí integramos el MAPA REAL
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -86,10 +94,10 @@ fun MapScreen(
                         bottom = innerContentPadding.calculateBottomPadding()
                     )
             ) {
+                // Mapa Optimizado
                 AttractionMapView(
-                    atractivos = uiState.atractivos, // Pasamos la lista real de ROOM
+                    atractivos = uiState.atractivos,
                     onMarkerClick = { atractivo ->
-                        // Al hacer clic en un pin de Google Maps, actualizamos el ViewModel
                         mapViewModel.selectAttraction(atractivo)
                     },
                     modifier = Modifier.fillMaxSize()
@@ -99,7 +107,7 @@ fun MapScreen(
     }
 }
 
-// ... (El resto de tus componentes: MapTopBar y AttractionDetailSheet se mantienen igual)
+// ... El resto de componentes (MapTopBar, AttractionDetailSheet) se queda igual ...
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MapTopBar(
@@ -128,7 +136,7 @@ private fun MapTopBar(
                 )
             )
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White.copy(alpha = 0.9f)) // Le puse un poco de fondo para que se lea sobre el mapa
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White.copy(alpha = 0.9f))
     )
 }
 
@@ -143,7 +151,6 @@ private fun AttractionDetailSheet(
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Columna de Info
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -183,21 +190,13 @@ private fun AttractionDetailSheet(
 
         Spacer(Modifier.width(16.dp))
 
-        // Imagen (Aquí deberías usar tu nuevo componente AttractionImage con Coil)
-        Box(
+        AttractionImage(
+            imageUrl = atractivo.idImagen,
+            contentDescription = atractivo.nombre,
             modifier = Modifier
                 .size(100.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.LightGray),
-            contentAlignment = Alignment.Center
-        ) {
-            // TIP: Reemplaza esto con: AttractionImage(imageUrl = atractivo.imagenUrl, modifier = ...)
-            Icon(
-                Icons.Filled.PhotoCamera,
-                contentDescription = null,
-                modifier = Modifier.size(40.dp),
-                tint = Color.Gray
-            )
-        }
+                .clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.Crop
+        )
     }
 }

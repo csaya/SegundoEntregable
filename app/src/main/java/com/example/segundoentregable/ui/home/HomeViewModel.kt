@@ -1,7 +1,6 @@
 package com.example.segundoentregable.ui.home
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.repository.AttractionRepository
@@ -19,9 +18,9 @@ data class HomeUiState(
     val isLoading: Boolean = false
 )
 
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repo = AttractionRepository(application.applicationContext)
+class HomeViewModel(
+    private val repo: AttractionRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -34,15 +33,16 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
+                // Aseguramos que haya datos iniciales (Data Seeding)
+                // Usamos Dispatchers.IO para no bloquear la UI
                 withContext(Dispatchers.IO) {
                     repo.initializeData()
                 }
-                val recomendaciones = withContext(Dispatchers.IO) {
-                    repo.getRecomendaciones()
-                }
-                val cercanos = withContext(Dispatchers.IO) {
-                    repo.getCercanos()
-                }
+
+                // Cargamos las listas usando las funciones del repositorio
+                val recomendaciones = repo.getRecomendaciones() // Ya son suspend functions
+                val cercanos = repo.getCercanos()               // Ya son suspend functions
+
                 _uiState.update {
                     it.copy(
                         recomendaciones = recomendaciones,
@@ -51,12 +51,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     )
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
 
     fun onSearchQueryChanged(query: String) {
-        // Lógica de búsqueda
+        // Lógica futura para búsqueda
     }
 }

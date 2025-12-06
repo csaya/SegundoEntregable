@@ -1,8 +1,7 @@
 package com.example.segundoentregable.ui.login
 
-import android.app.Application
-import android.util.Patterns // Para la validación de email
-import androidx.lifecycle.AndroidViewModel
+import android.util.Patterns
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.data.repository.UserRepository
 import kotlinx.coroutines.Dispatchers
@@ -22,36 +21,28 @@ data class LoginUiState(
     val errorMessage: String? = null
 )
 
-class LoginViewModel(application: Application) : AndroidViewModel(application) {
+// CAMBIO: Hereda de ViewModel y recibe el Repo
+class LoginViewModel(
+    private val repo: UserRepository
+) : ViewModel() {
 
-    private val repo = UserRepository(application.applicationContext)
-
-    // 2. Flujo de Estado (StateFlow) para la UI
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    // 3. Flujo de Eventos (SharedFlow) para acciones únicas (como navegar)
     private val _loginSuccessEvent = MutableSharedFlow<Unit>()
     val loginSuccessEvent = _loginSuccessEvent.asSharedFlow()
 
-    // 4. Funciones de Eventos: La Vista llama a estas
-
     fun onEmailChanged(email: String) {
-        _uiState.update { currentState ->
-            currentState.copy(email = email, errorMessage = null) // Limpia el error al escribir
-        }
+        _uiState.update { it.copy(email = email, errorMessage = null) }
     }
 
     fun onPasswordChanged(password: String) {
-        _uiState.update { currentState ->
-            currentState.copy(password = password, errorMessage = null) // Limpia el error al escribir
-        }
+        _uiState.update { it.copy(password = password, errorMessage = null) }
     }
 
     fun onLoginClicked() {
-        val state = _uiState.value // Obtiene el estado actual
+        val state = _uiState.value
 
-        // 5. Validación (Movida desde la Vista)
         val errorMessage = when {
             state.email.isBlank() -> "El correo es obligatorio"
             !Patterns.EMAIL_ADDRESS.matcher(state.email).matches() -> "Formato de correo inválido"
@@ -61,24 +52,22 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
         if (errorMessage != null) {
             _uiState.update { it.copy(errorMessage = errorMessage) }
-            return // Detiene la ejecución si hay un error
+            return
         }
 
-        // 6. Lógica de Login (Movida desde el antiguo UserViewModel)
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
             try {
+                // Usamos el repo inyectado
                 val ok = withContext(Dispatchers.IO) {
                     repo.login(state.email.trim(), state.password)
                 }
 
                 if (ok) {
-                    // Guarda la sesión
                     withContext(Dispatchers.IO) {
                         repo.setCurrentUser(state.email.trim())
                     }
-                    // Emite el evento de éxito para que la Vista navegue
                     _loginSuccessEvent.emit(Unit)
                 } else {
                     _uiState.update {
@@ -90,8 +79,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     it.copy(errorMessage = "Error al iniciar sesión: ${e.message}")
                 }
             }
-
-            // Siempre detiene la carga al final
             _uiState.update { it.copy(isLoading = false) }
         }
     }

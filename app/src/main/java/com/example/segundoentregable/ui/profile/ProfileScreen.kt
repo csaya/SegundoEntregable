@@ -1,13 +1,14 @@
 package com.example.segundoentregable.ui.profile
 
+import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -17,21 +18,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.segundoentregable.ui.components.AppBottomBar
-import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material3.HorizontalDivider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    viewModel: ProfileViewModel = viewModel(),
     onLogout: () -> Unit
 ) {
+    // 1. Configurar Factory
+    val context = LocalContext.current
+    val application = context.applicationContext as Application
+
+    val viewModel: ProfileViewModel = viewModel(
+        factory = ProfileViewModelFactory(application)
+    )
+
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
@@ -40,12 +47,7 @@ fun ProfileScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { viewModel.onDownloadGuideClicked() },
-                icon = {
-                    Icon(
-                        Icons.Filled.Download,
-                        contentDescription = "Descargar"
-                    )
-                },
+                icon = { Icon(Icons.Filled.Download, contentDescription = "Descargar") },
                 text = { Text("Descargar guía de Arequipa") },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             )
@@ -76,7 +78,11 @@ fun ProfileScreen(
 
             Spacer(Modifier.height(24.dp))
             Button(
-                onClick = onLogout, // <-- 3. LLAMAR AL CALLBACK
+                onClick = {
+                    // 2. Ejecutar lógica de Logout
+                    viewModel.logout()
+                    onLogout() // Navegar fuera
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error
@@ -90,6 +96,7 @@ fun ProfileScreen(
     }
 }
 
+// ... El resto de componentes (ProfileTopBar, ProfileHeader, etc.) se queda igual ...
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileTopBar() {

@@ -1,18 +1,15 @@
 package com.example.segundoentregable.data.repository
 
-import android.content.Context
-import com.example.segundoentregable.data.local.AppDatabase
+import com.example.segundoentregable.data.local.dao.FavoritoDao
 import com.example.segundoentregable.data.local.entity.FavoritoEntity
 import java.util.UUID
 
-class FavoriteRepository(context: Context) {
-
-    private val db = AppDatabase.getInstance(context)
-    private val favoritoDao = db.favoritoDao()
+// RECIBE DAO, NO CONTEXTO
+class FavoriteRepository(private val favoritoDao: FavoritoDao) {
 
     suspend fun toggleFavorito(userEmail: String, attractionId: String) {
-        val exists = favoritoDao.isFavorito(userEmail, attractionId) > 0
-        if (exists) {
+        val count = favoritoDao.isFavorito(userEmail, attractionId)
+        if (count > 0) {
             favoritoDao.deleteFavorito(userEmail, attractionId)
         } else {
             favoritoDao.insertFavorito(

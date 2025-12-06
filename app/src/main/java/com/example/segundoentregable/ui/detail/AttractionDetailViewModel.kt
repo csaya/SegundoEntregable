@@ -1,8 +1,8 @@
 package com.example.segundoentregable.ui.detail
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.model.Review
@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+private const val TAG = "DetailViewModel"
+
 data class DetailUiState(
     val atractivo: AtractivoTuristico? = null,
     val reviews: List<Review> = emptyList(),
@@ -24,14 +26,13 @@ data class DetailUiState(
     val isLoading: Boolean = false
 )
 
+// Ahora hereda de ViewModel (no AndroidViewModel) porque ya inyectamos los repos
 class AttractionDetailViewModel(
-    application: Application,
+    private val attractionRepo: AttractionRepository,
+    private val favoriteRepo: FavoriteRepository,
+    private val userRepo: UserRepository,
     savedStateHandle: SavedStateHandle
-) : AndroidViewModel(application) {
-
-    private val attractionRepo = AttractionRepository(application.applicationContext)
-    private val favoriteRepo = FavoriteRepository(application.applicationContext)
-    private val userRepo = UserRepository(application.applicationContext)
+) : ViewModel() {
 
     private val attractionId: String = checkNotNull(savedStateHandle["attractionId"])
 
@@ -46,20 +47,17 @@ class AttractionDetailViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                val atractivo = withContext(Dispatchers.IO) {
-                    attractionRepo.getAtractivoPorId(attractionId)
-                }
-                val reviews = withContext(Dispatchers.IO) {
-                    attractionRepo.getReviewsForAttraction(attractionId)
-                }
-                val userEmail = userRepo.getCurrentUserEmail()
-                val isFavorito = if (userEmail != null) {
-                    withContext(Dispatchers.IO) {
-                        favoriteRepo.isFavorito(userEmail, attractionId)
-                    }
-                } else {
-                    false
-                }
+                // 1. Cargar Atractivo y Reviews
+                val atractivo = attractionRepo.getAtractivoPorId(attractionId)
+                val reviews = attractionRepo.getReviewsForAttraction(attractionId)
+
+                // 2. Verificar Favorito
+                // TRUCO: Si no hay usuario logueado, usamos "guest_user" para probar la funcionalidad
+                val userEmail = userRepo.getCurrentUserEmail() ?: "guest_user"
+
+                // Nota: Usamos Flow collect si el repositorio lo provee, o llamada directa si es suspend
+                val isFavorito = favoriteRepo.isFavorito(userEmail, attractionId)
+
                 _uiState.update {
                     it.copy(
                         atractivo = atractivo,
@@ -69,26 +67,30 @@ class AttractionDetailViewModel(
                     )
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "Error cargando datos", e)
                 _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
 
     fun onToggleFavorite() {
-        val userEmail = userRepo.getCurrentUserEmail() ?: return
         viewModelScope.launch {
+            val userEmail = userRepo.getCurrentUserEmail() ?: "guest_user"
+
             try {
-                withContext(Dispatchers.IO) {
-                    favoriteRepo.toggleFavorito(userEmail, attractionId)
-                }
-                val isFavorito = withContext(Dispatchers.IO) {
-                    favoriteRepo.isFavorito(userEmail, attractionId)
-                }
-                _uiState.update {
-                    it.copy(isFavorito = isFavorito)
-                }
+                // 1. Ejecutar el cambio en base de datos
+                favoriteRepo.toggleFavorito(userEmail, attractionId)
+
+                // 2. Leer el nuevo estado
+                val nuevoEstado = favoriteRepo.isFavorito(userEmail, attractionId)
+
+                // 3. Actualizar la UI
+                _uiState.update { it.copy(isFavorito = nuevoEstado) }
+
+                Log.d(TAG, "Favorito actualizado: $nuevoEstado para $attractionId")
+
             } catch (e: Exception) {
-                // Manejar error
+                Log.e(TAG, "Error al cambiar favorito", e)
             }
         }
     }

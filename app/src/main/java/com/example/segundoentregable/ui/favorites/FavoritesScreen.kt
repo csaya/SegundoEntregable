@@ -1,5 +1,6 @@
 package com.example.segundoentregable.ui.favorites
 
+import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,8 +26,15 @@ import com.example.segundoentregable.ui.components.FavoriteListItem
 @Composable
 fun FavoritesScreen(
     navController: NavController,
-    viewModel: FavoritesViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    val application = context.applicationContext as Application
+
+    // USAR LA FACTORY AQUÍ
+    val viewModel: FavoritesViewModel = viewModel(
+        factory = FavoritesViewModelFactory(application)
+    )
+
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {

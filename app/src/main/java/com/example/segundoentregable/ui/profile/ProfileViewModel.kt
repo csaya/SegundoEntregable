@@ -1,7 +1,6 @@
 package com.example.segundoentregable.ui.profile
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.data.repository.UserRepository
 import kotlinx.coroutines.Dispatchers
@@ -13,40 +12,35 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 data class ProfileUiState(
-    // 1. Empezamos con valores por defecto o de "carga"
     val userName: String = "Cargando...",
     val userEmail: String = "",
     val downloadedGuides: Int = 3,
     val notificationsEnabled: Boolean = false
 )
 
-// 2. Convertimos el ViewModel en AndroidViewModel para tener el 'context'
-class ProfileViewModel(application: Application) : AndroidViewModel(application) {
-
-    // 3. Obtenemos la instancia de nuestro UserRepository
-    private val repo = UserRepository(application.applicationContext)
+// CAMBIO: Hereda de ViewModel y recibe el Repo
+class ProfileViewModel(
+    private val repo: UserRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
-    // 4. Usamos un bloque 'init' para cargar los datos en cuanto el VM se cree
     init {
         loadUserProfile()
     }
 
     private fun loadUserProfile() {
         viewModelScope.launch {
-            // 5. Obtenemos el usuario en un hilo de fondo (IO)
             val user = withContext(Dispatchers.IO) {
                 val email = repo.getCurrentUserEmail()
                 if (email != null) {
                     repo.getUser(email)
                 } else {
-                    null // No hay usuario logueado
+                    null
                 }
             }
 
-            // 6. Actualizamos el UiState con los datos reales
             if (user != null) {
                 _uiState.update {
                     it.copy(
@@ -55,8 +49,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                     )
                 }
             } else {
-                // Esto no debería pasar si la lógica del NavGraph es correcta,
-                // pero es bueno tener un fallback.
                 _uiState.update {
                     it.copy(
                         userName = "Invitado",
@@ -74,9 +66,13 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun onDownloadGuideClicked() {
-        // Simular lógica de descarga
         _uiState.update {
             it.copy(downloadedGuides = it.downloadedGuides + 1)
         }
+    }
+
+    // NUEVO: Función para cerrar sesión real
+    fun logout() {
+        repo.logout()
     }
 }

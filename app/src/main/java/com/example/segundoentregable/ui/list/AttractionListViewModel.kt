@@ -1,7 +1,6 @@
 package com.example.segundoentregable.ui.list
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.repository.AttractionRepository
@@ -21,9 +20,9 @@ data class AttractionListUiState(
     val isLoading: Boolean = false
 )
 
-class AttractionListViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repo = AttractionRepository(application.applicationContext)
+class AttractionListViewModel(
+    private val repo: AttractionRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AttractionListUiState())
     val uiState: StateFlow<AttractionListUiState> = _uiState.asStateFlow()
@@ -38,20 +37,27 @@ class AttractionListViewModel(application: Application) : AndroidViewModel(appli
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
+                // Aseguramos que la DB tenga datos (por seguridad)
                 withContext(Dispatchers.IO) {
                     repo.initializeData()
                 }
+
+                // Cargamos todos los datos
                 todosLosAtractivos = withContext(Dispatchers.IO) {
                     repo.getTodosLosAtractivos()
                 }
+
+                // Actualizamos la UI
                 _uiState.update {
                     it.copy(
                         listaFiltrada = todosLosAtractivos,
+                        // Extraemos las categorías únicas dinámicamente
                         categoriasDisponibles = todosLosAtractivos.map { a -> a.categoria }.distinct(),
                         isLoading = false
                     )
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 _uiState.update { it.copy(isLoading = false) }
             }
         }
@@ -63,6 +69,7 @@ class AttractionListViewModel(application: Application) : AndroidViewModel(appli
     }
 
     fun onCategorySelected(category: String?) {
+        // Si tocan la misma categoría, la deseleccionamos (toggle)
         val newCategory = if (category == _uiState.value.selectedCategory) null else category
         _uiState.update { it.copy(selectedCategory = newCategory) }
         filterList()

@@ -1,7 +1,7 @@
 package com.example.segundoentregable.ui.favorites
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.util.Log
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.repository.AttractionRepository
@@ -20,49 +20,57 @@ data class FavoritesUiState(
     val isLoading: Boolean = false
 )
 
-class FavoritesViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val attractionRepo = AttractionRepository(application.applicationContext)
-    private val favoriteRepo = FavoriteRepository(application.applicationContext)
-    private val userRepo = UserRepository(application.applicationContext)
+class FavoritesViewModel(
+    private val attractionRepo: AttractionRepository,
+    private val favoriteRepo: FavoriteRepository,
+    private val userRepo: UserRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FavoritesUiState())
     val uiState: StateFlow<FavoritesUiState> = _uiState.asStateFlow()
+
+    // Cargar favoritos al iniciar
+    init {
+        loadFavorites()
+    }
 
     fun loadFavorites() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                val userEmail = userRepo.getCurrentUserEmail()
-                if (userEmail != null) {
-                    val favoritoIds = withContext(Dispatchers.IO) {
-                        favoriteRepo.getFavoritosByUser(userEmail)
-                    }
-                    val favoritos = withContext(Dispatchers.IO) {
-                        favoritoIds.mapNotNull { attractionRepo.getAtractivoPorId(it) }
-                    }
-                    _uiState.update {
-                        it.copy(favoritesList = favoritos, isLoading = false)
-                    }
-                } else {
-                    _uiState.update { it.copy(favoritesList = emptyList(), isLoading = false) }
+                // Usamos "guest_user" si es nulo para no romper la app en pruebas,
+                // o puedes dejarlo nulo si prefieres que no muestre nada.
+                val userEmail = userRepo.getCurrentUserEmail() ?: "guest_user"
+
+                // 1. Obtener IDs
+                val favoritoIds = favoriteRepo.getFavoritosByUser(userEmail)
+
+                // 2. Obtener objetos completos
+                val favoritos = favoritoIds.mapNotNull { id ->
+                    attractionRepo.getAtractivoPorId(id)
+                }
+
+                _uiState.update {
+                    it.copy(favoritesList = favoritos, isLoading = false)
                 }
             } catch (e: Exception) {
+                Log.e("FavoritesVM", "Error cargando favoritos", e)
                 _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
 
     fun onToggleFavorite(attractionId: String) {
-        val userEmail = userRepo.getCurrentUserEmail() ?: return
         viewModelScope.launch {
             try {
-                withContext(Dispatchers.IO) {
-                    favoriteRepo.toggleFavorito(userEmail, attractionId)
-                }
+                val userEmail = userRepo.getCurrentUserEmail() ?: "guest_user"
+
+                favoriteRepo.toggleFavorito(userEmail, attractionId)
+
+                // Recargar la lista después de quitar/poner
                 loadFavorites()
             } catch (e: Exception) {
-                // Manejar error
+                Log.e("FavoritesVM", "Error toggle favorito", e)
             }
         }
     }

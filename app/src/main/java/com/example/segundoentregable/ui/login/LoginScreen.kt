@@ -1,30 +1,35 @@
 package com.example.segundoentregable.ui.login
 
+import android.app.Application
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.segundoentregable.ui.components.ImagePlaceholderCircle
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     navController: NavController,
-    loginViewModel: LoginViewModel = viewModel(),
     onLoginSuccess: () -> Unit
 ) {
+    // 1. Configuración del Factory
+    val context = LocalContext.current
+    val application = context.applicationContext as Application
+
+    val loginViewModel: LoginViewModel = viewModel(
+        factory = LoginViewModelFactory(application)
+    )
+
     val uiState by loginViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -60,13 +65,13 @@ fun LoginScreen(
             ImagePlaceholderCircle()
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
-                value = uiState.email, // <-- Lee del estado
+                value = uiState.email,
                 onValueChange = { loginViewModel.onEmailChanged(it) },
                 label = { Text("Correo") },
                 singleLine = true,
                 leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
-                isError = uiState.errorMessage != null // <-- El VM nos dice si hay error
+                isError = uiState.errorMessage != null
             )
             Spacer(Modifier.height(8.dp))
             OutlinedTextField(

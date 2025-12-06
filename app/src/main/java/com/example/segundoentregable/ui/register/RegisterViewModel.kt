@@ -1,8 +1,7 @@
 package com.example.segundoentregable.ui.register
 
-import android.app.Application
 import android.util.Patterns
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.data.model.User
 import com.example.segundoentregable.data.repository.UserRepository
@@ -24,11 +23,14 @@ data class RegisterUiState(
     val errorMessage: String? = null
 )
 
-class RegisterViewModel(application: Application) : AndroidViewModel(application) {
+// CAMBIO: Hereda de ViewModel y recibe el Repo inyectado
+class RegisterViewModel(
+    private val repo: UserRepository
+) : ViewModel() {
 
-    private val repo = UserRepository(application.applicationContext)
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
+
     private val _registerSuccessEvent = MutableSharedFlow<Unit>()
     val registerSuccessEvent = _registerSuccessEvent.asSharedFlow()
 
