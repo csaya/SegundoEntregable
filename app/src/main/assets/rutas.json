@@ -1,0 +1,110 @@
+{
+  "rutas": [
+    {
+      "id": "ruta_sillar",
+      "nombre": "Ruta del Sillar",
+      "descripcion": "Descubre el origen del sillar blanco que da identidad a Arequipa. Visita las canteras donde se extrae esta piedra volcánica y conoce el trabajo artesanal de los cortadores.",
+      "categoria": "cultural",
+      "duracionEstimada": "4-5 horas",
+      "distanciaTotal": 25.5,
+      "dificultad": "moderada",
+      "imagenPrincipal": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Cantera_de_sillar_en_A%C3%B1ashuayco.jpg/1280px-Cantera_de_sillar_en_A%C3%B1ashuayco.jpg",
+      "puntoInicio": "Plaza de Armas",
+      "puntoFin": "Canteras de Añashuayco",
+      "recomendaciones": "Llevar protector solar, agua y calzado cómodo. Mejor visitar por la mañana.",
+      "orden": 1
+    },
+    {
+      "id": "ruta_centro_historico",
+      "nombre": "Centro Histórico Colonial",
+      "descripcion": "Recorre los principales monumentos del centro histórico de Arequipa, declarado Patrimonio de la Humanidad por la UNESCO. Iglesias, casonas y plazas te esperan.",
+      "categoria": "cultural",
+      "duracionEstimada": "3-4 horas",
+      "distanciaTotal": 3.2,
+      "dificultad": "facil",
+      "imagenPrincipal": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Arequipa%2C_Plaza_de_Armas_and_Volc%C3%A1n_Misti_-_panoramio.jpg/1280px-Arequipa%2C_Plaza_de_Armas_and_Volc%C3%A1n_Misti_-_panoramio.jpg",
+      "puntoInicio": "Plaza de Armas",
+      "puntoFin": "Barrio de San Lázaro",
+      "recomendaciones": "Visitar temprano para evitar el sol. Los domingos hay menos tráfico.",
+      "orden": 2
+    },
+    {
+      "id": "ruta_gastronomica",
+      "nombre": "Sabores de Arequipa",
+      "descripcion": "Degusta los platos típicos arequipeños en las tradicionales picanterías. Desde el rocoto relleno hasta el adobo, una experiencia culinaria única.",
+      "categoria": "gastronomica",
+      "duracionEstimada": "5-6 horas",
+      "distanciaTotal": 8.0,
+      "dificultad": "facil",
+      "imagenPrincipal": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Rocoto_relleno.jpg/1280px-Rocoto_relleno.jpg",
+      "puntoInicio": "Mercado San Camilo",
+      "puntoFin": "Picantería La Lucila",
+      "recomendaciones": "Reservar con anticipación en picanterías. Ir con hambre!",
+      "orden": 3
+    },
+    {
+      "id": "ruta_campiña",
+      "nombre": "Campiña Arequipeña",
+      "descripcion": "Explora los pueblos tradicionales de la campiña: Sachaca, Tiabaya, y Sabandía. Paisajes verdes, molinos coloniales y tranquilidad.",
+      "categoria": "naturaleza",
+      "duracionEstimada": "Medio día",
+      "distanciaTotal": 15.0,
+      "dificultad": "facil",
+      "imagenPrincipal": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Molino_de_Sabandia.jpg/1280px-Molino_de_Sabandia.jpg",
+      "puntoInicio": "Centro de Arequipa",
+      "puntoFin": "Molino de Sabandía",
+      "recomendaciones": "Ideal para ciclismo. Llevar cámara para los paisajes.",
+      "orden": 4
+    }
+  ],
+  "paradas": [
+    {
+      "id": "p_sillar_1",
+      "rutaId": "ruta_sillar",
+      "atractivoId": "plaza_armas",
+      "orden": 1,
+      "tiempoSugerido": "30 min",
+      "notas": "Punto de encuentro y partida"
+    },
+    {
+      "id": "p_sillar_2",
+      "rutaId": "ruta_sillar",
+      "atractivoId": "monasterio_santa_catalina",
+      "orden": 2,
+      "tiempoSugerido": "1 hora",
+      "notas": "Observar el uso del sillar en la arquitectura"
+    },
+    {
+      "id": "p_centro_1",
+      "rutaId": "ruta_centro_historico",
+      "atractivoId": "plaza_armas",
+      "orden": 1,
+      "tiempoSugerido": "45 min",
+      "notas": "Catedral y portales coloniales"
+    },
+    {
+      "id": "p_centro_2",
+      "rutaId": "ruta_centro_historico",
+      "atractivoId": "monasterio_santa_catalina",
+      "orden": 2,
+      "tiempoSugerido": "2 horas",
+      "notas": "Ciudad dentro de la ciudad"
+    },
+    {
+      "id": "p_centro_3",
+      "rutaId": "ruta_centro_historico",
+      "atractivoId": "yanahuara",
+      "orden": 3,
+      "tiempoSugerido": "30 min",
+      "notas": "Mirador con vista al Misti"
+    },
+    {
+      "id": "p_campiña_1",
+      "rutaId": "ruta_campiña",
+      "atractivoId": "molino_sabandia",
+      "orden": 1,
+      "tiempoSugerido": "1 hora",
+      "notas": "Molino colonial del siglo XVII"
+    }
+  ]
+}

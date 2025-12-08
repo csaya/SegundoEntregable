@@ -9,7 +9,9 @@ import com.example.segundoentregable.data.repository.AttractionRepository
 import com.example.segundoentregable.data.repository.FavoriteRepository
 import com.example.segundoentregable.data.repository.UserRepository
 import com.example.segundoentregable.data.location.LocationService
+import com.example.segundoentregable.data.sync.ReviewSyncWorker
 import com.example.segundoentregable.utils.DataImporter
+import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,6 +50,10 @@ class AppApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        // Inicializar Firebase
+        FirebaseApp.initializeApp(this)
+        Log.d(TAG, "Firebase inicializado")
+
         // Configurar Coil con caché de disco y OkHttp
         val imageLoader = ImageLoader.Builder(this)
             .okHttpClient {
@@ -60,6 +66,10 @@ class AppApplication : Application() {
 
         // Importar datos desde assets si no se ha hecho antes
         importDataIfNeeded()
+        
+        // Programar sincronización periódica de reseñas
+        ReviewSyncWorker.schedulePeriodicSync(this)
+        Log.d(TAG, "WorkManager configurado para sincronización de reseñas")
     }
 
     private fun importDataIfNeeded() {

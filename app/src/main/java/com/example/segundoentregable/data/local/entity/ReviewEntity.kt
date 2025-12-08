@@ -16,7 +16,8 @@ import androidx.room.PrimaryKey
         )
     ],
     indices = [
-        Index("attractionId")
+        Index("attractionId"),
+        Index("isSynced")
     ]
 )
 data class ReviewEntity(
@@ -24,9 +25,12 @@ data class ReviewEntity(
     val id: String,
     val attractionId: String,
     val userName: String,
+    val userEmail: String = "",
     val date: String,
     val rating: Float,
     val comment: String,
-    val likes: Int,
-    val dislikes: Int
+    val likes: Int = 0,
+    val dislikes: Int = 0,
+    val isSynced: Boolean = false,
+    val createdAt: Long = System.currentTimeMillis()
 )

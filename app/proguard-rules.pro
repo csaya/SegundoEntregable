@@ -14,8 +14,56 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# ============ ROOM Database ============
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-dontwarn androidx.room.paging.**
+
+# ============ GSON ============
+-keepattributes Signature
+-keepattributes *Annotation*
+-dontwarn sun.misc.**
+-keep class com.google.gson.stream.** { *; }
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
+
+# Keep data models for GSON
+-keep class com.example.segundoentregable.data.model.** { *; }
+-keep class com.example.segundoentregable.data.local.entity.** { *; }
+
+# ============ Coil ============
+-dontwarn coil.**
+-keep class coil.** { *; }
+
+# ============ Google Maps ============
+-keep class com.google.android.gms.maps.** { *; }
+-keep class com.google.maps.android.** { *; }
+-dontwarn com.google.android.gms.**
+
+# ============ Kotlin Coroutines ============
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepclassmembers class kotlinx.coroutines.** {
+    volatile <fields>;
+}
+
+# ============ Compose ============
+-dontwarn androidx.compose.**
+-keep class androidx.compose.** { *; }
+
+# ============ Navigation ============
+-keep class * extends androidx.navigation.Navigator
+
+# ============ Firebase ============
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.firebase.**
+-keepattributes *Annotation*
+
+# ============ WorkManager ============
+-keep class * extends androidx.work.Worker
+-keep class * extends androidx.work.ListenableWorker

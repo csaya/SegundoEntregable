@@ -6,6 +6,8 @@ import com.example.segundoentregable.data.local.AppDatabase
 import com.example.segundoentregable.data.local.entity.ActividadEntity
 import com.example.segundoentregable.data.local.entity.AtractivoEntity
 import com.example.segundoentregable.data.local.entity.GaleriaFotoEntity
+import com.example.segundoentregable.data.local.entity.RutaEntity
+import com.example.segundoentregable.data.local.entity.RutaParadaEntity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
@@ -52,6 +54,23 @@ object DataImporter {
                 database.actividadDao().insertAll(actividadesEntities)
                 Log.d(TAG, "Importadas ${actividadesEntities.size} actividades")
 
+                // 4. Importar Rutas Curadas
+                try {
+                    val rutasJson = context.assets.open("rutas.json")
+                        .bufferedReader()
+                        .use { it.readText() }
+
+                    val rutasData = gson.fromJson(rutasJson, RutasJsonModel::class.java)
+                    
+                    database.rutaDao().insertRutas(rutasData.rutas)
+                    Log.d(TAG, "Importadas ${rutasData.rutas.size} rutas")
+                    
+                    database.rutaDao().insertParadas(rutasData.paradas)
+                    Log.d(TAG, "Importadas ${rutasData.paradas.size} paradas de ruta")
+                } catch (e: Exception) {
+                    Log.w(TAG, "No se encontró rutas.json o error al importar rutas: ${e.message}")
+                }
+
                 Log.d(TAG, "Importación de datos completada exitosamente")
 
             } catch (e: Exception) {
@@ -61,6 +80,14 @@ object DataImporter {
         }
     }
 }
+
+/**
+ * Modelo JSON para rutas.json
+ */
+private data class RutasJsonModel(
+    val rutas: List<RutaEntity>,
+    val paradas: List<RutaParadaEntity>
+)
 
 /**
  * Modelo JSON intermedio para parsear atractivos.json

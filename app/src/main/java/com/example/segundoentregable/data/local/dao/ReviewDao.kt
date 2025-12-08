@@ -15,7 +15,7 @@ interface ReviewDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertReviews(reviews: List<ReviewEntity>)
 
-    @Query("SELECT * FROM reviews WHERE attractionId = :attractionId")
+    @Query("SELECT * FROM reviews WHERE attractionId = :attractionId ORDER BY createdAt DESC")
     suspend fun getReviewsByAttraction(attractionId: String): List<ReviewEntity>
 
     @Query("SELECT * FROM reviews WHERE id = :id")
@@ -23,4 +23,17 @@ interface ReviewDao {
 
     @Query("DELETE FROM reviews WHERE attractionId = :attractionId")
     suspend fun deleteReviewsByAttraction(attractionId: String)
+    
+    // Métodos para sincronización
+    @Query("SELECT * FROM reviews WHERE isSynced = 0")
+    suspend fun getUnsyncedReviews(): List<ReviewEntity>
+    
+    @Query("UPDATE reviews SET isSynced = 1 WHERE id = :reviewId")
+    suspend fun markAsSynced(reviewId: String)
+    
+    @Query("UPDATE reviews SET isSynced = 1 WHERE id IN (:reviewIds)")
+    suspend fun markMultipleAsSynced(reviewIds: List<String>)
+    
+    @Query("SELECT COUNT(*) FROM reviews WHERE isSynced = 0")
+    suspend fun getUnsyncedCount(): Int
 }

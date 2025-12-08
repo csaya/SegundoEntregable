@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
     id("com.google.devtools.ksp") version "2.0.21-1.0.27"
 }
 
@@ -84,4 +85,12 @@ dependencies {
     implementation("com.google.maps.android:android-maps-utils:3.8.2")
 
     implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+
+    // WorkManager for background sync
+    implementation(libs.workmanager)
 }

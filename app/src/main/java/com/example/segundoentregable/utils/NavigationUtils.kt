@@ -3,6 +3,7 @@ package com.example.segundoentregable.utils
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 
 /**
  * Utilidades para navegación externa (Google Maps, etc.)
@@ -11,19 +12,31 @@ object NavigationUtils {
 
     /**
      * Abre Google Maps con navegación hacia las coordenadas especificadas.
+     * Valida conexión a internet antes de abrir.
      * Si Google Maps no está instalado, abre en el navegador.
      * 
      * @param context Contexto de Android
      * @param latitude Latitud del destino
      * @param longitude Longitud del destino
      * @param label Nombre del lugar (opcional, para mostrar en el marcador)
+     * @return true si se abrió correctamente, false si no hay conexión
      */
     fun openGoogleMapsNavigation(
         context: Context,
         latitude: Double,
         longitude: Double,
         label: String = ""
-    ) {
+    ): Boolean {
+        // Validar conexión antes de abrir
+        val connectivityObserver = NetworkConnectivityObserver(context)
+        if (!connectivityObserver.isCurrentlyConnected()) {
+            Toast.makeText(
+                context,
+                "Se requiere conexión a internet para la navegación",
+                Toast.LENGTH_SHORT
+            ).show()
+            return false
+        }
         // URI para navegación en Google Maps
         // Formato: google.navigation:q=lat,lng
         val navigationUri = Uri.parse("google.navigation:q=$latitude,$longitude")
@@ -39,6 +52,7 @@ object NavigationUtils {
             // Fallback: abrir en navegador web
             openInBrowser(context, latitude, longitude, label)
         }
+        return true
     }
 
     /**
