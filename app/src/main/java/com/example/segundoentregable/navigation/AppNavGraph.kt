@@ -41,8 +41,18 @@ fun AppNavGraph(
             MapScreen(navController = navController)
         }
 
-        composable("list") {
-            AttractionListScreen(navController = navController)
+        composable(
+            route = "list?query={query}",
+            arguments = listOf(navArgument("query") { 
+                type = NavType.StringType
+                defaultValue = ""
+            })
+        ) { backStackEntry ->
+            val query = backStackEntry.arguments?.getString("query") ?: ""
+            AttractionListScreen(
+                navController = navController,
+                initialQuery = query
+            )
         }
 
         composable(

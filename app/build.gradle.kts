@@ -77,6 +77,10 @@ dependencies {
     // Google Maps Compose
     implementation("com.google.maps.android:maps-compose:6.1.1")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
+    
+    // Google Maps Utils for Clustering
+    implementation("com.google.maps.android:maps-compose-utils:6.1.1")
+    implementation("com.google.maps.android:android-maps-utils:3.8.2")
 
     implementation("com.google.android.gms:play-services-location:21.0.1")
 }

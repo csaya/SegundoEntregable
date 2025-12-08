@@ -86,8 +86,12 @@ fun HomeScreen(
                 query = searchQuery,
                 onQueryChange = { searchQuery = it },
                 onSearchClicked = {
-                    // Navegamos a la lista pasando el query si quisieras filtrar allá
-                    navController.navigate("list")
+                    // Navegamos a la lista pasando el query para filtrar
+                    if (searchQuery.isNotEmpty()) {
+                        navController.navigate("list?query=$searchQuery")
+                    } else {
+                        navController.navigate("list")
+                    }
                 },
                 placeholder = "Buscar atractivos, restaurantes..."
             )

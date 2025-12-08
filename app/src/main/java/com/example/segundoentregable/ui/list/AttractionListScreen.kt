@@ -24,7 +24,8 @@ import com.example.segundoentregable.ui.components.AttractionListItem
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttractionListScreen(
-    navController: NavController
+    navController: NavController,
+    initialQuery: String = ""
 ) {
     val context = LocalContext.current
     val application = context.applicationContext as Application
@@ -35,6 +36,13 @@ fun AttractionListScreen(
     )
 
     val uiState by viewModel.uiState.collectAsState()
+    
+    // Aplicar query inicial si viene de la búsqueda en Home
+    LaunchedEffect(initialQuery) {
+        if (initialQuery.isNotEmpty()) {
+            viewModel.onSearchQueryChanged(initialQuery)
+        }
+    }
 
     Scaffold(
         topBar = { ListTopBar(navController = navController) },

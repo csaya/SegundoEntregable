@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Landscape
 import androidx.compose.material.icons.filled.LocalActivity
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.*
@@ -42,9 +43,11 @@ import com.example.segundoentregable.data.model.Actividad
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.model.GaleriaFoto
 import com.example.segundoentregable.ui.components.AppBottomBar
+import com.example.segundoentregable.ui.components.OpenStatusBadge
 import com.example.segundoentregable.ui.components.RatingBar
 import com.example.segundoentregable.ui.components.ReviewCard
 import com.example.segundoentregable.ui.components.AttractionImage
+import com.example.segundoentregable.utils.NavigationUtils
 
 @Composable
 fun AttractionDetailScreen(
@@ -134,6 +137,9 @@ fun AttractionDetailScreen(
                             color = Color.Gray
                         )
                     }
+                    Spacer(Modifier.height(8.dp))
+                    // Indicador de Abierto/Cerrado
+                    OpenStatusBadge(horario = atractivo.horario)
                     Spacer(Modifier.height(16.dp))
                     Text(atractivo.descripcionLarga, style = MaterialTheme.typography.bodyLarge)
                 }
@@ -171,6 +177,14 @@ fun AttractionDetailScreen(
                     },
                     onGoToMap = {
                         navController.navigate("map")
+                    },
+                    onComoLlegar = {
+                        NavigationUtils.openGoogleMapsNavigation(
+                            context = context,
+                            latitude = atractivo.latitud,
+                            longitude = atractivo.longitud,
+                            label = atractivo.nombre
+                        )
                     }
                 )
             }
@@ -387,35 +401,52 @@ private fun InfoAdicionalSection(atractivo: AtractivoTuristico) {
 private fun ActionButtonsSection(
     isFavorito: Boolean,
     onToggleFavorite: () -> Unit,
-    onGoToMap: () -> Unit
+    onGoToMap: () -> Unit,
+    onComoLlegar: () -> Unit
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        OutlinedButton(
-            onClick = onToggleFavorite,
-            modifier = Modifier.weight(1f)
+        // Fila 1: Guardar y Ver en Mapa
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Icon(
-                if (isFavorito) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                contentDescription = "Guardar",
-                modifier = Modifier.size(ButtonDefaults.IconSize),
-                tint = if(isFavorito) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-            Text(if (isFavorito) "Guardado" else "Guardar")
-        }
+            OutlinedButton(
+                onClick = onToggleFavorite,
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(
+                    if (isFavorito) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                    contentDescription = "Guardar",
+                    modifier = Modifier.size(ButtonDefaults.IconSize),
+                    tint = if(isFavorito) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text(if (isFavorito) "Guardado" else "Guardar")
+            }
 
+            OutlinedButton(
+                onClick = onGoToMap,
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(Icons.Filled.Map, contentDescription = null, Modifier.size(16.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Ver en Mapa")
+            }
+        }
+        
+        // Fila 2: Botón principal "Cómo Llegar"
         Button(
-            onClick = onGoToMap,
-            modifier = Modifier.weight(1f)
+            onClick = onComoLlegar,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Icon(Icons.Filled.Map, contentDescription = null, Modifier.size(16.dp))
+            Icon(Icons.Filled.Navigation, contentDescription = null, Modifier.size(20.dp))
             Spacer(Modifier.width(8.dp))
-            Text("Ver Ubicación")
+            Text("Cómo Llegar")
         }
     }
 }

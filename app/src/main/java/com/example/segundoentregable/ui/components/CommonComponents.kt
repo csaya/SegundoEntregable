@@ -2,7 +2,7 @@ package com.example.segundoentregable.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.* // ← para Row, Column, Spacer, size, padding, etc.
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -20,9 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.segundoentregable.data.model.Review
+import com.example.segundoentregable.utils.HorarioUtils
 
 @Composable
 fun SearchBar(
@@ -37,14 +40,21 @@ fun SearchBar(
         onValueChange = onQueryChange,
         placeholder = { Text(placeholder) },
         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = "Buscar") },
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(30.dp))
-            .clickable { onSearchClicked() },
-        enabled = false,
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = onSearchClicked) {
+                    Icon(Icons.Filled.Search, contentDescription = "Buscar", tint = MaterialTheme.colorScheme.primary)
+                }
+            }
+        },
+        singleLine = true,
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(30.dp),
         colors = TextFieldDefaults.colors(
-            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            disabledIndicatorColor = Color.Transparent
+            focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
         )
     )
 }
@@ -121,6 +131,83 @@ fun ReviewCard(
                 Spacer(Modifier.width(4.dp))
                 Text(review.dislikes.toString(), style = MaterialTheme.typography.bodySmall)
             }
+        }
+    }
+}
+
+/**
+ * Componente que muestra el estado de apertura de un lugar.
+ * Muestra "Abierto" en verde o "Cerrado" en rojo, con información adicional.
+ */
+@Composable
+fun OpenStatusBadge(
+    horario: String,
+    modifier: Modifier = Modifier,
+    showDetails: Boolean = true
+) {
+    val estado = HorarioUtils.getEstadoActual(horario)
+    
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .clip(CircleShape)
+                .background(if (estado.isOpen) Color(0xFF4CAF50) else Color(0xFFF44336))
+        )
+        
+        Text(
+            text = estado.mensaje,
+            color = if (estado.isOpen) Color(0xFF4CAF50) else Color(0xFFF44336),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 14.sp
+        )
+        
+        if (showDetails && estado.proximoCambio != null) {
+            Text(
+                text = "· ${estado.proximoCambio}",
+                color = Color.Gray,
+                fontSize = 12.sp
+            )
+        }
+    }
+}
+
+/**
+ * Versión compacta del badge de estado (solo el indicador y texto corto).
+ */
+@Composable
+fun OpenStatusChip(
+    horario: String,
+    modifier: Modifier = Modifier
+) {
+    val estado = HorarioUtils.getEstadoActual(horario)
+    
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        color = if (estado.isOpen) Color(0xFF4CAF50).copy(alpha = 0.1f) else Color(0xFFF44336).copy(alpha = 0.1f)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .clip(CircleShape)
+                    .background(if (estado.isOpen) Color(0xFF4CAF50) else Color(0xFFF44336))
+            )
+            Text(
+                text = if (estado.isOpen) "Abierto" else "Cerrado",
+                color = if (estado.isOpen) Color(0xFF4CAF50) else Color(0xFFF44336),
+                fontWeight = FontWeight.Medium,
+                fontSize = 12.sp
+            )
         }
     }
 }
