@@ -5,18 +5,32 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "atractivos")
 data class AtractivoEntity(
-    @PrimaryKey
-    val id: String,
+    @PrimaryKey val id: String,
+    val codigoMincetur: String,
     val nombre: String,
     val descripcionCorta: String,
     val descripcionLarga: String,
     val ubicacion: String,
-    val latitud: Double = 0.0,
-    val longitud: Double = 0.0,
+    val latitud: Double,
+    val longitud: Double,
+    val departamento: String,
+    val provincia: String,
+    val distrito: String,
+    val altitud: Int,
     val categoria: String,
-    val precio: Double = 0.0,
-    val horario: String = "",
-    val rating: Float = 5.0f,
-    val idImagen: String,
-    val distanciaTexto: String = ""
+    val tipo: String,
+    val subtipo: String,
+    val jerarquia: Int,
+    val precio: Double,
+    val precioDetalle: String,
+    val horario: String,
+    val horarioDetallado: String,
+    val epocaVisita: String,
+    val tiempoVisitaSugerido: String,
+    val estadoActual: String,
+    val observaciones: String,
+    val tieneAccesibilidad: Boolean,
+    val imagenPrincipal: String,
+    val rating: Float,
+    val distanciaTexto: String
 )

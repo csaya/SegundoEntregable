@@ -37,11 +37,7 @@ class AttractionListViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                // Aseguramos que la DB tenga datos (por seguridad)
-                withContext(Dispatchers.IO) {
-                    repo.initializeData()
-                }
-
+                // Los datos se cargan desde DataImporter en AppApplication
                 // Cargamos todos los datos
                 todosLosAtractivos = withContext(Dispatchers.IO) {
                     repo.getTodosLosAtractivos()
@@ -52,7 +48,7 @@ class AttractionListViewModel(
                     it.copy(
                         listaFiltrada = todosLosAtractivos,
                         // Extraemos las categorías únicas dinámicamente
-                        categoriasDisponibles = todosLosAtractivos.map { a -> a.categoria }.distinct(),
+                        categoriasDisponibles = todosLosAtractivos.map { a -> a.categoria }.distinct().sorted(),
                         isLoading = false
                     )
                 }

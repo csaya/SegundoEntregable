@@ -33,13 +33,7 @@ class MapViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                // Ya no necesitamos llamar a initializeData() aquí obligatoriamente
-                // porque HomeViewModel ya lo hizo al abrir la app,
-                // pero no hace daño dejarlo por seguridad.
-                withContext(Dispatchers.IO) {
-                    repo.initializeData()
-                }
-
+                // Los datos se cargan desde DataImporter en AppApplication
                 val atractivos = withContext(Dispatchers.IO) {
                     repo.getTodosLosAtractivos()
                 }

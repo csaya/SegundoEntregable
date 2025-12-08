@@ -49,22 +49,21 @@ class AttractionDetailViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                // 1. Cargar Atractivo y Reviews
-                val atractivo = attractionRepo.getAtractivoPorId(attractionId)
-                val reviews = attractionRepo.getReviewsForAttraction(attractionId)
-
-                // 2. Verificar Favorito
-                // TRUCO: Si no hay usuario logueado, usamos "guest_user" para probar la funcionalidad
                 val userEmail = userRepo.getCurrentUserEmail() ?: "guest_user"
 
-                // Nota: Usamos Flow collect si el repositorio lo provee, o llamada directa si es suspend
-                val isFavorito = favoriteRepo.isFavorito(userEmail, attractionId)
+                // Cargar atractivo completo con galería, actividades y estado de favorito
+                val atractivo = withContext(Dispatchers.IO) {
+                    attractionRepo.getAtractivoCompletoSync(attractionId, userEmail)
+                }
+                val reviews = withContext(Dispatchers.IO) {
+                    attractionRepo.getReviewsForAttraction(attractionId)
+                }
 
                 _uiState.update {
                     it.copy(
                         atractivo = atractivo,
                         reviews = reviews,
-                        isFavorito = isFavorito,
+                        isFavorito = atractivo?.isFavorito ?: false,
                         isLoading = false
                     )
                 }

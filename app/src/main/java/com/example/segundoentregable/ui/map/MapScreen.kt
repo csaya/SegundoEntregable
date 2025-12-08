@@ -191,7 +191,7 @@ private fun AttractionDetailSheet(
         Spacer(Modifier.width(16.dp))
 
         AttractionImage(
-            imageUrl = atractivo.idImagen,
+            imageUrl = atractivo.imagenPrincipal,
             contentDescription = atractivo.nombre,
             modifier = Modifier
                 .size(100.dp)

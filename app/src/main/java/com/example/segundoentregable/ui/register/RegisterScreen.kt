@@ -13,6 +13,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.segundoentregable.ui.components.AppBottomBar // <-- IMPORTANTE
 import com.example.segundoentregable.ui.components.ImagePlaceholderCircle
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -20,7 +21,6 @@ import com.example.segundoentregable.ui.components.ImagePlaceholderCircle
 fun RegisterScreen(
     navController: NavController
 ) {
-    // 1. Configurar Factory
     val context = LocalContext.current
     val application = context.applicationContext as Application
 
@@ -32,24 +32,29 @@ fun RegisterScreen(
 
     LaunchedEffect(Unit) {
         registerViewModel.registerSuccessEvent.collect {
-            // Al registrarse con éxito, volvemos atrás (al login)
             navController.popBackStack()
         }
     }
 
-    Scaffold(topBar = {
-        CenterAlignedTopAppBar(
-            title = { Text("Registro") },
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Volver"
-                    )
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Registro") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
                 }
-            }
-        )
-    }) { innerPadding ->
+            )
+        },
+        // AGREGAMOS LA BARRA INFERIOR AQUÍ
+        bottomBar = {
+            AppBottomBar(navController = navController)
+        }
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

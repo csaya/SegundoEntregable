@@ -3,12 +3,21 @@ package com.example.segundoentregable.ui.detail
 import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Landscape
+import androidx.compose.material.icons.filled.LocalActivity
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -19,12 +28,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.segundoentregable.data.model.Actividad
+import com.example.segundoentregable.data.model.AtractivoTuristico
+import com.example.segundoentregable.data.model.GaleriaFoto
 import com.example.segundoentregable.ui.components.AppBottomBar
 import com.example.segundoentregable.ui.components.RatingBar
 import com.example.segundoentregable.ui.components.ReviewCard
@@ -79,15 +95,34 @@ fun AttractionDetailScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            // Imagen principal
             item {
                 AttractionImage(
-                    imageUrl = atractivo.idImagen,
+                    imageUrl = atractivo.imagenPrincipal,
                     contentDescription = atractivo.nombre
                 )
             }
 
+            // Título, rating y descripción
             item {
                 Column(Modifier.padding(16.dp)) {
+                    // Categoría y tipo
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AssistChip(
+                            onClick = { },
+                            label = { Text(atractivo.categoria) }
+                        )
+                        if (atractivo.tipo.isNotEmpty()) {
+                            AssistChip(
+                                onClick = { },
+                                label = { Text(atractivo.tipo) }
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
                     Text(atractivo.nombre, style = MaterialTheme.typography.headlineMedium)
                     Spacer(Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -104,15 +139,30 @@ fun AttractionDetailScreen(
                 }
             }
 
-            item {
-                InfoSection(atractivo.horario, "S/ ${atractivo.precio} aprox.")
+            // Galería de fotos
+            if (atractivo.galeria.isNotEmpty()) {
+                item {
+                    GaleriaSection(galeria = atractivo.galeria)
+                }
             }
 
+            // Información detallada
+            item {
+                InfoSectionEnhanced(atractivo = atractivo)
+            }
+
+            // Actividades disponibles
+            if (atractivo.actividades.isNotEmpty()) {
+                item {
+                    ActividadesSection(actividades = atractivo.actividades)
+                }
+            }
+
+            // Botones de acción
             item {
                 ActionButtonsSection(
                     isFavorito = uiState.isFavorito,
                     onToggleFavorite = {
-                        // LÓGICA DE PROTECCIÓN
                         if (isUserLoggedIn) {
                             viewModel.onToggleFavorite()
                         } else {
@@ -125,14 +175,14 @@ fun AttractionDetailScreen(
                 )
             }
 
-            item {
-                Text(
-                    "Reseñas",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-                )
+            // Información adicional (observaciones, estado)
+            if (atractivo.observaciones.isNotEmpty() || atractivo.estadoActual.isNotEmpty()) {
+                item {
+                    InfoAdicionalSection(atractivo = atractivo)
+                }
             }
 
+            // Sección de reseñas
             item {
                 Row(
                     modifier = Modifier
@@ -145,8 +195,6 @@ fun AttractionDetailScreen(
                         "Reseñas (${uiState.reviews.size})",
                         style = MaterialTheme.typography.headlineSmall
                     )
-
-                    // Botón pequeño para agregar review
                     TextButton(onClick = {
                         if (isUserLoggedIn) {
                             viewModel.showReviewDialog()
@@ -186,19 +234,151 @@ private fun DetailTopBar(navController: NavController) {
 }
 
 @Composable
-private fun InfoSection(horario: String, admision: String) {
-    Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-        Text("Información", style = MaterialTheme.typography.headlineSmall)
+private fun GaleriaSection(galeria: List<GaleriaFoto>) {
+    Column(Modifier.padding(vertical = 8.dp)) {
+        Text(
+            "Galería de fotos",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
         Spacer(Modifier.height(8.dp))
-        Row(Modifier.fillMaxWidth()) {
-            Column(Modifier.weight(1f)) {
-                Text("Horario", style = MaterialTheme.typography.labelMedium, color = Color.Gray)
-                Text(horario.ifEmpty { "09:00 - 18:00" }, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            items(galeria) { foto ->
+                AttractionImage(
+                    imageUrl = foto.urlFoto,
+                    contentDescription = "Foto ${foto.orden + 1}",
+                    modifier = Modifier
+                        .size(150.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop
+                )
             }
-            Column(Modifier.weight(1f)) {
-                Text("Precio", style = MaterialTheme.typography.labelMedium, color = Color.Gray)
-                Text(admision, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+        }
+    }
+}
+
+@Composable
+private fun InfoSectionEnhanced(atractivo: AtractivoTuristico) {
+    Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Text("Información", style = MaterialTheme.typography.titleLarge)
+        Spacer(Modifier.height(12.dp))
+
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            InfoCard(
+                icon = Icons.Filled.AccessTime,
+                title = "Horario",
+                content = atractivo.horario.ifEmpty { "Consultar" },
+                modifier = Modifier.weight(1f)
+            )
+            InfoCard(
+                icon = Icons.Filled.Payments,
+                title = "Precio",
+                content = if (atractivo.precio > 0) "S/ ${atractivo.precio}" else "Gratis",
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            InfoCard(
+                icon = Icons.Filled.Place,
+                title = "Ubicación",
+                content = atractivo.distrito.ifEmpty { atractivo.ubicacion },
+                modifier = Modifier.weight(1f)
+            )
+            InfoCard(
+                icon = Icons.Filled.Landscape,
+                title = "Altitud",
+                content = "${atractivo.altitud} m.s.n.m.",
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        if (atractivo.horarioDetallado.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
+                    Icon(Icons.Filled.CalendarMonth, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Column {
+                        Text("Horario detallado", style = MaterialTheme.typography.labelMedium)
+                        Text(atractivo.horarioDetallado, style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
             }
+        }
+
+        if (atractivo.precioDetalle.isNotEmpty() && atractivo.precioDetalle != "Ingreso gratuito") {
+            Spacer(Modifier.height(8.dp))
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.Top) {
+                    Icon(Icons.Filled.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Column {
+                        Text("Detalle de precios", style = MaterialTheme.typography.labelMedium)
+                        Text(atractivo.precioDetalle, style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun InfoCard(icon: ImageVector, title: String, content: String, modifier: Modifier = Modifier) {
+    Card(modifier = modifier, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+            Spacer(Modifier.width(8.dp))
+            Column {
+                Text(title, style = MaterialTheme.typography.labelMedium, color = Color.Gray)
+                Text(content, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ActividadesSection(actividades: List<Actividad>) {
+    Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Text("Actividades disponibles", style = MaterialTheme.typography.titleLarge)
+        Spacer(Modifier.height(8.dp))
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(actividades) { actividad ->
+                FilterChip(
+                    selected = false,
+                    onClick = { },
+                    label = { Text(actividad.nombre) },
+                    leadingIcon = { Icon(Icons.Filled.LocalActivity, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun InfoAdicionalSection(atractivo: AtractivoTuristico) {
+    Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        if (atractivo.estadoActual.isNotEmpty()) {
+            Text("Estado actual", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(atractivo.estadoActual, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+            Spacer(Modifier.height(12.dp))
+        }
+        if (atractivo.observaciones.isNotEmpty()) {
+            Text("Observaciones", style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(atractivo.observaciones, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
         }
     }
 }

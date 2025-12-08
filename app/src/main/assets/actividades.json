@@ -1,0 +1,2473 @@
+[
+  {
+    "id": "9a343029-6bb4-4aec-ac44-76373690b15a",
+    "atractivoId": "mincetur_587",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "516923ea-e975-483d-8d6b-5ba91314ca30",
+    "atractivoId": "mincetur_587",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "a9bafa52-ea30-41fa-a341-880269a4b92c",
+    "atractivoId": "mincetur_589",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "fcbb9484-ef81-48ce-9953-5b6a99e1b71a",
+    "atractivoId": "mincetur_589",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "85e392a7-d9e9-4c0a-8283-9523939b230f",
+    "atractivoId": "mincetur_589",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "9be156b8-c940-46e2-aa88-0ec3e089658a",
+    "atractivoId": "mincetur_589",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "e157e803-b77e-419a-9009-35bea02c7044",
+    "atractivoId": "mincetur_596",
+    "nombre": "Paseos en bicicleta",
+    "categoria": "Paseos",
+    "icono": "paseos"
+  },
+  {
+    "id": "b6268b0a-0ac9-4199-a920-99ec6577aa2e",
+    "atractivoId": "mincetur_596",
+    "nombre": "Observación de flora",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "ebe934aa-aacb-4d7e-a1c0-58d19f188a72",
+    "atractivoId": "mincetur_596",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "803c3b9d-a7ba-4b27-9fb0-eb1713001385",
+    "atractivoId": "mincetur_596",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "063eb451-afaa-4541-9fac-fdfc203af1f1",
+    "atractivoId": "mincetur_596",
+    "nombre": "Ciclismo",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "7a49eaf8-3929-4343-a2c7-c8358a42bf59",
+    "atractivoId": "mincetur_596",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "a5b7d119-a25d-4384-94d2-947d948bbf16",
+    "atractivoId": "mincetur_596",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "cb15ea69-7ce7-4289-9393-8347add92fb3",
+    "atractivoId": "mincetur_596",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "a331a545-a0e2-4e54-b943-62b8e357fdf9",
+    "atractivoId": "mincetur_596",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "e5edf217-95ee-4d14-8d7d-8c8314710a89",
+    "atractivoId": "mincetur_596",
+    "nombre": "Otros(Especificar)",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "c06165e6-e18c-4c34-a703-b6980389c244",
+    "atractivoId": "mincetur_597",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "de5050b9-993a-40d3-a271-2eac6b83c154",
+    "atractivoId": "mincetur_597",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "180e4e3a-26b0-49fe-bb26-e8211b0d4f33",
+    "atractivoId": "mincetur_597",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "5d9e459d-00e9-4b02-8a24-38aefdb11c1a",
+    "atractivoId": "mincetur_597",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "f2dbc06c-8591-4e83-bb66-c0741564dd3d",
+    "atractivoId": "mincetur_597",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "14901ca4-2f6f-4b0c-a122-995b4ce57606",
+    "atractivoId": "mincetur_597",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "3c727452-68c3-4947-a04c-50a25d316c71",
+    "atractivoId": "mincetur_597",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "829f40e9-b298-41d6-ae6f-c61734ecb29d",
+    "atractivoId": "mincetur_598",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "7e3dc11d-c0b1-4778-ab67-c61434adb5cc",
+    "atractivoId": "mincetur_598",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "4cfb1f74-64e0-4cad-8ccb-d003b28ba33a",
+    "atractivoId": "mincetur_598",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "1b5a2ee9-67e9-4501-8eeb-f79484ddf5a6",
+    "atractivoId": "mincetur_598",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "9bf9de93-482a-4167-9a17-9bc139448b3e",
+    "atractivoId": "mincetur_599",
+    "nombre": "Camping",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "928da0ef-eaeb-4adc-baff-4cdeeeff4ef6",
+    "atractivoId": "mincetur_599",
+    "nombre": "Parapente",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "7e43fb4b-76ea-46ee-8467-16cc5159c0d1",
+    "atractivoId": "mincetur_599",
+    "nombre": "Montañismo",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "a6ccedf5-db6e-4fb5-86a7-dd9612181fd0",
+    "atractivoId": "mincetur_599",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "1ad00e05-6448-4485-ad5d-c426a01ea563",
+    "atractivoId": "mincetur_606",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "c95f2e41-5e1a-4cb0-9fd9-fb56fc8b47f4",
+    "atractivoId": "mincetur_606",
+    "nombre": "Otros(Especificar)",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "5160b42e-e11e-4a21-a24b-23499cf62334",
+    "atractivoId": "mincetur_610",
+    "nombre": "Observación de aves",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "6fc0cc4f-632b-491d-89e5-5a85a8c16aad",
+    "atractivoId": "mincetur_610",
+    "nombre": "Observación de fauna",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "307ac19d-6aa7-4998-8ba4-839488e7df16",
+    "atractivoId": "mincetur_610",
+    "nombre": "Observación de flora",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "26c7972f-aa24-4d6b-a265-ce6ec1903317",
+    "atractivoId": "mincetur_610",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "78a3d0d1-24d7-4bd1-bb86-88085d1749cc",
+    "atractivoId": "mincetur_610",
+    "nombre": "Ferias",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "22902588-4e42-4036-b5a5-47062100f6cf",
+    "atractivoId": "mincetur_610",
+    "nombre": "Rituales místicos o tradicionales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "9b83ce43-73f5-4808-a51e-50eabf7997ae",
+    "atractivoId": "mincetur_610",
+    "nombre": "Ciclismo",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "9f8677f5-e97e-4449-b302-a5c98f25bea5",
+    "atractivoId": "mincetur_610",
+    "nombre": "Escalada en roca",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "f502b551-c0ed-44d4-86ec-2448641086be",
+    "atractivoId": "mincetur_610",
+    "nombre": "Montañismo",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "74b3a31f-f5c3-45b6-92db-51d235c2696c",
+    "atractivoId": "mincetur_610",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "cccb504d-1c14-4b2f-83d7-d93630050cce",
+    "atractivoId": "mincetur_610",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "5ca40b26-29fc-4252-9359-82d5d95ac483",
+    "atractivoId": "mincetur_610",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "4034ca0d-2e03-455b-845f-1c56b92613c6",
+    "atractivoId": "mincetur_610",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "0e93cc1b-bfcb-42ee-8347-e52bdce24001",
+    "atractivoId": "mincetur_972",
+    "nombre": "Ferias",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "1ef0c945-30ba-491f-b186-a28ff11609ef",
+    "atractivoId": "mincetur_972",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "a916c732-9dd5-4c03-96b5-53cbcea4b94c",
+    "atractivoId": "mincetur_972",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "005ea9c1-32f1-4903-9ba6-bd37a1f7d913",
+    "atractivoId": "mincetur_972",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "b71cb9c5-de64-44d8-9caa-4dbebfc52069",
+    "atractivoId": "mincetur_972",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "4f29599f-6f8d-4766-a4ac-e09b9283ab95",
+    "atractivoId": "mincetur_972",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "7dccae71-d9e7-42a3-997f-742681f6832f",
+    "atractivoId": "mincetur_972",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "c1fff642-09d5-48dc-a394-6134835cff95",
+    "atractivoId": "mincetur_972",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "096f6846-132f-48ad-854c-e8bb6e4eeafa",
+    "atractivoId": "mincetur_972",
+    "nombre": "Compra de productos regionales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "fd759614-d3c2-4a1d-b109-5bf1a31c3098",
+    "atractivoId": "mincetur_973",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "90e5a0e6-1e14-4af7-b7f7-4928c67b0b12",
+    "atractivoId": "mincetur_974",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "dc75a3ad-bc00-4ef6-9c41-a3d92ce9d456",
+    "atractivoId": "mincetur_974",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "f6a7bd11-9ec2-49f9-9ec0-5880ae5cbe06",
+    "atractivoId": "mincetur_974",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "d0ca76e8-ae97-4d91-8f99-7b97113fe95f",
+    "atractivoId": "mincetur_974",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "fbd3afc8-6665-43df-9b93-e311c8027a92",
+    "atractivoId": "mincetur_974",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "fc8f319f-1e2e-43a2-8b8c-6b5c71a57392",
+    "atractivoId": "mincetur_975",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "5770bcda-cf3b-4589-9820-ca8eab7e66bc",
+    "atractivoId": "mincetur_975",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "42f81608-e0dd-4d28-bf19-39cf8b60c218",
+    "atractivoId": "mincetur_975",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "c5e98fe5-a822-4ea9-88b3-9d5c48507d34",
+    "atractivoId": "mincetur_976",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "2db21b81-6a90-4fcd-a561-2554c9b40f29",
+    "atractivoId": "mincetur_977",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "451478d7-4fe1-4f4f-8a5c-0ee90079e6ee",
+    "atractivoId": "mincetur_977",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "1d63a309-9419-4306-b54f-b87c6d000b81",
+    "atractivoId": "mincetur_977",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "7fce0ef4-0ada-4ac6-a8a5-ffff505708ad",
+    "atractivoId": "mincetur_982",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "53a4811c-0af7-439a-b6d0-8ba34604662d",
+    "atractivoId": "mincetur_982",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "99ae9080-c84b-4976-a5ea-89b7d056949e",
+    "atractivoId": "mincetur_982",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "6d99fa5a-e99b-4d94-9716-fab2e36f2b77",
+    "atractivoId": "mincetur_982",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "b9481d36-e5c3-4b0b-ad8d-00ee77bb446a",
+    "atractivoId": "mincetur_982",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "7f8cbd4a-434b-40df-a010-8db7ae754b1a",
+    "atractivoId": "mincetur_983",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "e5194eff-9ddc-43c8-ae87-97132c06d3ab",
+    "atractivoId": "mincetur_983",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "bae015db-d55b-4a6a-9040-45e369ae1b51",
+    "atractivoId": "mincetur_983",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "39c7e5f2-e59d-4761-8671-6926123f9363",
+    "atractivoId": "mincetur_983",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "3689d1c1-aacc-4474-af5e-c3dacfc3556f",
+    "atractivoId": "mincetur_983",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "644ed4a4-021a-4b87-80df-64f43c4e190a",
+    "atractivoId": "mincetur_983",
+    "nombre": "Otros(Especificar)",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "7bca9a86-0be2-47e2-bd8a-01afb1e6a8f2",
+    "atractivoId": "mincetur_985",
+    "nombre": "Ferias",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "6de6eaab-20b0-4bb6-81bc-822fe06947d1",
+    "atractivoId": "mincetur_985",
+    "nombre": "Visita y participación en actividades de vida cotidiana de la comunidad",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "9ffc6e5d-d074-445b-8f0b-f37717d62f34",
+    "atractivoId": "mincetur_985",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "43825533-f877-4f6b-9f10-8a4b17a4da11",
+    "atractivoId": "mincetur_985",
+    "nombre": "Actividades Culturales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "a61c506d-60a1-4d17-bd09-c3b9b74dd336",
+    "atractivoId": "mincetur_985",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "f640d84a-546a-4e17-9f79-853495c5704f",
+    "atractivoId": "mincetur_985",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "22c64f37-a565-4bf6-ad9a-79f9b1657b1e",
+    "atractivoId": "mincetur_985",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "51cb6884-ed3b-421c-93b1-774d26396a15",
+    "atractivoId": "mincetur_985",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "542f9e33-1772-4a52-a98b-0cc96e9ad004",
+    "atractivoId": "mincetur_985",
+    "nombre": "Otros(Especificar)",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "33c05b2b-a61d-4cc4-a44d-d2496cd630cd",
+    "atractivoId": "mincetur_985",
+    "nombre": "Compra de productos regionales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "88bb774e-06dd-4a31-a588-90ee339382c9",
+    "atractivoId": "mincetur_989",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "ba84f8c9-c092-4f78-ba67-e87783267dae",
+    "atractivoId": "mincetur_989",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "1f2c9e9f-299e-47ef-b649-87fd83bf4fa7",
+    "atractivoId": "mincetur_989",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "d09d7b85-fe21-4652-ab73-08585d72000a",
+    "atractivoId": "mincetur_993",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "fada6f45-9b40-4c07-af59-419861f663ce",
+    "atractivoId": "mincetur_993",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "807bb02d-1828-4a8c-a65b-5314c770ebea",
+    "atractivoId": "mincetur_993",
+    "nombre": "Otros(Especificar)",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "5fd9e788-4788-4ef1-a284-02fce74d2da8",
+    "atractivoId": "mincetur_1338",
+    "nombre": "Excursiones",
+    "categoria": "Paseos",
+    "icono": "paseos"
+  },
+  {
+    "id": "2c8175a0-e72b-4554-a3a6-2852cd16e829",
+    "atractivoId": "mincetur_1338",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "fe44445a-5771-4ae5-826d-c0b991ac6dc4",
+    "atractivoId": "mincetur_1338",
+    "nombre": "Camping",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "5f5fa51d-5b55-4934-9500-e12cc51fa9d4",
+    "atractivoId": "mincetur_1338",
+    "nombre": "Escalada en Hielo",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "b5e8efa3-fbc3-46f9-91b4-7f3347b91c76",
+    "atractivoId": "mincetur_1338",
+    "nombre": "Escalada en roca",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "c97e4fd9-e74b-47c1-bb49-2cbdeeb746d4",
+    "atractivoId": "mincetur_1338",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "d92171c2-544e-4d3f-bea7-58fd126d0e28",
+    "atractivoId": "mincetur_1338",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "8d85f754-b24c-4b6e-b156-685a46d8a608",
+    "atractivoId": "mincetur_1338",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "e7b758cb-3de3-4667-ab98-2211f6471464",
+    "atractivoId": "mincetur_2735",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "b05f0141-21b4-48b1-b98b-244c78401835",
+    "atractivoId": "mincetur_2735",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "e901e693-01cd-4059-add0-4568df4c20c1",
+    "atractivoId": "mincetur_2744",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "7f665a28-ebc2-4be0-8ee8-1bc7f08ed89e",
+    "atractivoId": "mincetur_2744",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "973c0f26-849f-49ee-bd5a-3a8b45fcd580",
+    "atractivoId": "mincetur_2764",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "cdbd28fa-84d4-4302-a769-5b764c32b19c",
+    "atractivoId": "mincetur_2764",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "290c5be0-4366-44b5-96a6-a9d1dcb1c20a",
+    "atractivoId": "mincetur_2768",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "c2f78448-64ad-4e80-abec-d4eeb18958d7",
+    "atractivoId": "mincetur_2768",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "a6eeb800-7ece-45db-b668-c1643bb431a0",
+    "atractivoId": "mincetur_2774",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "fc43454d-2d69-4a23-99a3-f05fbc9bb334",
+    "atractivoId": "mincetur_2775",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "6f908a8d-f2d3-420e-b0f1-8176bff25302",
+    "atractivoId": "mincetur_2775",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "b9c40415-b966-44c3-bdc3-cedfe47bc0c0",
+    "atractivoId": "mincetur_2776",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "2a52b47f-4e36-4161-b0d1-534a42731f1c",
+    "atractivoId": "mincetur_2776",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "71c439fe-6cb7-40ab-853f-0e363d161bb0",
+    "atractivoId": "mincetur_2837",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "9f69133d-4298-4f0e-8f5c-666f2f3cad8f",
+    "atractivoId": "mincetur_12735",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "d2f21cca-cd02-4972-9829-f2a19e3d445a",
+    "atractivoId": "mincetur_12735",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "c242d8a5-f315-43e0-8e1a-18d5a9455f2b",
+    "atractivoId": "mincetur_12735",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "4c180da3-9750-427d-8426-0d880e789fef",
+    "atractivoId": "mincetur_12735",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "7842f0c1-91c3-4d78-bd7a-ca07e0d3215e",
+    "atractivoId": "mincetur_12735",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "20fd4469-33aa-40f1-a1a2-b7973e913e1a",
+    "atractivoId": "mincetur_12735",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "134f63f3-80bb-4a17-ac63-d0e847d6e03c",
+    "atractivoId": "mincetur_3632",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "bc3a9577-35f7-4be7-b3e1-52c963534fe3",
+    "atractivoId": "mincetur_3632",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "e3be18f0-89bb-4115-a229-8794e1c5c144",
+    "atractivoId": "mincetur_3632",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "a34b9f39-8172-49c7-837f-83cfdc51e2e8",
+    "atractivoId": "mincetur_12369",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "5b1c787f-ae4f-4916-9c54-0a88ff7a4831",
+    "atractivoId": "mincetur_12369",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "b41d4875-c84e-4e05-bfba-58f0bbebae13",
+    "atractivoId": "mincetur_3941",
+    "nombre": "Excursiones",
+    "categoria": "Paseos",
+    "icono": "paseos"
+  },
+  {
+    "id": "598f683e-e337-4596-8b6d-0e7eaadbbaf7",
+    "atractivoId": "mincetur_3941",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "7b68676b-8ff1-43e3-91ec-37634e25cf72",
+    "atractivoId": "mincetur_3941",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "6a35fc29-04b2-47c6-a70d-39b1cc098c74",
+    "atractivoId": "mincetur_3941",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "9231cfc7-b1ca-4c4b-8e10-778fc07997ad",
+    "atractivoId": "mincetur_3941",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "4c5a534c-292c-480e-a035-6211f228e7f0",
+    "atractivoId": "mincetur_3941",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "83a3a0b5-e0a6-48b1-a709-3eb79bb21ff4",
+    "atractivoId": "mincetur_3941",
+    "nombre": "Otros(Especificar)",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "2dc1aac8-4cfe-420c-8f64-fe98536f845f",
+    "atractivoId": "mincetur_4443",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "18713d55-73df-42d6-aaf7-5fc086c05cde",
+    "atractivoId": "mincetur_4443",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "a4dd1a2d-aae0-44c0-9dc7-28a7e37ac425",
+    "atractivoId": "mincetur_4697",
+    "nombre": "Observación de flora",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "7befacfb-2e4b-49a3-bf17-fb6018acb8ac",
+    "atractivoId": "mincetur_4697",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "462d2aa5-51ec-488b-ae18-fac9701982e8",
+    "atractivoId": "mincetur_4697",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "9c748a93-ff7d-4031-a599-db396d4c18fa",
+    "atractivoId": "mincetur_4697",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "a8366d0d-e71d-48e6-8e56-0ec2c7a24b0d",
+    "atractivoId": "mincetur_4697",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "1afc77ec-9c29-4a0b-923e-5f3a4d92ebf8",
+    "atractivoId": "mincetur_4697",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "9d5d7670-9b37-46f0-9729-91671700fc97",
+    "atractivoId": "mincetur_4697",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "d198f517-99b3-4fea-91de-591b2e65d6a6",
+    "atractivoId": "mincetur_4697",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "8caf1b3e-6ce8-469d-8b05-37ad716c2a2c",
+    "atractivoId": "mincetur_4775",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "8f18ea75-9343-479f-835a-eb753bfefde6",
+    "atractivoId": "mincetur_4775",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "cbebb5e6-13f9-4a10-abf1-d488dc4f7415",
+    "atractivoId": "mincetur_4775",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "d32b0426-b677-4838-a117-babac0316140",
+    "atractivoId": "mincetur_5591",
+    "nombre": "Otros",
+    "categoria": "Paseos",
+    "icono": "paseos"
+  },
+  {
+    "id": "8826f31a-03f6-4ad0-ae03-561b4aed8c02",
+    "atractivoId": "mincetur_5591",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "7e84efdd-75fc-4cae-996a-af3a0ba231d7",
+    "atractivoId": "mincetur_5591",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "351d3f6b-206a-46f2-932d-54f6b042bb87",
+    "atractivoId": "mincetur_5591",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "11d0fd9d-8406-43ac-981d-3fa612c45b45",
+    "atractivoId": "mincetur_5591",
+    "nombre": "Actividades Culturales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "35f04f80-b575-430f-8d9f-9a6f4f30400b",
+    "atractivoId": "mincetur_5591",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "55a9f5be-0a19-4324-95e3-0391c9462a35",
+    "atractivoId": "mincetur_5591",
+    "nombre": "Actividades Sociales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "9e6b22f1-fd50-4e71-845f-d88234f1397e",
+    "atractivoId": "mincetur_5591",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "9fd442a0-1ddd-4444-883d-3affe7779c24",
+    "atractivoId": "mincetur_5591",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "a9c77925-be4f-4f1f-8e2e-bdb8b476a89c",
+    "atractivoId": "mincetur_13527",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "7e37ef99-d72e-4bfd-be4d-c4ec249a5d97",
+    "atractivoId": "mincetur_6223",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "2b3bdca0-ae25-4e03-b619-53298f167a2a",
+    "atractivoId": "mincetur_6223",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "762bb682-45ee-4e7d-a56c-209d095daef7",
+    "atractivoId": "mincetur_6223",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "136e5f5e-2a3c-44f5-9cd2-bcd7b31170c3",
+    "atractivoId": "mincetur_6235",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "63672237-40e5-4982-9ffa-c87f69147ac8",
+    "atractivoId": "mincetur_6235",
+    "nombre": "Ferias",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "184f55fb-07ee-4a7b-b358-f347bb649f95",
+    "atractivoId": "mincetur_6235",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "8fe5644b-d4b5-4c7f-8dca-8bff73a3ecb2",
+    "atractivoId": "mincetur_6235",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "ba4f3314-c214-4926-8e33-b36b3f17cfb9",
+    "atractivoId": "mincetur_6311",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "6f7f6f90-8cc8-465d-abb8-f0ec9fa12fa7",
+    "atractivoId": "mincetur_6311",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "a122a1ed-837e-42cc-8402-b6ed485248ef",
+    "atractivoId": "mincetur_6311",
+    "nombre": "Actividades Culturales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "a895edf9-8378-426b-b32c-0179d166112c",
+    "atractivoId": "mincetur_6311",
+    "nombre": "Actividades Sociales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "68b32189-0b90-4322-9750-56b64a3c316f",
+    "atractivoId": "mincetur_6311",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "5bd2d6d4-91ed-4305-a6d1-32fa9e0f5fc2",
+    "atractivoId": "mincetur_6658",
+    "nombre": "Observación de fauna",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "e23522c2-930d-471f-aa91-2d2eda8d9029",
+    "atractivoId": "mincetur_6658",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "a64f21cd-5d33-4ade-9f0d-cf6918d40637",
+    "atractivoId": "mincetur_6658",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "645653ef-6fe1-4914-8f2c-0fa21c5d84fc",
+    "atractivoId": "mincetur_6658",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "41f1b984-ffb4-4125-ae27-c396ad5dba0e",
+    "atractivoId": "mincetur_6659",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "35753c9e-0be2-4adb-9f33-ded9df8eb760",
+    "atractivoId": "mincetur_6659",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "9cb40ba2-093a-4bb7-a438-699250ef9ba0",
+    "atractivoId": "mincetur_6659",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "1532ad2a-4e5f-478b-8b95-de66eb84fbc2",
+    "atractivoId": "mincetur_6660",
+    "nombre": "Observación de fauna",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "753ab61b-5365-4bb8-ae6b-ca7a4fdfc17e",
+    "atractivoId": "mincetur_6660",
+    "nombre": "Observación de flora",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "7225cbd3-e5f3-47d8-90bc-5292e1613772",
+    "atractivoId": "mincetur_6660",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "3f2cf0f6-c06d-4800-911e-5df1c2927397",
+    "atractivoId": "mincetur_6660",
+    "nombre": "Rituales místicos o tradicionales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "928d7a0d-1d2e-43cd-8dc2-151297788b25",
+    "atractivoId": "mincetur_6660",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "aec7d7c5-3b54-4140-9a59-2c2a9bff1786",
+    "atractivoId": "mincetur_6660",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "be52aebe-6806-4194-96c6-a62a811b1207",
+    "atractivoId": "mincetur_6662",
+    "nombre": "Observación de fauna",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "93b01c19-5b22-47f3-b5a8-604fddca43f7",
+    "atractivoId": "mincetur_6662",
+    "nombre": "Observación de flora",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "a8b7aeea-0ca1-4203-a6e7-9db006cbfce8",
+    "atractivoId": "mincetur_6662",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "56607b5e-fe1c-42fe-93c9-ebee1eec698a",
+    "atractivoId": "mincetur_6662",
+    "nombre": "Rituales místicos o tradicionales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "22961f43-ad56-4c85-ab74-59c9819caf58",
+    "atractivoId": "mincetur_6662",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "762bc148-2b9f-4aac-91b3-e6cd263a0e9f",
+    "atractivoId": "mincetur_6662",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "59babefd-daee-4d40-b9df-58a6a5a146bb",
+    "atractivoId": "mincetur_6664",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "2c8bac44-4365-4f02-bef4-a31f671b8536",
+    "atractivoId": "mincetur_6664",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "3f9d5a60-9604-45a0-8a65-8b187cd38b99",
+    "atractivoId": "mincetur_6665",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "cf95a2f7-3e7f-4a4a-8877-76592b492bd4",
+    "atractivoId": "mincetur_6665",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "f51b3902-7f96-4ff8-87aa-847a398aff2e",
+    "atractivoId": "mincetur_6665",
+    "nombre": "Actividades Culturales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "9574b379-a729-4f40-a88b-ac22729ded5d",
+    "atractivoId": "mincetur_6665",
+    "nombre": "Actividades Sociales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "a7a82b1b-602c-4c75-b181-ae49f09d4062",
+    "atractivoId": "mincetur_6665",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "e128c479-647b-4e70-9870-c1a71b9b9709",
+    "atractivoId": "mincetur_6665",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "7eb1c882-6d2c-40c5-9783-bf6ffe02628e",
+    "atractivoId": "mincetur_6738",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "54f802c1-41cc-43f1-9cf6-6735c46ec109",
+    "atractivoId": "mincetur_6738",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "7c5a9798-c3d8-46cc-8d01-5e60e45b2d8a",
+    "atractivoId": "mincetur_6738",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "22fc4527-5d8a-4ed9-91d6-744c3e725ef2",
+    "atractivoId": "mincetur_6738",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "9f30dcd3-056b-4bcc-9074-976122fd093c",
+    "atractivoId": "mincetur_6738",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "346b47c8-ee0b-486f-af05-538fa8de909b",
+    "atractivoId": "mincetur_6738",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "c5dc588b-acc3-4f4a-8567-ddcf14934581",
+    "atractivoId": "mincetur_6738",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "d9340945-f80c-4abd-a954-04ce8f6a8441",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Paseos en lancha o canoa",
+    "categoria": "Paseos",
+    "icono": "paseos"
+  },
+  {
+    "id": "64b63561-787d-4b25-9928-be574ea1f205",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Excursiones",
+    "categoria": "Paseos",
+    "icono": "paseos"
+  },
+  {
+    "id": "ecc8866e-eb34-4aa5-9348-4854c6501b62",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Sea Kayac",
+    "categoria": " Deportes acuáticos",
+    "icono": "deportes_acuaticos"
+  },
+  {
+    "id": "f6547590-a69e-4280-a9e6-6abd76688e15",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Canotaje / Rafting",
+    "categoria": " Deportes acuáticos",
+    "icono": "deportes_acuaticos"
+  },
+  {
+    "id": "c2f898b5-224f-4332-8139-87453ea86cc0",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Observación de fauna",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "c845f535-95c0-4583-99aa-5c2fd8fb0daf",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Observación de flora",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "b1914de6-bb08-45bb-bc6e-757544bc74af",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "f86b1d1d-05d5-4b65-b5bd-130ee54f1e8c",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Ciclismo",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "539df047-6353-447a-b661-e765b4177d74",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Camping",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "442109cf-3c80-4fdb-a16b-d81bbf64c1aa",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Escalada en roca",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "f189b609-e3b5-4c62-a7cd-3e3c7aa432c2",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Puenting",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "faa9a832-e48a-4308-b032-88f5d99599f8",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "e950ddb8-f48f-4302-ab31-cec2bdf94525",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "b1f9ebce-061c-43b8-90b1-ea774549159c",
+    "atractivoId": "mincetur_6758",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "ecd4080f-44a7-4ce6-bf6b-bab5d4c77933",
+    "atractivoId": "mincetur_13051",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "1290fa62-6d2f-4087-bbb0-49e541dfac7b",
+    "atractivoId": "mincetur_13051",
+    "nombre": "Rituales místicos o tradicionales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "c8e78629-2b98-4f64-a403-63959f1dd8ba",
+    "atractivoId": "mincetur_13051",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "a72fb257-7112-406b-8722-968209bfd103",
+    "atractivoId": "mincetur_13051",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "82574474-40fc-46b4-b351-0dd26ea88d78",
+    "atractivoId": "mincetur_6766",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "15bd299c-a945-44e9-aa7a-c20ce3c14c86",
+    "atractivoId": "mincetur_6766",
+    "nombre": "Actividades Culturales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "655e2c93-7b13-4d35-8032-80e0207e8f72",
+    "atractivoId": "mincetur_6766",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "9b2dba56-bbd6-4647-a27f-148086196281",
+    "atractivoId": "mincetur_6766",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "5ec42102-b0e3-424b-893e-91b0aef83d20",
+    "atractivoId": "mincetur_6766",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "8debab35-7ea2-4e5e-99fc-fc79823ef411",
+    "atractivoId": "mincetur_13315",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "59d395c0-784b-42be-b549-70e2c5bf04a4",
+    "atractivoId": "mincetur_13315",
+    "nombre": "Actividades Sociales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "7f695909-90ba-41b9-ac8f-0b4a8d7461aa",
+    "atractivoId": "mincetur_13315",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "5f898b8c-c88d-428b-b1f9-d84f6ca8c5d3",
+    "atractivoId": "mincetur_13315",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "0dff8c5b-2809-41eb-989d-a13475f4195f",
+    "atractivoId": "mincetur_8733",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "486254e8-c8b6-4ad6-bfb9-3190d1d3478f",
+    "atractivoId": "mincetur_8733",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "bc193be9-9c17-4e83-a2f6-a23106484ae2",
+    "atractivoId": "mincetur_8733",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "55ef8aa5-4d54-47cd-a22c-15953184dc98",
+    "atractivoId": "mincetur_8733",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "2621da07-abab-486a-9ab6-4ce4390fe262",
+    "atractivoId": "mincetur_8733",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "fa0e8c4b-9b30-4708-bf50-5b04f65478d3",
+    "atractivoId": "mincetur_8733",
+    "nombre": "Compra de productos regionales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "4c1285ec-7e16-474d-8b0d-0a52e5e8915c",
+    "atractivoId": "mincetur_8865",
+    "nombre": "Observación de aves",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "3653903d-a7b6-4ac6-8ef9-b9c54b88b5cf",
+    "atractivoId": "mincetur_8865",
+    "nombre": "Observación de fauna",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "569bbaab-b812-4716-b985-ff2072ec4dd5",
+    "atractivoId": "mincetur_8865",
+    "nombre": "Observación de flora",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "cdc5209e-da85-4a79-b824-95170e3af225",
+    "atractivoId": "mincetur_8865",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "ebea7e5b-bfd8-41ff-8043-07d991a207e0",
+    "atractivoId": "mincetur_8865",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "1ffa667b-b806-408a-8953-8f2d43af9424",
+    "atractivoId": "mincetur_8865",
+    "nombre": "Participación y/u observación del proceso de elaboración de productos locales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "a2ec6df1-2a94-4c3c-8d0d-5b33418ba4ea",
+    "atractivoId": "mincetur_8865",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "8e0e778b-bc65-4d26-a4f8-374832c8580c",
+    "atractivoId": "mincetur_8865",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "0786b242-f275-4f4e-ab83-75b84ed58fcd",
+    "atractivoId": "mincetur_8865",
+    "nombre": "Compra de productos regionales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "399869f5-674f-4779-9757-495713d6424b",
+    "atractivoId": "mincetur_8968",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "c3a44b0e-f1fe-4232-b367-adced60d0eb2",
+    "atractivoId": "mincetur_9280",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "ac6e1760-14b3-40c2-911c-ba39ddcaf3ad",
+    "atractivoId": "mincetur_9280",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "74934894-41b2-4d36-ae29-68e12de4b416",
+    "atractivoId": "mincetur_12038",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "1f35d349-d3c7-4f3a-9bcc-e1e5a06d582d",
+    "atractivoId": "mincetur_12038",
+    "nombre": "Participación y/u observación del proceso de elaboración de productos locales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "a7ac6966-e4cd-4d03-b913-5192989c7a2f",
+    "atractivoId": "mincetur_12037",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "4f491b6d-b0cc-4a56-9dae-382cc6a54724",
+    "atractivoId": "mincetur_12036",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "b075da0b-d455-4892-a3f8-74c4647d5ed6",
+    "atractivoId": "mincetur_12725",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "cb2f6bfa-855b-470d-8718-4b0e475d1f52",
+    "atractivoId": "mincetur_12027",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "44c4797d-d783-41e5-a42f-9bb7d264c24b",
+    "atractivoId": "mincetur_12027",
+    "nombre": "Participación y/u observación del proceso de elaboración de productos locales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "e5adaca1-8dd5-4961-9e2f-cb05d637d5bf",
+    "atractivoId": "mincetur_12027",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "12bbfc96-c7f1-49dd-85ba-d34bdcf614f2",
+    "atractivoId": "mincetur_12027",
+    "nombre": "Compra de productos regionales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "30cf8d2a-06ac-4448-9898-82d146f0cc45",
+    "atractivoId": "mincetur_12028",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "c87c9ade-2cfc-470a-9663-0fc13e98defc",
+    "atractivoId": "mincetur_12028",
+    "nombre": "Compra de productos regionales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "ab9ecad1-5ef1-4e21-9913-373b8f8d4f4b",
+    "atractivoId": "mincetur_12026",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "2e18b47f-817c-4a3f-98c5-5c54d6858cca",
+    "atractivoId": "mincetur_12026",
+    "nombre": "Participación y/u observación del proceso de elaboración de productos locales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "46a2f1d7-069a-40d4-a82a-1a7148b5f943",
+    "atractivoId": "mincetur_12026",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "ddb13b3b-3082-4e4e-ab31-c3d85c3e1bd0",
+    "atractivoId": "mincetur_12910",
+    "nombre": "Observación de aves",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "a83d52c5-e882-4bf6-92ea-90547f60a60c",
+    "atractivoId": "mincetur_12910",
+    "nombre": "Observación de flora",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "56a9ba75-a4ba-4473-bada-19ad2d83352d",
+    "atractivoId": "mincetur_12910",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "0d17a05a-3bd8-4669-aa2d-d713454cf9c1",
+    "atractivoId": "mincetur_12910",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "c421ec40-0265-44d8-be4b-7f373018d29b",
+    "atractivoId": "mincetur_12910",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "f78460f2-f59c-4fe5-89a8-fea3565ba371",
+    "atractivoId": "mincetur_11904",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "6ba25e07-501c-4c1b-b076-1f3d47302574",
+    "atractivoId": "mincetur_11904",
+    "nombre": "Rituales místicos o tradicionales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "a7274960-d678-40f3-af77-34760e7b9ae2",
+    "atractivoId": "mincetur_11904",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "374810de-d902-4a24-a135-e9567f081589",
+    "atractivoId": "mincetur_11904",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "7497394b-c34c-48d3-8424-d6a6b0f1ed8c",
+    "atractivoId": "mincetur_12274",
+    "nombre": "Ferias",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "e5755fa8-7caa-4a6a-bb60-a50b7f7b62b8",
+    "atractivoId": "mincetur_12274",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "bb59ea07-c369-4dbf-a24a-1fa71162fc89",
+    "atractivoId": "mincetur_12274",
+    "nombre": "Rituales místicos o tradicionales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "2cf78b1f-c3e7-407a-864e-67e23630d12d",
+    "atractivoId": "mincetur_12274",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "fe38b0e7-e247-4a1b-9df6-8e817c2fa054",
+    "atractivoId": "mincetur_12274",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "e8bd5b26-39c9-4829-96bd-8197105aeb74",
+    "atractivoId": "mincetur_12264",
+    "nombre": "Paseos en bote",
+    "categoria": "Paseos",
+    "icono": "paseos"
+  },
+  {
+    "id": "ae105d76-b095-4a54-8c8c-0076cc5f67e3",
+    "atractivoId": "mincetur_12264",
+    "nombre": "Paseos en bicicleta",
+    "categoria": "Paseos",
+    "icono": "paseos"
+  },
+  {
+    "id": "62999bb1-962b-4c11-bbb5-823d146809f5",
+    "atractivoId": "mincetur_12264",
+    "nombre": "Paseos en cuatrimotos",
+    "categoria": "Paseos",
+    "icono": "paseos"
+  },
+  {
+    "id": "142e4466-4226-4e5e-b136-b78b9ae48b3a",
+    "atractivoId": "mincetur_12264",
+    "nombre": "Natación",
+    "categoria": " Deportes acuáticos",
+    "icono": "deportes_acuaticos"
+  },
+  {
+    "id": "279a57d1-877b-41ec-82dc-687360ccabd4",
+    "atractivoId": "mincetur_12264",
+    "nombre": "Remo",
+    "categoria": " Deportes acuáticos",
+    "icono": "deportes_acuaticos"
+  },
+  {
+    "id": "5f82751b-aeb3-4d45-9a4f-486805a890a9",
+    "atractivoId": "mincetur_12264",
+    "nombre": "Buceo/diving",
+    "categoria": " Deportes acuáticos",
+    "icono": "deportes_acuaticos"
+  },
+  {
+    "id": "1fa6aa39-32fa-4d8a-abf3-84517c84ea42",
+    "atractivoId": "mincetur_12264",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "d86b6723-30b9-42bc-b1d3-c065410deda0",
+    "atractivoId": "mincetur_12264",
+    "nombre": "Camping",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "cd986625-8108-4545-8ce6-f7182964660a",
+    "atractivoId": "mincetur_12264",
+    "nombre": "Sandboard (Esquí sobre arena)",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "e5c389a5-1043-467e-a81f-54b6c68a9b17",
+    "atractivoId": "mincetur_12264",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "cbedf9c9-6204-4d9c-9a3f-4ecab5982058",
+    "atractivoId": "mincetur_12264",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "b7bd6c06-33b1-4843-b41a-5de270cd24b8",
+    "atractivoId": "mincetur_12309",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "4b710cb2-3fdb-4613-96f3-46a42d691f7c",
+    "atractivoId": "mincetur_12309",
+    "nombre": "Ciclismo",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "6d1080fa-deeb-415c-b245-6158ac1b6c58",
+    "atractivoId": "mincetur_12309",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "efd6c2b1-7e35-43eb-8e99-1c14d078c8d0",
+    "atractivoId": "mincetur_12309",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "717d9703-7325-4dd6-b7d6-977414c8e60d",
+    "atractivoId": "mincetur_12309",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "3b784c21-100b-4c5e-9179-9c346d51b59f",
+    "atractivoId": "mincetur_12462",
+    "nombre": "Paseos en bicicleta",
+    "categoria": "Paseos",
+    "icono": "paseos"
+  },
+  {
+    "id": "ce635f9b-c017-4370-b6f9-c0981e2fd475",
+    "atractivoId": "mincetur_12462",
+    "nombre": "Paseos en motocicleta",
+    "categoria": "Paseos",
+    "icono": "paseos"
+  },
+  {
+    "id": "e79e9308-c352-45e8-98d3-0ef76413f4cb",
+    "atractivoId": "mincetur_12462",
+    "nombre": "Observación de aves",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "deccaa1f-9249-405f-8616-da2ec3438c08",
+    "atractivoId": "mincetur_12462",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "86a63605-08cd-46f7-a67f-17d91d249fc8",
+    "atractivoId": "mincetur_12462",
+    "nombre": "Participación y/u observación del proceso de elaboración de productos locales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "3e8074e0-4527-4328-91ce-305047cb7b22",
+    "atractivoId": "mincetur_12462",
+    "nombre": "Ciclismo",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "16e067ab-62af-4e47-9a86-671f3421f36b",
+    "atractivoId": "mincetur_12462",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "75637622-c487-48a3-becd-cdd1a5b603c3",
+    "atractivoId": "mincetur_12462",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "4bfa6544-cd92-4f2e-8d3f-d71d6b5682e8",
+    "atractivoId": "mincetur_12462",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "4289c63c-8caa-4189-942f-fff20eb2adc6",
+    "atractivoId": "mincetur_12732",
+    "nombre": "Observación de flora",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "e8973002-22f6-497d-b22f-07efbb8747a4",
+    "atractivoId": "mincetur_12732",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "6d6b4ad7-b8ed-45a1-ae0b-d72915481ccf",
+    "atractivoId": "mincetur_12732",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "0fccb6fc-dad1-41c4-bdae-7e340d6ee8d8",
+    "atractivoId": "mincetur_12732",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "d228cd3b-5e39-45b9-8bf0-2b24ad93a988",
+    "atractivoId": "mincetur_12732",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "c96d28c0-8aaa-404c-a05d-74bf0ed6a9be",
+    "atractivoId": "mincetur_12941",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "26c43516-686d-4078-8d82-45b5446b7050",
+    "atractivoId": "mincetur_12941",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "eaf1f32a-5428-4255-9bbc-09dd60b42c7c",
+    "atractivoId": "mincetur_12941",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "c63070c1-4a60-4976-a668-7d803c8617b6",
+    "atractivoId": "mincetur_12941",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "1a17a12f-afa8-4dbb-b14a-2c5a4ce2a1b0",
+    "atractivoId": "mincetur_12941",
+    "nombre": "Compra de productos regionales",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "32c59594-4711-4283-8b1a-0daa67bcbb21",
+    "atractivoId": "mincetur_12555",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "0782867f-75cb-47af-abc4-4036f5503992",
+    "atractivoId": "mincetur_12555",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "814e3e44-eea2-49f1-b26e-06c649051049",
+    "atractivoId": "mincetur_12555",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "db0ab30e-53b0-4ab1-8884-0b1bbc89c647",
+    "atractivoId": "mincetur_12555",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "5fa199fd-ad8c-4c25-b173-548e234ef142",
+    "atractivoId": "mincetur_12733",
+    "nombre": "Rituales místicos o tradicionales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "391fcbf6-f85c-480b-9acc-254d679674ef",
+    "atractivoId": "mincetur_12733",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "07971801-8227-4d7a-be7a-f2580ea1ee29",
+    "atractivoId": "mincetur_12979",
+    "nombre": "Actividades Religiosas o Patronales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "584b7ece-2983-4dfc-9462-aa33f6a21c84",
+    "atractivoId": "mincetur_12979",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "975740e0-0cdd-4a8e-beb2-da12bbbfb73c",
+    "atractivoId": "mincetur_12916",
+    "nombre": "Paseos en bicicleta",
+    "categoria": "Paseos",
+    "icono": "paseos"
+  },
+  {
+    "id": "758ce6b2-6386-41a3-8cfc-7e0bea562db8",
+    "atractivoId": "mincetur_12916",
+    "nombre": "Observación de fauna",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "8e0cc0ad-f498-44f2-bcb7-1223766e35ac",
+    "atractivoId": "mincetur_12916",
+    "nombre": "Observación de flora",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "bd99b1be-8f7a-4821-a88a-689036bc962d",
+    "atractivoId": "mincetur_12916",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "f69d05bf-9923-47a3-9a24-f1e9d92dc9b1",
+    "atractivoId": "mincetur_12916",
+    "nombre": "Rituales místicos o tradicionales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "07f359ca-0ffd-4809-8c6c-9ccafcc4c852",
+    "atractivoId": "mincetur_12916",
+    "nombre": "Escalada en roca",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "cc0c78cd-3602-41da-83ae-7eae8df5160e",
+    "atractivoId": "mincetur_12916",
+    "nombre": "Caminata/Trekking",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "2e32e6d6-e582-448f-a8c5-936a0aae1fe5",
+    "atractivoId": "mincetur_12916",
+    "nombre": "Realización de eventos",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "523b5b6a-ba1a-43b6-8f45-e70677568108",
+    "atractivoId": "mincetur_12916",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "f141c48c-a682-4881-95d9-fad858e69b6f",
+    "atractivoId": "mincetur_13040",
+    "nombre": "Rituales místicos o tradicionales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "092434c8-cff5-4200-9366-02e66c938eab",
+    "atractivoId": "mincetur_13040",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "4cb81984-fc36-4471-a207-fa3794c4bd97",
+    "atractivoId": "mincetur_13040",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "5db697b2-270b-4b37-b731-c4bfa18a2928",
+    "atractivoId": "mincetur_13194",
+    "nombre": "Visita y participación en actividades de vida cotidiana de la comunidad",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "947330d9-a6e1-4b26-a3c5-bcdfdd45f816",
+    "atractivoId": "mincetur_13194",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "11df081a-3ac3-4fe7-8b88-55b3133e241c",
+    "atractivoId": "mincetur_13194",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "b965d801-3349-4e44-af2d-6199650f41ef",
+    "atractivoId": "mincetur_13194",
+    "nombre": "Otros(Especificar)",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "d44481fe-8bef-4859-8cfd-0da88c214383",
+    "atractivoId": "mincetur_13308",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "2222ad98-f56c-479c-8a5f-ae180166690c",
+    "atractivoId": "mincetur_13308",
+    "nombre": "Participación y/u observación del proceso de elaboración de productos locales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "88428adb-7384-4fb2-a89c-946f1454f4a2",
+    "atractivoId": "mincetur_13610",
+    "nombre": "Paseos a caballo",
+    "categoria": "Paseos",
+    "icono": "paseos"
+  },
+  {
+    "id": "c89dc634-35f5-4f12-b153-1ffa764f3739",
+    "atractivoId": "mincetur_13610",
+    "nombre": "Observación de fauna",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "7dbf946f-c1ac-4d1e-8993-b3b775c966ca",
+    "atractivoId": "mincetur_13610",
+    "nombre": "Observación de paisaje",
+    "categoria": " Naturaleza",
+    "icono": "naturaleza"
+  },
+  {
+    "id": "defc6bc0-4f16-4208-8773-66aea82521ff",
+    "atractivoId": "mincetur_13610",
+    "nombre": "Ferias",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "e3c2e634-938f-4f01-b68a-4ee50bcc3b9e",
+    "atractivoId": "mincetur_13610",
+    "nombre": "Degustación y preparación de platos, productos o bebidas típicas",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "932055d9-2bfb-4a19-8368-e4a72bb3fd9b",
+    "atractivoId": "mincetur_13610",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "d1942aec-8d9d-478f-b70e-e54c0c9a194a",
+    "atractivoId": "mincetur_13610",
+    "nombre": "Participación y/u observación del proceso de elaboración de productos locales",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "ef729fd1-970a-46e4-9fd3-961529ecfe7f",
+    "atractivoId": "mincetur_13610",
+    "nombre": "Camping",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "c9417b3f-c9f1-4bce-bef5-035ebd66b6de",
+    "atractivoId": "mincetur_13610",
+    "nombre": "Cabalgatas",
+    "categoria": "Deportes / Aventura",
+    "icono": "deportes_aventura"
+  },
+  {
+    "id": "3351e2a4-cf62-4e67-a35d-fb58efc59b40",
+    "atractivoId": "mincetur_13610",
+    "nombre": "Compras de artesanía/souvenir",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "b285cab6-754f-4ed7-aa79-139d0f4a06a2",
+    "atractivoId": "mincetur_13610",
+    "nombre": "Otros(Especificar)",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "649faa77-622c-4c67-bfda-097678688780",
+    "atractivoId": "mincetur_13791",
+    "nombre": "Visita y participación en actividades de vida cotidiana de la comunidad",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "024537bc-d70f-4006-b818-2d03feaa7754",
+    "atractivoId": "mincetur_13791",
+    "nombre": "Apreciación de muestras o actividades artísticas(danza, teatro,canto, pintura, escultura, etc.)",
+    "categoria": "Cultura y Folclore",
+    "icono": "folklore"
+  },
+  {
+    "id": "58bc436e-f154-49a2-af38-512e387f68dc",
+    "atractivoId": "mincetur_13791",
+    "nombre": "Estudios e Investigación",
+    "categoria": "Otros",
+    "icono": "otros"
+  },
+  {
+    "id": "6c5da066-7a56-48aa-b9ef-550f7d03137c",
+    "atractivoId": "mincetur_13791",
+    "nombre": "Toma de fotografías y filmaciones",
+    "categoria": "Otros",
+    "icono": "otros"
+  }
+]

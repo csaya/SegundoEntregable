@@ -13,8 +13,6 @@ class HomeViewModelFactory(
 
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
         val app = application as AppApplication
-
-        // Le pasamos el repositorio único al ViewModel
-        return HomeViewModel(app.attractionRepository) as T
+        return HomeViewModel(app.attractionRepository, app.locationService) as T
     }
 }

@@ -72,8 +72,11 @@ dependencies {
     // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.7.0")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
     // Google Maps Compose
     implementation("com.google.maps.android:maps-compose:6.1.1")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
 
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 }

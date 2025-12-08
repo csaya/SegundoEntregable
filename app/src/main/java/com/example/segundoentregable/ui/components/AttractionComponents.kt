@@ -32,7 +32,7 @@ fun RecomendacionCard(
         Column {
             // Imagen real con AttractionImage
             AttractionImage(
-                imageUrl = atractivo.idImagen,
+                imageUrl = atractivo.imagenPrincipal,
                 contentDescription = atractivo.nombre,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -61,7 +61,7 @@ fun CercanoItemRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         AttractionImage(
-            imageUrl = atractivo.idImagen,
+            imageUrl = atractivo.imagenPrincipal,
             contentDescription = atractivo.nombre,
             modifier = Modifier
                 .size(60.dp)
@@ -116,7 +116,7 @@ fun AttractionListItem(
         Spacer(Modifier.width(16.dp))
 
         AttractionImage(
-            imageUrl = atractivo.idImagen,
+            imageUrl = atractivo.imagenPrincipal,
             contentDescription = atractivo.nombre,
             modifier = Modifier
                 .size(80.dp)
@@ -140,7 +140,7 @@ fun FavoriteListItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         AttractionImage(
-            imageUrl = atractivo.idImagen,
+            imageUrl = atractivo.imagenPrincipal,
             contentDescription = atractivo.nombre,
             modifier = Modifier
                 .size(60.dp)

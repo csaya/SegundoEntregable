@@ -14,6 +14,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.segundoentregable.ui.components.AppBottomBar // <-- IMPORTANTE
 import com.example.segundoentregable.ui.components.ImagePlaceholderCircle
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,12 +34,8 @@ fun LoginScreen(
 
     LaunchedEffect(Unit) {
         loginViewModel.loginSuccessEvent.collect {
-            onLoginSuccess() // Notifica al SessionViewModel
-
-            // INTENTAMOS VOLVER ATRÁS (ej: Detalle del atractivo)
+            onLoginSuccess()
             val success = navController.popBackStack()
-
-            // Si no se pudo volver (pila vacía), vamos al Home
             if (!success) {
                 navController.navigate("home") {
                     popUpTo("login") { inclusive = true }
@@ -47,19 +44,25 @@ fun LoginScreen(
         }
     }
 
-    Scaffold(topBar = {
-        CenterAlignedTopAppBar(
-            title = { Text("Iniciar Sesión") },
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Volver"
-                    )
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Iniciar Sesión") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
                 }
-            }
-        )
-    }) { innerPadding ->
+            )
+        },
+        // AGREGAMOS LA BARRA INFERIOR AQUÍ
+        bottomBar = {
+            AppBottomBar(navController = navController)
+        }
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -79,7 +82,6 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 isError = uiState.errorMessage != null
             )
-            // ... resto del UI (Password, Botones) se mantiene igual ...
             Spacer(Modifier.height(8.dp))
             OutlinedTextField(
                 value = uiState.password,
