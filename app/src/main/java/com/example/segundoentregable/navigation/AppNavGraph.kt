@@ -24,26 +24,15 @@ fun AppNavGraph(
     navController: NavHostController,
     sessionViewModel: SessionViewModel
 ) {
-    // Obtenemos el estado de sesión para decidir dónde iniciar
+    // 1. Observamos el estado global de la sesión
     val isLoggedIn by sessionViewModel.isLoggedIn.collectAsState()
-    val startRoute = if (isLoggedIn) BottomBarScreen.Home.route else "login"
 
     NavHost(
         navController = navController,
-        startDestination = startRoute // Usamos la lógica de sesión
+        startDestination = BottomBarScreen.Home.route // 2. Siempre inicia en Home
     ) {
 
-        // --- RUTA LOGIN (Faltaba esta ruta independiente) ---
-        composable("login") {
-            LoginScreen(
-                navController = navController,
-                onLoginSuccess = {
-                    sessionViewModel.login() // Ahora sí existe este método
-                    // LoginScreen ya maneja la navegación a "home" internamente
-                }
-            )
-        }
-
+        // --- RUTAS PÚBLICAS ---
         composable(BottomBarScreen.Home.route) {
             HomeScreen(navController = navController)
         }
@@ -58,39 +47,50 @@ fun AppNavGraph(
 
         composable(
             route = "detail/{attractionId}",
-            arguments = listOf(navArgument("attractionId") {
-                type = NavType.StringType
-            })
+            arguments = listOf(navArgument("attractionId") { type = NavType.StringType })
         ) {
-            AttractionDetailScreen(navController = navController)
+            // 3. Pasamos el estado de sesión al Detalle
+            AttractionDetailScreen(
+                navController = navController,
+                isUserLoggedIn = isLoggedIn
+            )
         }
 
+        // --- RUTAS HÍBRIDAS / PROTEGIDAS ---
+
         composable(BottomBarScreen.Favoritos.route) {
-            FavoritesScreen(navController = navController)
+            // 4. Pasamos el estado a Favoritos para mostrar UI de invitado o lista real
+            FavoritesScreen(
+                navController = navController,
+                isUserLoggedIn = isLoggedIn
+            )
         }
 
         composable(BottomBarScreen.Perfil.route) {
-            // Lógica interna de la pestaña perfil
             if (isLoggedIn) {
                 ProfileScreen(
                     navController = navController,
                     onLogout = {
                         sessionViewModel.logout()
-                        // Al cerrar sesión, mandamos al usuario al login y limpiamos el historial
-                        navController.navigate("login") {
-                            popUpTo(0) { inclusive = true }
-                        }
+                        // Al salir, vamos al Login pero limpiando el stack para seguridad
+                        navController.navigate("login") { popUpTo(0) }
                     }
                 )
             } else {
-                // Si entra a perfil pero no está logueado
+                // Si es invitado y toca Perfil, mostramos Login
                 LoginScreen(
                     navController = navController,
-                    onLoginSuccess = {
-                        sessionViewModel.login()
-                    }
+                    onLoginSuccess = { sessionViewModel.login() }
                 )
             }
+        }
+
+        // --- AUTH ---
+        composable("login") {
+            LoginScreen(
+                navController = navController,
+                onLoginSuccess = { sessionViewModel.login() }
+            )
         }
 
         composable("register") {

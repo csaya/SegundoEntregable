@@ -194,6 +194,20 @@ class AttractionRepository(
         return atractivoDao.getAtractivosByCategoria(categoria).map { it.toModel() }
     }
 
+    suspend fun addReview(attractionId: String, userEmail: String, userName: String, rating: Float, comment: String) {
+        val newReview = ReviewEntity(
+            id = java.util.UUID.randomUUID().toString(), // Generamos ID único
+            attractionId = attractionId,
+            userName = userName,
+            date = "Hace un momento", // En una app real usaríamos DateFormatter
+            rating = rating,
+            comment = comment,
+            likes = 0,
+            dislikes = 0
+        )
+        reviewDao.insertReviews(listOf(newReview))
+    }
+
     private fun AtractivoEntity.toModel(): AtractivoTuristico {
         return AtractivoTuristico(
             id = id,

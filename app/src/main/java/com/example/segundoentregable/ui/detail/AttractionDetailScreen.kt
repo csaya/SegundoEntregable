@@ -13,6 +13,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +33,7 @@ import com.example.segundoentregable.ui.components.AttractionImage
 @Composable
 fun AttractionDetailScreen(
     navController: NavController,
+    isUserLoggedIn: Boolean
 ) {
     val context = LocalContext.current
     val application = context.applicationContext as Application
@@ -40,14 +45,21 @@ fun AttractionDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     val atractivo = uiState.atractivo
 
+    if (uiState.isReviewDialogVisible) {
+        AddReviewDialog(
+            onDismiss = { viewModel.hideReviewDialog() },
+            onSubmit = { rating, comment ->
+                viewModel.submitReview(rating, comment)
+            }
+        )
+    }
+
     Scaffold(
         topBar = { DetailTopBar(navController = navController) },
         bottomBar = { AppBottomBar(navController = navController) },
         floatingActionButton = {
-            // Reemplazamos el FAB genérico por uno que lleve al mapa directamente si se desea,
-            // o lo dejamos como "Añadir a ruta".
             ExtendedFloatingActionButton(
-                onClick = { navController.navigate("map") }, // Navegar al mapa general
+                onClick = { navController.navigate("map") },
                 text = { Text("Ver en Mapa") },
                 icon = { Icon(Icons.Filled.Map, contentDescription = null) }
             )
@@ -67,15 +79,13 @@ fun AttractionDetailScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // 1. Imagen
             item {
                 AttractionImage(
-                    imageUrl = atractivo.idImagen, // Usamos idImagen que ahora contiene la URL
+                    imageUrl = atractivo.idImagen,
                     contentDescription = atractivo.nombre
                 )
             }
 
-            // 2. Info Principal
             item {
                 Column(Modifier.padding(16.dp)) {
                     Text(atractivo.nombre, style = MaterialTheme.typography.headlineMedium)
@@ -94,18 +104,22 @@ fun AttractionDetailScreen(
                 }
             }
 
-            // 3. Sección de Horarios
             item {
                 InfoSection(atractivo.horario, "S/ ${atractivo.precio} aprox.")
             }
 
-            // 4. Botones de Acción (Favorito y Mapa)
             item {
                 ActionButtonsSection(
                     isFavorito = uiState.isFavorito,
-                    onToggleFavorite = { viewModel.onToggleFavorite() },
+                    onToggleFavorite = {
+                        // LÓGICA DE PROTECCIÓN
+                        if (isUserLoggedIn) {
+                            viewModel.onToggleFavorite()
+                        } else {
+                            navController.navigate("login")
+                        }
+                    },
                     onGoToMap = {
-                        // Navegación al mapa
                         navController.navigate("map")
                     }
                 )
@@ -117,6 +131,32 @@ fun AttractionDetailScreen(
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(start = 16.dp, top = 16.dp)
                 )
+            }
+
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Reseñas (${uiState.reviews.size})",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+
+                    // Botón pequeño para agregar review
+                    TextButton(onClick = {
+                        if (isUserLoggedIn) {
+                            viewModel.showReviewDialog()
+                        } else {
+                            navController.navigate("login")
+                        }
+                    }) {
+                        Text("Escribir opinión")
+                    }
+                }
             }
 
             items(uiState.reviews) { review ->
@@ -175,7 +215,6 @@ private fun ActionButtonsSection(
             .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Botón Guardar (Favorito)
         OutlinedButton(
             onClick = onToggleFavorite,
             modifier = Modifier.weight(1f)
@@ -190,7 +229,6 @@ private fun ActionButtonsSection(
             Text(if (isFavorito) "Guardado" else "Guardar")
         }
 
-        // Botón Indicaciones (Mapa)
         Button(
             onClick = onGoToMap,
             modifier = Modifier.weight(1f)
@@ -200,4 +238,51 @@ private fun ActionButtonsSection(
             Text("Ver Ubicación")
         }
     }
+}
+
+@Composable
+fun AddReviewDialog(
+    onDismiss: () -> Unit,
+    onSubmit: (Float, String) -> Unit
+) {
+    var rating by remember { mutableFloatStateOf(5f) }
+    var comment by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Escribe tu reseña") },
+        text = {
+            Column {
+                Text("Calificación:")
+                // Slider simple para rating (puedes mejorarlo con estrellas clicables)
+                Slider(
+                    value = rating,
+                    onValueChange = { rating = it },
+                    valueRange = 1f..5f,
+                    steps = 3
+                )
+                Text(text = "${rating.toInt()} Estrellas", style = MaterialTheme.typography.bodySmall)
+
+                Spacer(Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = comment,
+                    onValueChange = { comment = it },
+                    label = { Text("Comentario") },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onSubmit(rating, comment) }) {
+                Text("Publicar")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    )
 }

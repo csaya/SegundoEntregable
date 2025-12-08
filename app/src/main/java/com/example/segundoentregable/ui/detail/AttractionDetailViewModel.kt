@@ -23,7 +23,9 @@ data class DetailUiState(
     val atractivo: AtractivoTuristico? = null,
     val reviews: List<Review> = emptyList(),
     val isFavorito: Boolean = false,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isReviewDialogVisible: Boolean = false,
+    val isSubmittingReview: Boolean = false
 )
 
 // Ahora hereda de ViewModel (no AndroidViewModel) porque ya inyectamos los repos
@@ -91,6 +93,47 @@ class AttractionDetailViewModel(
 
             } catch (e: Exception) {
                 Log.e(TAG, "Error al cambiar favorito", e)
+            }
+        }
+    }
+
+    fun showReviewDialog() {
+        _uiState.update { it.copy(isReviewDialogVisible = true) }
+    }
+
+    fun hideReviewDialog() {
+        _uiState.update { it.copy(isReviewDialogVisible = false) }
+    }
+
+    fun submitReview(rating: Float, comment: String) {
+        viewModelScope.launch {
+            val userEmail = userRepo.getCurrentUserEmail() ?: return@launch
+            // Obtenemos el nombre del usuario (idealmente esto vendría del objeto User,
+            // aquí simulamos una llamada rápida o usamos el email si no hay nombre cargado)
+            val user = userRepo.getUser(userEmail)
+            val userName = user?.name ?: "Usuario"
+
+            _uiState.update { it.copy(isSubmittingReview = true) }
+
+            try {
+                // Guardamos en BD
+                attractionRepo.addReview(
+                    attractionId = attractionId,
+                    userEmail = userEmail, // Aunque ReviewEntity no guarda email, lo usamos para lógica
+                    userName = userName,
+                    rating = rating,
+                    comment = comment
+                )
+
+                // Recargamos los datos para ver la nueva review
+                loadData()
+
+                // Cerramos diálogo
+                _uiState.update { it.copy(isReviewDialogVisible = false) }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _uiState.update { it.copy(isSubmittingReview = false) }
             }
         }
     }

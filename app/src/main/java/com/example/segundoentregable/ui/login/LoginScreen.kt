@@ -22,7 +22,6 @@ fun LoginScreen(
     navController: NavController,
     onLoginSuccess: () -> Unit
 ) {
-    // 1. Configuración del Factory
     val context = LocalContext.current
     val application = context.applicationContext as Application
 
@@ -34,9 +33,16 @@ fun LoginScreen(
 
     LaunchedEffect(Unit) {
         loginViewModel.loginSuccessEvent.collect {
-            onLoginSuccess()
-            navController.navigate("home") {
-                popUpTo("login") { inclusive = true }
+            onLoginSuccess() // Notifica al SessionViewModel
+
+            // INTENTAMOS VOLVER ATRÁS (ej: Detalle del atractivo)
+            val success = navController.popBackStack()
+
+            // Si no se pudo volver (pila vacía), vamos al Home
+            if (!success) {
+                navController.navigate("home") {
+                    popUpTo("login") { inclusive = true }
+                }
             }
         }
     }
@@ -73,6 +79,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 isError = uiState.errorMessage != null
             )
+            // ... resto del UI (Password, Botones) se mantiene igual ...
             Spacer(Modifier.height(8.dp))
             OutlinedTextField(
                 value = uiState.password,
@@ -91,9 +98,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = {
-                    loginViewModel.onLoginClicked()
-                },
+                onClick = { loginViewModel.onLoginClicked() },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             ) {
