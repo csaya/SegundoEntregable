@@ -1,5 +1,6 @@
 package com.example.segundoentregable.ui.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.data.location.LocationService
@@ -9,52 +10,66 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+private const val TAG = "HomeViewModel"
+
 data class HomeUiState(
     val recomendaciones: List<AtractivoTuristico> = emptyList(),
     val cercanos: List<AtractivoTuristico> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = true, // Iniciar en true
+    val isEmpty: Boolean = false
 )
 
 class HomeViewModel(
     private val repo: AttractionRepository,
-    private val locationService: LocationService
+    private val locationService: LocationService,
+    private val isDataReadyFlow: StateFlow<Boolean>
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
-        cargarDatosDeInicio()
+        esperarDatosYCargar()
     }
 
-    private fun cargarDatosDeInicio() {
+    private fun esperarDatosYCargar() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            try {
-                // Los datos se cargan desde DataImporter en AppApplication
-                // Cargamos las listas usando las funciones del repositorio
-                val recomendaciones = withContext(Dispatchers.IO) {
-                    repo.getRecomendaciones()
-                }
-                val cercanos = withContext(Dispatchers.IO) {
-                    repo.getCercanos()
-                }
+            Log.d(TAG, "Esperando a que los datos estén listos...")
+            // Esperar a que AppApplication termine de importar datos
+            isDataReadyFlow.first { it }
+            Log.d(TAG, "Datos listos, cargando...")
+            cargarDatosDeInicio()
+        }
+    }
 
-                _uiState.update {
-                    it.copy(
-                        recomendaciones = recomendaciones,
-                        cercanos = cercanos,
-                        isLoading = false
-                    )
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _uiState.update { it.copy(isLoading = false) }
+    private suspend fun cargarDatosDeInicio() {
+        _uiState.update { it.copy(isLoading = true) }
+        try {
+            val recomendaciones = withContext(Dispatchers.IO) {
+                repo.getRecomendaciones()
             }
+            val cercanos = withContext(Dispatchers.IO) {
+                repo.getCercanos()
+            }
+
+            Log.d(TAG, "Cargados: ${recomendaciones.size} recomendaciones, ${cercanos.size} cercanos")
+
+            _uiState.update {
+                it.copy(
+                    recomendaciones = recomendaciones,
+                    cercanos = cercanos,
+                    isLoading = false,
+                    isEmpty = recomendaciones.isEmpty() && cercanos.isEmpty()
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error cargando datos", e)
+            _uiState.update { it.copy(isLoading = false, isEmpty = true) }
         }
     }
 

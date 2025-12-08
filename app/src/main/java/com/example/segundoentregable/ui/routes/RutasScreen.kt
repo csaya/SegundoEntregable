@@ -1,6 +1,5 @@
 package com.example.segundoentregable.ui.routes
 
-import android.app.Application
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,7 +9,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.DirectionsWalk
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.segundoentregable.AppApplication
 import com.example.segundoentregable.data.local.entity.RutaEntity
 import com.example.segundoentregable.ui.components.AppBottomBar
 import com.example.segundoentregable.ui.components.AttractionImage
@@ -36,10 +37,10 @@ fun RutasScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
-    val application = context.applicationContext as Application
+    val app = context.applicationContext as AppApplication
     
     val viewModel: RutasViewModel = viewModel(
-        factory = RutasViewModelFactory(application)
+        factory = RutasViewModelFactory(app)
     )
     
     val uiState by viewModel.uiState.collectAsState()
@@ -65,6 +66,45 @@ fun RutasScreen(
         ) {
             // Banner de conectividad
             ConnectivityBanner()
+            
+            // Card para crear ruta personal
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .clickable { navController.navigate("planner") },
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                )
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Filled.Place,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            "Crear Mi Ruta",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            "Selecciona lugares y optimiza tu recorrido",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                        )
+                    }
+                    Icon(
+                        Icons.Filled.ChevronRight,
+                        contentDescription = null
+                    )
+                }
+            }
             
             // Filtro por categoría
             if (uiState.categorias.isNotEmpty()) {
@@ -206,7 +246,7 @@ private fun RutaCard(
                     // Distancia
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            Icons.Filled.DirectionsWalk,
+                            Icons.AutoMirrored.Filled.DirectionsWalk,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp),
                             tint = Color.Gray

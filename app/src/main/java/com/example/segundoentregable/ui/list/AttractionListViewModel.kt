@@ -1,5 +1,6 @@
 package com.example.segundoentregable.ui.list
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.data.model.AtractivoTuristico
@@ -8,9 +9,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+private const val TAG = "AttractionListViewModel"
 
 /**
  * Opciones de filtro por precio
@@ -42,12 +46,13 @@ data class AttractionListUiState(
     val sortOption: SortOption = SortOption.RATING_DESC,
     val categoriasDisponibles: List<String> = emptyList(),
     val listaFiltrada: List<AtractivoTuristico> = emptyList(),
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val isRefreshing: Boolean = false
 )
 
 class AttractionListViewModel(
-    private val repo: AttractionRepository
+    private val repo: AttractionRepository,
+    private val isDataReadyFlow: StateFlow<Boolean>
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AttractionListUiState())
@@ -56,32 +61,36 @@ class AttractionListViewModel(
     private var todosLosAtractivos: List<AtractivoTuristico> = emptyList()
 
     init {
-        loadAtractivos()
+        esperarDatosYCargar()
     }
 
-    private fun loadAtractivos() {
+    private fun esperarDatosYCargar() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            try {
-                // Los datos se cargan desde DataImporter en AppApplication
-                // Cargamos todos los datos
-                todosLosAtractivos = withContext(Dispatchers.IO) {
-                    repo.getTodosLosAtractivos()
-                }
+            Log.d(TAG, "Esperando a que los datos estén listos...")
+            isDataReadyFlow.first { it }
+            Log.d(TAG, "Datos listos, cargando lista...")
+            loadAtractivos()
+        }
+    }
 
-                // Actualizamos la UI
-                _uiState.update {
-                    it.copy(
-                        listaFiltrada = todosLosAtractivos,
-                        // Extraemos las categorías únicas dinámicamente
-                        categoriasDisponibles = todosLosAtractivos.map { a -> a.categoria }.distinct().sorted(),
-                        isLoading = false
-                    )
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _uiState.update { it.copy(isLoading = false) }
+    private suspend fun loadAtractivos() {
+        _uiState.update { it.copy(isLoading = true) }
+        try {
+            todosLosAtractivos = withContext(Dispatchers.IO) {
+                repo.getTodosLosAtractivos()
             }
+            Log.d(TAG, "Cargados ${todosLosAtractivos.size} atractivos")
+
+            _uiState.update {
+                it.copy(
+                    listaFiltrada = todosLosAtractivos,
+                    categoriasDisponibles = todosLosAtractivos.map { a -> a.categoria }.distinct().sorted(),
+                    isLoading = false
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error cargando atractivos", e)
+            _uiState.update { it.copy(isLoading = false) }
         }
     }
 

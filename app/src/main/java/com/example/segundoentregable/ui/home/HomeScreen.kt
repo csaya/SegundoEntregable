@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -73,50 +74,75 @@ fun HomeScreen(
         bottomBar = { AppBottomBar(navController = navController) }
     ) { innerPadding ->
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            Spacer(Modifier.height(16.dp))
-
-            SearchBar(
-                query = searchQuery,
-                onQueryChange = { searchQuery = it },
-                onSearchClicked = {
-                    // Navegamos a la lista pasando el query para filtrar
-                    if (searchQuery.isNotEmpty()) {
-                        navController.navigate("list?query=$searchQuery")
-                    } else {
-                        navController.navigate("list")
-                    }
-                },
-                placeholder = "Buscar atractivos, restaurantes..."
-            )
-
-            Spacer(Modifier.height(24.dp))
-
-            // RECOMENDACIONES
-            RecomendacionesSection(
-                lista = uiState.recomendaciones,
-                onAtractivoClicked = { atractivoId ->
-                    navController.navigate("detail/$atractivoId")
+        if (uiState.isLoading) {
+            // Mostrar loading centrado mientras se cargan los datos
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    CircularProgressIndicator()
+                    Spacer(Modifier.height(16.dp))
+                    Text("Cargando atractivos...", color = Color.Gray)
                 }
-            )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Spacer(Modifier.height(16.dp))
 
-            Spacer(Modifier.height(24.dp))
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = { searchQuery = it },
+                    onSearchClicked = {
+                        // Navegamos a la lista pasando el query para filtrar
+                        if (searchQuery.isNotEmpty()) {
+                            navController.navigate("list?query=$searchQuery")
+                        } else {
+                            navController.navigate("list")
+                        }
+                    },
+                    placeholder = "Buscar atractivos, restaurantes..."
+                )
 
-            // CERCANOS
-            CercanosSection(
-                lista = uiState.cercanos,
-                onAtractivoClicked = { atractivoId ->
-                    navController.navigate("detail/$atractivoId")
+                Spacer(Modifier.height(24.dp))
+
+                // RECOMENDACIONES
+                if (uiState.recomendaciones.isNotEmpty()) {
+                    RecomendacionesSection(
+                        lista = uiState.recomendaciones,
+                        onAtractivoClicked = { atractivoId ->
+                            navController.navigate("detail/$atractivoId")
+                        }
+                    )
+                    Spacer(Modifier.height(24.dp))
                 }
-            )
 
-            Spacer(Modifier.height(16.dp))
+                // CERCANOS
+                if (uiState.cercanos.isNotEmpty()) {
+                    CercanosSection(
+                        lista = uiState.cercanos,
+                        onAtractivoClicked = { atractivoId ->
+                            navController.navigate("detail/$atractivoId")
+                        }
+                    )
+                    Spacer(Modifier.height(24.dp))
+                }
+
+                // RUTAS TURÍSTICAS
+                RutasSection(
+                    onVerRutas = { navController.navigate("rutas") }
+                )
+
+                Spacer(Modifier.height(16.dp))
+            }
         }
     }
 }
@@ -151,22 +177,15 @@ private fun RecomendacionesSection(
     lista: List<AtractivoTuristico>,
     onAtractivoClicked: (String) -> Unit
 ) {
-    if (lista.isEmpty()) {
-        // Opcional: Mostrar loading o mensaje vacío
-        Box(Modifier.fillMaxWidth().height(100.dp), contentAlignment = androidx.compose.ui.Alignment.Center) {
-            CircularProgressIndicator()
-        }
-    } else {
-        Column {
-            Text("Recomendaciones", style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(12.dp))
+    Column {
+        Text("Recomendaciones", style = MaterialTheme.typography.titleLarge)
+        Spacer(Modifier.height(12.dp))
 
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(lista) { atractivo ->
-                    RecomendacionCard(atractivo, onClick = { onAtractivoClicked(atractivo.id) })
-                }
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(lista) { atractivo ->
+                RecomendacionCard(atractivo, onClick = { onAtractivoClicked(atractivo.id) })
             }
         }
     }
@@ -188,6 +207,43 @@ private fun CercanosSection(
                 lista.forEach { atractivo ->
                     CercanoItemRow(atractivo, onClick = { onAtractivoClicked(atractivo.id) })
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RutasSection(
+    onVerRutas: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "🗺️ Rutas Turísticas",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "Explora rutas curadas por expertos locales",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+            Button(onClick = onVerRutas) {
+                Text("Ver rutas")
             }
         }
     }

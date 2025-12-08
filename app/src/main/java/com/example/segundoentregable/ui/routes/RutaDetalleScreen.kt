@@ -1,6 +1,5 @@
 package com.example.segundoentregable.ui.routes
 
-import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,6 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.segundoentregable.AppApplication
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.ui.components.AttractionImage
 import com.example.segundoentregable.ui.components.ConnectivityBanner
@@ -35,10 +36,10 @@ fun RutaDetalleScreen(
     rutaId: String
 ) {
     val context = LocalContext.current
-    val application = context.applicationContext as Application
+    val app = context.applicationContext as AppApplication
     
     val viewModel: RutasViewModel = viewModel(
-        factory = RutasViewModelFactory(application)
+        factory = RutasViewModelFactory(app)
     )
     
     val detalleState by viewModel.detalleState.collectAsState()
@@ -119,7 +120,7 @@ fun RutaDetalleScreen(
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 StatItem(Icons.Filled.AccessTime, ruta.duracionEstimada, "Duración")
-                                StatItem(Icons.Filled.DirectionsWalk, "${ruta.distanciaTotal} km", "Distancia")
+                                StatItem(Icons.AutoMirrored.Filled.DirectionsWalk, "${ruta.distanciaTotal} km", "Distancia")
                                 StatItem(Icons.Filled.Terrain, ruta.dificultad.replaceFirstChar { it.uppercase() }, "Dificultad")
                             }
                             

@@ -15,8 +15,11 @@ import com.example.segundoentregable.ui.home.HomeScreen
 import com.example.segundoentregable.ui.list.AttractionListScreen
 import com.example.segundoentregable.ui.login.LoginScreen
 import com.example.segundoentregable.ui.map.MapScreen
+import com.example.segundoentregable.ui.planner.PlannerScreen
 import com.example.segundoentregable.ui.profile.ProfileScreen
 import com.example.segundoentregable.ui.register.RegisterScreen
+import com.example.segundoentregable.ui.routes.RutaDetalleScreen
+import com.example.segundoentregable.ui.routes.RutasScreen
 import com.example.segundoentregable.ui.session.SessionViewModel
 
 @Composable
@@ -105,6 +108,27 @@ fun AppNavGraph(
 
         composable("register") {
             RegisterScreen(navController = navController)
+        }
+
+        // --- RUTAS TURÍSTICAS ---
+        composable("rutas") {
+            RutasScreen(navController = navController)
+        }
+
+        composable(
+            route = "ruta_detalle/{rutaId}",
+            arguments = listOf(navArgument("rutaId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val rutaId = backStackEntry.arguments?.getString("rutaId") ?: ""
+            RutaDetalleScreen(
+                navController = navController,
+                rutaId = rutaId
+            )
+        }
+
+        // --- PLANIFICADOR PERSONAL ---
+        composable("planner") {
+            PlannerScreen(navController = navController)
         }
     }
 }

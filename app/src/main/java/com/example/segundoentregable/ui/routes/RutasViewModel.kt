@@ -1,19 +1,21 @@
 package com.example.segundoentregable.ui.routes
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.segundoentregable.data.local.AppDatabase
+import com.example.segundoentregable.AppApplication
 import com.example.segundoentregable.data.local.entity.RutaEntity
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.repository.RutaRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+private const val TAG = "RutasViewModel"
 
 data class RutasUiState(
     val rutas: List<RutaEntity> = emptyList(),
@@ -30,9 +32,10 @@ data class RutaDetalleUiState(
     val error: String? = null
 )
 
-class RutasViewModel(application: Application) : AndroidViewModel(application) {
-    
-    private val rutaRepository: RutaRepository
+class RutasViewModel(
+    private val rutaRepository: RutaRepository,
+    private val isDataReadyFlow: StateFlow<Boolean>
+) : ViewModel() {
     
     private val _uiState = MutableStateFlow(RutasUiState())
     val uiState: StateFlow<RutasUiState> = _uiState.asStateFlow()
@@ -41,31 +44,38 @@ class RutasViewModel(application: Application) : AndroidViewModel(application) {
     val detalleState: StateFlow<RutaDetalleUiState> = _detalleState.asStateFlow()
     
     init {
-        val database = AppDatabase.getInstance(application)
-        rutaRepository = RutaRepository(database.rutaDao())
-        loadRutas()
+        esperarDatosYCargar()
+    }
+
+    private fun esperarDatosYCargar() {
+        viewModelScope.launch {
+            Log.d(TAG, "Esperando a que los datos estén listos...")
+            isDataReadyFlow.first { it }
+            Log.d(TAG, "Datos listos, cargando rutas...")
+            loadRutas()
+        }
     }
     
-    private fun loadRutas() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            try {
-                val rutas = rutaRepository.getAllRutasList()
-                val categorias = rutaRepository.getCategorias()
-                _uiState.update { 
-                    it.copy(
-                        rutas = rutas,
-                        categorias = categorias,
-                        isLoading = false
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.update { 
-                    it.copy(
-                        error = e.message,
-                        isLoading = false
-                    )
-                }
+    private suspend fun loadRutas() {
+        _uiState.update { it.copy(isLoading = true) }
+        try {
+            val rutas = rutaRepository.getAllRutasList()
+            val categorias = rutaRepository.getCategorias()
+            Log.d(TAG, "Cargadas ${rutas.size} rutas")
+            _uiState.update { 
+                it.copy(
+                    rutas = rutas,
+                    categorias = categorias,
+                    isLoading = false
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error cargando rutas", e)
+            _uiState.update { 
+                it.copy(
+                    error = e.message,
+                    isLoading = false
+                )
             }
         }
     }
@@ -107,12 +117,15 @@ class RutasViewModel(application: Application) : AndroidViewModel(application) {
 }
 
 class RutasViewModelFactory(
-    private val application: Application
+    private val app: AppApplication
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RutasViewModel::class.java)) {
-            return RutasViewModel(application) as T
+            return RutasViewModel(
+                rutaRepository = app.rutaRepository,
+                isDataReadyFlow = app.isDataReady
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

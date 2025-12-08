@@ -29,4 +29,7 @@ interface AtractivoDao {
 
     @Query("DELETE FROM atractivos")
     suspend fun deleteAllAtractivos()
+
+    @Query("SELECT COUNT(*) FROM atractivos")
+    suspend fun getCount(): Int
 }

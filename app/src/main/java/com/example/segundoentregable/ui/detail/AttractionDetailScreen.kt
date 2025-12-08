@@ -43,6 +43,7 @@ import com.example.segundoentregable.data.model.Actividad
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.model.GaleriaFoto
 import com.example.segundoentregable.ui.components.AppBottomBar
+import com.example.segundoentregable.ui.components.BottomBarScreen
 import com.example.segundoentregable.ui.components.OpenStatusBadge
 import com.example.segundoentregable.ui.components.RatingBar
 import com.example.segundoentregable.ui.components.ReviewCard
@@ -78,7 +79,10 @@ fun AttractionDetailScreen(
         bottomBar = { AppBottomBar(navController = navController) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { navController.navigate("map") },
+                onClick = {
+                    // CORRECCIÓN: Usar la constante definida en BottomBarScreen
+                    navController.navigate(BottomBarScreen.Mapa.route)
+                },
                 text = { Text("Ver en Mapa") },
                 icon = { Icon(Icons.Filled.Map, contentDescription = null) }
             )
@@ -176,7 +180,7 @@ fun AttractionDetailScreen(
                         }
                     },
                     onGoToMap = {
-                        navController.navigate("map")
+                        navController.navigate(BottomBarScreen.Mapa.route)
                     },
                     onComoLlegar = {
                         NavigationUtils.openGoogleMapsNavigation(

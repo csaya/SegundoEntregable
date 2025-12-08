@@ -7,21 +7,30 @@ import coil.ImageLoader
 import com.example.segundoentregable.data.local.AppDatabase
 import com.example.segundoentregable.data.repository.AttractionRepository
 import com.example.segundoentregable.data.repository.FavoriteRepository
+import com.example.segundoentregable.data.repository.RutaRepository
 import com.example.segundoentregable.data.repository.UserRepository
 import com.example.segundoentregable.data.location.LocationService
+import com.example.segundoentregable.data.location.ProximityService
 import com.example.segundoentregable.data.sync.ReviewSyncWorker
 import com.example.segundoentregable.utils.DataImporter
 import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 
 private const val TAG = "AppApplication"
 private const val PREFS_NAME = "app_prefs"
-private const val KEY_DATA_IMPORTED = "data_imported_v2"
+private const val KEY_DATA_VERSION = "data_version_v5" // Incrementar cuando cambie el esquema
 
 class AppApplication : Application() {
+
+    // Estado de inicialización de datos - los ViewModels pueden observar esto
+    private val _isDataReady = MutableStateFlow(false)
+    val isDataReady: StateFlow<Boolean> = _isDataReady.asStateFlow()
 
     val database by lazy { AppDatabase.getInstance(this) }
 
@@ -43,8 +52,16 @@ class AppApplication : Application() {
         FavoriteRepository(database.favoritoDao())
     }
 
+    val rutaRepository by lazy {
+        RutaRepository(database.rutaDao())
+    }
+
     val locationService by lazy {
         LocationService(this)
+    }
+
+    val proximityService by lazy {
+        ProximityService(this)
     }
 
     override fun onCreate() {
@@ -66,7 +83,7 @@ class AppApplication : Application() {
 
         // Importar datos desde assets si no se ha hecho antes
         importDataIfNeeded()
-        
+
         // Programar sincronización periódica de reseñas
         ReviewSyncWorker.schedulePeriodicSync(this)
         Log.d(TAG, "WorkManager configurado para sincronización de reseñas")
@@ -74,21 +91,32 @@ class AppApplication : Application() {
 
     private fun importDataIfNeeded() {
         val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        val dataImported = prefs.getBoolean(KEY_DATA_IMPORTED, false)
+        val currentVersion = 5 // Incrementar cuando cambie el esquema de datos
+        val savedVersion = prefs.getInt(KEY_DATA_VERSION, 0)
 
-        if (!dataImported) {
-            Log.d(TAG, "Iniciando importación de datos desde assets...")
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Verificar si la BD tiene datos (más confiable que SharedPrefs)
+                val atractivosCount = database.atractivoDao().getCount()
+
+                if (savedVersion < currentVersion || atractivosCount == 0) {
+                    Log.d(TAG, "Iniciando importación de datos (version: $savedVersion -> $currentVersion, count: $atractivosCount)")
                     DataImporter.importDataFromAssets(this@AppApplication, database)
-                    prefs.edit().putBoolean(KEY_DATA_IMPORTED, true).apply()
+                    prefs.edit().putInt(KEY_DATA_VERSION, currentVersion).apply()
                     Log.d(TAG, "Datos importados exitosamente")
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error al importar datos", e)
+                } else {
+                    Log.d(TAG, "Datos ya existen (version: $savedVersion, count: $atractivosCount)")
                 }
+
+                // Marcar datos como listos
+                _isDataReady.value = true
+                Log.d(TAG, "Datos listos para consumir")
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Error al importar datos", e)
+                // Aún así marcamos como listo para que la UI no se quede colgada
+                _isDataReady.value = true
             }
-        } else {
-            Log.d(TAG, "Datos ya fueron importados previamente")
         }
     }
 }
