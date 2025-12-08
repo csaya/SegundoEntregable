@@ -1,13 +1,16 @@
 package com.example.segundoentregable.ui.components
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.clustering.Clustering
@@ -16,66 +19,104 @@ import com.google.maps.android.clustering.ClusterItem
 
 /**
  * Clase que representa un item de cluster para el mapa.
+ * Implementa equals/hashCode basado en ID para optimizar comparaciones.
  */
 data class AttractionClusterItem(
     val atractivo: AtractivoTuristico
 ) : ClusterItem {
-    override fun getPosition(): LatLng = LatLng(atractivo.latitud, atractivo.longitud)
+    private val cachedPosition = LatLng(atractivo.latitud, atractivo.longitud)
+    
+    override fun getPosition(): LatLng = cachedPosition
     override fun getTitle(): String = atractivo.nombre
     override fun getSnippet(): String = atractivo.descripcionCorta
     override fun getZIndex(): Float = 0f
+    
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is AttractionClusterItem) return false
+        return atractivo.id == other.atractivo.id
+    }
+    
+    override fun hashCode(): Int = atractivo.id.hashCode()
 }
 
 /**
- * Componente de mapa que muestra marcadores de atracciones turísticas con clustering.
- * Centro inicial: Arequipa, Perú
+ * Componente de mapa optimizado con clustering.
  * 
- * Características:
- * - Clustering automático cuando hay muchos marcadores cercanos
- * - Al hacer zoom, los clusters se expanden
- * - Click en cluster muestra el primer atractivo del grupo
+ * Optimizaciones:
+ * - ClusterItems memoizados con derivedStateOf
+ * - Posiciones cacheadas en ClusterItem
+ * - MapProperties y UiSettings memoizados
+ * - Lite mode deshabilitado para mejor interactividad
  */
 @OptIn(MapsComposeExperimentalApi::class)
-@SuppressLint("UnrememberedMutableState")
 @Composable
 fun AttractionMapView(
     atractivos: List<AtractivoTuristico>,
     onMarkerClick: (AtractivoTuristico) -> Unit = {},
     modifier: Modifier = Modifier.fillMaxSize()
 ) {
-    // Centro de Arequipa
-    val arequipaCenter = LatLng(-16.3989, -71.5349)
+    // Centro de Arequipa - constante
+    val arequipaCenter = remember { LatLng(-16.3989, -71.5349) }
     
-    // Crear cameraPositionState una sola vez (memoizado)
+    // Camera position memoizado
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(arequipaCenter, 11f)
     }
     
-    // Convertir atractivos a ClusterItems
-    val clusterItems = remember(atractivos) {
-        atractivos
-            .filter { it.latitud != 0.0 && it.longitud != 0.0 }
-            .map { AttractionClusterItem(it) }
+    // Propiedades del mapa memoizadas
+    val mapProperties = remember {
+        MapProperties(
+            isMyLocationEnabled = false,
+            isBuildingEnabled = false,
+            isIndoorEnabled = false,
+            isTrafficEnabled = false
+        )
+    }
+    
+    // UI Settings memoizados
+    val uiSettings = remember {
+        MapUiSettings(
+            zoomControlsEnabled = true,
+            compassEnabled = true,
+            myLocationButtonEnabled = false,
+            mapToolbarEnabled = false,
+            rotationGesturesEnabled = true,
+            scrollGesturesEnabled = true,
+            tiltGesturesEnabled = false,
+            zoomGesturesEnabled = true
+        )
+    }
+    
+    // Convertir atractivos a ClusterItems - solo recalcular si cambia la lista
+    val clusterItems by remember(atractivos) {
+        derivedStateOf {
+            atractivos
+                .filter { it.latitud != 0.0 && it.longitud != 0.0 }
+                .map { AttractionClusterItem(it) }
+        }
     }
 
     GoogleMap(
         modifier = modifier,
-        cameraPositionState = cameraPositionState
+        cameraPositionState = cameraPositionState,
+        properties = mapProperties,
+        uiSettings = uiSettings
     ) {
-        // Usar Clustering para agrupar marcadores cercanos
-        Clustering(
-            items = clusterItems,
-            onClusterClick = { cluster ->
-                // Al hacer click en un cluster, mostrar el primer atractivo
-                cluster.items.firstOrNull()?.let { item ->
+        if (clusterItems.isNotEmpty()) {
+            Clustering(
+                items = clusterItems,
+                onClusterClick = { cluster ->
+                    cluster.items.firstOrNull()?.let { item ->
+                        onMarkerClick(item.atractivo)
+                    }
+                    false
+                },
+                onClusterItemClick = { item ->
                     onMarkerClick(item.atractivo)
+                    false
                 }
-                false
-            },
-            onClusterItemClick = { item ->
-                onMarkerClick(item.atractivo)
-                false
-            }
-        )
+            )
+        }
     }
 }

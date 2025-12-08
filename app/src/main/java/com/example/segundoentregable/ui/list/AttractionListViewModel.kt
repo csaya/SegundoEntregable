@@ -12,12 +12,38 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Opciones de filtro por precio
+ */
+enum class PriceFilter {
+    ALL,      // Todos
+    FREE,     // Gratis (precio = 0)
+    PAID      // De pago (precio > 0)
+}
+
+/**
+ * Opciones de ordenamiento
+ */
+enum class SortOption {
+    DEFAULT,      // Sin ordenar
+    RATING_DESC,  // Mayor rating primero
+    RATING_ASC,   // Menor rating primero
+    NAME_ASC,     // A-Z
+    NAME_DESC,    // Z-A
+    PRICE_ASC,    // Más barato primero
+    PRICE_DESC    // Más caro primero
+}
+
 data class AttractionListUiState(
     val searchQuery: String = "",
     val selectedCategory: String? = null,
+    val priceFilter: PriceFilter = PriceFilter.ALL,
+    val minRating: Float = 0f,
+    val sortOption: SortOption = SortOption.RATING_DESC,
     val categoriasDisponibles: List<String> = emptyList(),
     val listaFiltrada: List<AtractivoTuristico> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false
 )
 
 class AttractionListViewModel(
@@ -61,31 +87,89 @@ class AttractionListViewModel(
 
     fun onSearchQueryChanged(query: String) {
         _uiState.update { it.copy(searchQuery = query) }
-        filterList()
+        filterAndSortList()
     }
 
     fun onCategorySelected(category: String?) {
         // Si tocan la misma categoría, la deseleccionamos (toggle)
         val newCategory = if (category == _uiState.value.selectedCategory) null else category
         _uiState.update { it.copy(selectedCategory = newCategory) }
-        filterList()
+        filterAndSortList()
+    }
+
+    fun onPriceFilterChanged(filter: PriceFilter) {
+        _uiState.update { it.copy(priceFilter = filter) }
+        filterAndSortList()
+    }
+
+    fun onMinRatingChanged(rating: Float) {
+        _uiState.update { it.copy(minRating = rating) }
+        filterAndSortList()
+    }
+
+    fun onSortOptionChanged(option: SortOption) {
+        _uiState.update { it.copy(sortOption = option) }
+        filterAndSortList()
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRefreshing = true) }
+            try {
+                todosLosAtractivos = withContext(Dispatchers.IO) {
+                    repo.getTodosLosAtractivos()
+                }
+                filterAndSortList()
+            } finally {
+                _uiState.update { it.copy(isRefreshing = false) }
+            }
+        }
+    }
+
+    private fun filterAndSortList() {
+        viewModelScope.launch(Dispatchers.Default) {
+            val state = _uiState.value
+
+            // 1. Filtrar
+            val filtered = todosLosAtractivos.filter { atractivo ->
+                // Búsqueda por nombre o descripción
+                val matchQuery = state.searchQuery.isEmpty() ||
+                    atractivo.nombre.contains(state.searchQuery, ignoreCase = true) ||
+                    atractivo.descripcionCorta.contains(state.searchQuery, ignoreCase = true)
+
+                // Categoría
+                val matchCategory = state.selectedCategory == null ||
+                    atractivo.categoria == state.selectedCategory
+
+                // Precio
+                val matchPrice = when (state.priceFilter) {
+                    PriceFilter.ALL -> true
+                    PriceFilter.FREE -> atractivo.precio == 0.0
+                    PriceFilter.PAID -> atractivo.precio > 0.0
+                }
+
+                // Rating mínimo
+                val matchRating = atractivo.rating >= state.minRating
+
+                matchQuery && matchCategory && matchPrice && matchRating
+            }
+
+            // 2. Ordenar
+            val sorted = when (state.sortOption) {
+                SortOption.DEFAULT -> filtered
+                SortOption.RATING_DESC -> filtered.sortedByDescending { it.rating }
+                SortOption.RATING_ASC -> filtered.sortedBy { it.rating }
+                SortOption.NAME_ASC -> filtered.sortedBy { it.nombre }
+                SortOption.NAME_DESC -> filtered.sortedByDescending { it.nombre }
+                SortOption.PRICE_ASC -> filtered.sortedBy { it.precio }
+                SortOption.PRICE_DESC -> filtered.sortedByDescending { it.precio }
+            }
+
+            _uiState.update { it.copy(listaFiltrada = sorted) }
+        }
     }
 
     private fun filterList() {
-        val state = _uiState.value
-
-        val newList = todosLosAtractivos.filter { atractivo ->
-            val matchQuery = atractivo.nombre.contains(state.searchQuery, ignoreCase = true)
-
-            val matchCategory = if (state.selectedCategory != null) {
-                atractivo.categoria == state.selectedCategory
-            } else {
-                true
-            }
-
-            matchQuery && matchCategory
-        }
-
-        _uiState.update { it.copy(listaFiltrada = newList) }
+        filterAndSortList()
     }
 }

@@ -1,9 +1,21 @@
 package com.example.segundoentregable.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "atractivos")
+/**
+ * Entidad de atractivo turístico con índices optimizados para consultas frecuentes.
+ */
+@Entity(
+    tableName = "atractivos",
+    indices = [
+        Index(value = ["categoria"]),
+        Index(value = ["rating"]),
+        Index(value = ["precio"]),
+        Index(value = ["nombre"])
+    ]
+)
 data class AtractivoEntity(
     @PrimaryKey val id: String,
     val codigoMincetur: String,

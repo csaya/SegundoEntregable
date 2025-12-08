@@ -26,7 +26,7 @@ import com.example.segundoentregable.data.local.entity.UserEntity
         GaleriaFotoEntity::class,
         ActividadEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
