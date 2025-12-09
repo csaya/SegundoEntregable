@@ -77,31 +77,49 @@
 
 ---
 
-## 🚧 PENDIENTE DE MEJORA (Prioridad Media)
+## ✅ MEJORAS COMPLETADAS (Prioridad Media)
 
-### Prioridad MEDIA 🟡
+### 5. Filtros Avanzados en Lista ✅
+**Estado:** Implementado
+**Archivos:** `AttractionListViewModel.kt`, `AttractionListScreen.kt`
+- Filtro por precio (Todos/Gratis/De pago)
+- Filtro por rating mínimo (0-5 estrellas)
+- Dialog de filtros con chips y slider
 
-#### 5. Splash Screen con Misti
-**Estado:** No existe
-**Impacto:** Medio - Primera impresión del usuario
+### 6. Ordenamiento Inteligente ✅
+**Estado:** Implementado
+**Archivos:** `AttractionListViewModel.kt`, `AttractionListScreen.kt`
+- Ordenar por rating (mayor/menor)
+- Ordenar por nombre (A-Z/Z-A)
+- Ordenar por precio (barato/caro)
+- Dialog de ordenamiento con radio buttons
 
-#### 6. Filtros Avanzados en Lista
-**Estado:** Solo categoría
-**Necesita:** Precio (Gratis/Pagado), Distancia, Rating
+### 7. Pull-to-Refresh ✅
+**Estado:** Implementado
+**Archivos:** `AttractionListScreen.kt`
+- PullToRefreshBox de Material3
+- Recarga datos desde repositorio
 
-#### 7. Ordenamiento Inteligente
-**Estado:** Lista estática
-**Necesita:** Ordenar por distancia, rating, popularidad
+### 8. Empty States Mejorados ✅
+**Estado:** Implementado
+**Archivos:** `AttractionListScreen.kt`
+- Emoji ilustrativo
+- Mensaje principal y sugerencia
+- Diseño centrado y amigable
 
-#### 8. Pull-to-Refresh
-**Estado:** No implementado
-**Impacto:** UX esperada en listas
+### 9. Optimizaciones de Rendimiento ✅
+**Estado:** Implementado
+**Archivos:** Múltiples
+- **Imágenes:** Caché habilitado, crossfade, request memoizado
+- **Mapa:** Properties/UiSettings memoizados, ClusterItems optimizados
+- **Listas:** Keys estables, derivedStateOf
+- **Room:** Índices en categoría, rating, precio, nombre
+- **Release:** R8 minificación + shrink resources habilitados
+- **ProGuard:** Reglas para Room, GSON, Coil, Maps, Compose
 
-#### 9. Empty States Mejorados
-**Estado:** Básico
-**Necesita:** Ilustraciones y mensajes amigables
+---
 
-### Prioridad BAJA 🟢
+## 🚧 PENDIENTE (Prioridad Baja)
 
 #### 10. Animaciones y Transiciones
 **Estado:** Sin animaciones

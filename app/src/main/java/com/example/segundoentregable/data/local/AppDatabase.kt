@@ -11,6 +11,7 @@ import com.example.segundoentregable.data.local.dao.GaleriaFotoDao
 import com.example.segundoentregable.data.local.dao.ReviewDao
 import com.example.segundoentregable.data.local.dao.RutaDao
 import com.example.segundoentregable.data.local.dao.UserDao
+import com.example.segundoentregable.data.local.dao.UserRouteDao
 import com.example.segundoentregable.data.local.entity.ActividadEntity
 import com.example.segundoentregable.data.local.entity.AtractivoEntity
 import com.example.segundoentregable.data.local.entity.FavoritoEntity
@@ -19,6 +20,7 @@ import com.example.segundoentregable.data.local.entity.ReviewEntity
 import com.example.segundoentregable.data.local.entity.RutaEntity
 import com.example.segundoentregable.data.local.entity.RutaParadaEntity
 import com.example.segundoentregable.data.local.entity.UserEntity
+import com.example.segundoentregable.data.local.entity.UserRouteItemEntity
 
 @Database(
     entities = [
@@ -29,9 +31,10 @@ import com.example.segundoentregable.data.local.entity.UserEntity
         GaleriaFotoEntity::class,
         ActividadEntity::class,
         RutaEntity::class,
-        RutaParadaEntity::class
+        RutaParadaEntity::class,
+        UserRouteItemEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -43,6 +46,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun galeriaFotoDao(): GaleriaFotoDao
     abstract fun actividadDao(): ActividadDao
     abstract fun rutaDao(): RutaDao
+    abstract fun userRouteDao(): UserRouteDao
 
     companion object {
         @Volatile

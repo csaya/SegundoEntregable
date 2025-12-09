@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.AppApplication
 import com.example.segundoentregable.data.location.LocationService
 import com.example.segundoentregable.data.model.AtractivoTuristico
-import com.example.segundoentregable.data.repository.AttractionRepository
+import com.example.segundoentregable.data.repository.UserRouteRepository
 import com.example.segundoentregable.utils.RouteOptimizer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,21 +19,25 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "PlannerViewModel"
 
+/**
+ * Estado UI para el planificador de rutas personales.
+ * Ahora funciona como un "carrito" - muestra los lugares añadidos desde DetailScreen.
+ */
 data class PlannerUiState(
-    val allAtractivos: List<AtractivoTuristico> = emptyList(),
-    val selectedAtractivos: List<AtractivoTuristico> = emptyList(),
+    val routeAtractivos: List<AtractivoTuristico> = emptyList(),
     val optimizedRoute: List<AtractivoTuristico> = emptyList(),
     val totalDistance: String = "",
     val estimatedTime: String = "",
     val userLocation: Location? = null,
     val isLoading: Boolean = true,
     val isOptimizing: Boolean = false,
-    val showOptimizedRoute: Boolean = false,
+    val isOptimized: Boolean = false,
+    val isEmpty: Boolean = true,
     val error: String? = null
 )
 
 class PlannerViewModel(
-    private val attractionRepository: AttractionRepository,
+    private val userRouteRepository: UserRouteRepository,
     private val locationService: LocationService,
     private val isDataReadyFlow: StateFlow<Boolean>
 ) : ViewModel() {
@@ -49,26 +53,32 @@ class PlannerViewModel(
         viewModelScope.launch {
             Log.d(TAG, "Esperando a que los datos estén listos...")
             isDataReadyFlow.first { it }
-            Log.d(TAG, "Datos listos, cargando...")
-            loadAtractivos()
+            Log.d(TAG, "Datos listos, observando ruta del usuario...")
+            observeUserRoute()
             loadUserLocation()
         }
     }
-    
-    private suspend fun loadAtractivos() {
-        _uiState.update { it.copy(isLoading = true) }
-        try {
-            val atractivos = attractionRepository.getTodosLosAtractivos()
-            Log.d(TAG, "Cargados ${atractivos.size} atractivos")
-            _uiState.update { 
-                it.copy(
-                    allAtractivos = atractivos,
-                    isLoading = false
-                )
+
+    /**
+     * Observa los cambios en la ruta del usuario (Room Flow)
+     */
+    private fun observeUserRoute() {
+        viewModelScope.launch {
+            userRouteRepository.getRouteAtractivosFlow().collect { atractivos ->
+                Log.d(TAG, "Ruta actualizada: ${atractivos.size} lugares")
+                _uiState.update { 
+                    it.copy(
+                        routeAtractivos = atractivos,
+                        isLoading = false,
+                        isEmpty = atractivos.isEmpty(),
+                        // Reset optimización si cambia la lista
+                        isOptimized = false,
+                        optimizedRoute = emptyList(),
+                        totalDistance = "",
+                        estimatedTime = ""
+                    )
+                }
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error cargando atractivos", e)
-            _uiState.update { it.copy(error = e.message, isLoading = false) }
         }
     }
     
@@ -87,29 +97,27 @@ class PlannerViewModel(
             }
         }
     }
-    
-    fun toggleAtractivoSelection(atractivo: AtractivoTuristico) {
-        _uiState.update { state ->
-            val currentSelection = state.selectedAtractivos.toMutableList()
-            if (currentSelection.any { it.id == atractivo.id }) {
-                currentSelection.removeAll { it.id == atractivo.id }
-            } else {
-                currentSelection.add(atractivo)
+
+    /**
+     * Elimina un atractivo de la ruta
+     */
+    fun removeFromRoute(atractivoId: String) {
+        viewModelScope.launch {
+            try {
+                userRouteRepository.removeFromRoute(atractivoId)
+                Log.d(TAG, "Eliminado de la ruta: $atractivoId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error eliminando de la ruta", e)
             }
-            state.copy(
-                selectedAtractivos = currentSelection,
-                showOptimizedRoute = false // Reset cuando cambia selección
-            )
         }
     }
     
-    fun isSelected(atractivoId: String): Boolean {
-        return _uiState.value.selectedAtractivos.any { it.id == atractivoId }
-    }
-    
+    /**
+     * Optimiza el orden de la ruta usando el algoritmo del vecino más cercano
+     */
     fun optimizeRoute() {
         val state = _uiState.value
-        if (state.selectedAtractivos.isEmpty()) return
+        if (state.routeAtractivos.isEmpty()) return
         
         viewModelScope.launch {
             _uiState.update { it.copy(isOptimizing = true) }
@@ -119,7 +127,7 @@ class PlannerViewModel(
             
             // Optimizar ruta
             val optimized = RouteOptimizer.optimizeRoute(
-                state.selectedAtractivos,
+                state.routeAtractivos,
                 userLat,
                 userLng
             )
@@ -127,6 +135,9 @@ class PlannerViewModel(
             // Calcular métricas
             val totalDistanceKm = RouteOptimizer.calculateTotalDistance(optimized, userLat, userLng)
             val estimatedMinutes = RouteOptimizer.estimateTotalTime(optimized, userLat, userLng)
+
+            // Guardar el nuevo orden en la BD
+            userRouteRepository.updateRouteOrder(optimized.map { it.id })
             
             _uiState.update {
                 it.copy(
@@ -134,21 +145,37 @@ class PlannerViewModel(
                     totalDistance = RouteOptimizer.formatDistance(totalDistanceKm),
                     estimatedTime = RouteOptimizer.formatTime(estimatedMinutes),
                     isOptimizing = false,
-                    showOptimizedRoute = true
+                    isOptimized = true
                 )
             }
+            
+            Log.d(TAG, "Ruta optimizada: ${optimized.size} lugares, $totalDistanceKm km")
         }
     }
     
-    fun clearSelection() {
-        _uiState.update {
-            it.copy(
-                selectedAtractivos = emptyList(),
-                optimizedRoute = emptyList(),
-                showOptimizedRoute = false,
-                totalDistance = "",
-                estimatedTime = ""
-            )
+    /**
+     * Limpia toda la ruta
+     */
+    fun clearRoute() {
+        viewModelScope.launch {
+            try {
+                userRouteRepository.clearRoute()
+                Log.d(TAG, "Ruta limpiada")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error limpiando ruta", e)
+            }
+        }
+    }
+
+    /**
+     * Obtiene la lista de atractivos para navegar (optimizada si existe, sino la original)
+     */
+    fun getNavigationList(): List<AtractivoTuristico> {
+        val state = _uiState.value
+        return if (state.isOptimized && state.optimizedRoute.isNotEmpty()) {
+            state.optimizedRoute
+        } else {
+            state.routeAtractivos
         }
     }
 }
@@ -160,7 +187,7 @@ class PlannerViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PlannerViewModel::class.java)) {
             return PlannerViewModel(
-                attractionRepository = app.attractionRepository,
+                userRouteRepository = app.userRouteRepository,
                 locationService = app.locationService,
                 isDataReadyFlow = app.isDataReady
             ) as T

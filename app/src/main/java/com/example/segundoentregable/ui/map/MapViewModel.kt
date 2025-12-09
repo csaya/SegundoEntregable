@@ -17,9 +17,13 @@ import kotlinx.coroutines.withContext
 private const val TAG = "MapViewModel"
 
 data class MapUiState(
-    val atractivos: List<AtractivoTuristico> = emptyList(),
+    val allAtractivos: List<AtractivoTuristico> = emptyList(),
+    val filteredAtractivos: List<AtractivoTuristico> = emptyList(),
     val selectedAttraction: AtractivoTuristico? = null,
-    val isLoading: Boolean = true // Iniciar en true
+    val searchQuery: String = "",
+    val showOnlyFavorites: Boolean = false,
+    val favoriteIds: Set<String> = emptySet(),
+    val isLoading: Boolean = true
 )
 
 class MapViewModel(
@@ -51,12 +55,70 @@ class MapViewModel(
             }
             Log.d(TAG, "Cargados ${atractivos.size} atractivos para el mapa")
             _uiState.update {
-                it.copy(atractivos = atractivos, isLoading = false)
+                it.copy(
+                    allAtractivos = atractivos,
+                    filteredAtractivos = atractivos,
+                    isLoading = false
+                )
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error cargando atractivos", e)
             _uiState.update { it.copy(isLoading = false) }
         }
+    }
+
+    /**
+     * Actualiza el query de búsqueda y filtra los atractivos
+     */
+    fun onSearchQueryChange(query: String) {
+        _uiState.update { state ->
+            val filtered = applyFilters(state.allAtractivos, query, state.showOnlyFavorites, state.favoriteIds)
+            state.copy(searchQuery = query, filteredAtractivos = filtered)
+        }
+    }
+
+    /**
+     * Activa/desactiva el modo de solo favoritos
+     */
+    fun setShowOnlyFavorites(show: Boolean, favoriteIds: Set<String> = emptySet()) {
+        _uiState.update { state ->
+            val newFavoriteIds = if (show) favoriteIds else state.favoriteIds
+            val filtered = applyFilters(state.allAtractivos, state.searchQuery, show, newFavoriteIds)
+            state.copy(
+                showOnlyFavorites = show,
+                favoriteIds = newFavoriteIds,
+                filteredAtractivos = filtered
+            )
+        }
+    }
+
+    /**
+     * Aplica los filtros de búsqueda y favoritos
+     */
+    private fun applyFilters(
+        all: List<AtractivoTuristico>,
+        query: String,
+        onlyFavorites: Boolean,
+        favoriteIds: Set<String>
+    ): List<AtractivoTuristico> {
+        var result = all
+
+        // Filtrar por favoritos si está activo
+        if (onlyFavorites && favoriteIds.isNotEmpty()) {
+            result = result.filter { it.id in favoriteIds }
+        }
+
+        // Filtrar por búsqueda
+        if (query.isNotBlank()) {
+            val lowerQuery = query.lowercase()
+            result = result.filter { atractivo ->
+                atractivo.nombre.lowercase().contains(lowerQuery) ||
+                atractivo.categoria.lowercase().contains(lowerQuery) ||
+                atractivo.ubicacion.lowercase().contains(lowerQuery)
+            }
+        }
+
+        return result
     }
 
     fun selectAttraction(atractivo: AtractivoTuristico) {
@@ -68,6 +130,19 @@ class MapViewModel(
     fun dismissAttractionDetail() {
         _uiState.update {
             it.copy(selectedAttraction = null)
+        }
+    }
+
+    /**
+     * Limpia los filtros
+     */
+    fun clearFilters() {
+        _uiState.update { state ->
+            state.copy(
+                searchQuery = "",
+                showOnlyFavorites = false,
+                filteredAtractivos = state.allAtractivos
+            )
         }
     }
 }

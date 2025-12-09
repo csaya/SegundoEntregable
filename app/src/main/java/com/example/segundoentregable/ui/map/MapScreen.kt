@@ -4,7 +4,10 @@ import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,7 +29,9 @@ import com.example.segundoentregable.ui.components.AttractionImage
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
-    navController: NavController
+    navController: NavController,
+    showOnlyFavorites: Boolean = false,
+    favoriteIds: List<String> = emptyList()
 ) {
     // 1. Configuración del Factory
     val context = LocalContext.current
@@ -38,7 +43,13 @@ fun MapScreen(
     )
 
     val uiState by mapViewModel.uiState.collectAsState()
-    var searchQuery by remember { mutableStateOf("") }
+
+    // Aplicar filtro de favoritos si viene de FavoritesScreen
+    LaunchedEffect(showOnlyFavorites, favoriteIds) {
+        if (showOnlyFavorites && favoriteIds.isNotEmpty()) {
+            mapViewModel.setShowOnlyFavorites(true, favoriteIds.toSet())
+        }
+    }
 
     // Configuración del BottomSheet
     val sheetState = rememberStandardBottomSheetState(
@@ -62,8 +73,10 @@ fun MapScreen(
         scaffoldState = scaffoldState,
         topBar = {
             MapTopBar(
-                query = searchQuery,
-                onQueryChange = { searchQuery = it }
+                query = uiState.searchQuery,
+                onQueryChange = { mapViewModel.onSearchQueryChange(it) },
+                showingFavorites = uiState.showOnlyFavorites,
+                onClearFilters = { mapViewModel.clearFilters() }
             )
         },
         sheetContent = {
@@ -94,50 +107,88 @@ fun MapScreen(
                         bottom = innerContentPadding.calculateBottomPadding()
                     )
             ) {
-                // Mapa Optimizado
+                // Mapa con atractivos filtrados
                 AttractionMapView(
-                    atractivos = uiState.atractivos,
+                    atractivos = uiState.filteredAtractivos,
                     onMarkerClick = { atractivo ->
                         mapViewModel.selectAttraction(atractivo)
                     },
                     modifier = Modifier.fillMaxSize()
                 )
+                
+                // Indicador de resultados de búsqueda
+                if (uiState.searchQuery.isNotBlank() || uiState.showOnlyFavorites) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = 8.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    ) {
+                        Text(
+                            text = "${uiState.filteredAtractivos.size} resultados",
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                }
             }
         }
     }
 }
 
-// ... El resto de componentes (MapTopBar, AttractionDetailSheet) se queda igual ...
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MapTopBar(
     query: String,
-    onQueryChange: (String) -> Unit
+    onQueryChange: (String) -> Unit,
+    showingFavorites: Boolean,
+    onClearFilters: () -> Unit
 ) {
-    TopAppBar(
-        title = { Text("Mapa", fontWeight = FontWeight.Bold) },
-        navigationIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(Icons.Filled.Menu, contentDescription = "Menú")
-            }
-        },
-        actions = {
-            OutlinedTextField(
-                value = query,
-                onValueChange = onQueryChange,
-                placeholder = { Text("Buscar en el mapa") },
-                shape = RoundedCornerShape(30.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                )
+    Column {
+        TopAppBar(
+            title = { 
+                Text(
+                    if (showingFavorites) "Mapa - Favoritos" else "Mapa", 
+                    fontWeight = FontWeight.Bold
+                ) 
+            },
+            actions = {
+                if (showingFavorites) {
+                    TextButton(onClick = onClearFilters) {
+                        Text("Ver todos")
+                    }
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White.copy(alpha = 0.9f))
+        )
+        
+        // Barra de búsqueda
+        OutlinedTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            placeholder = { Text("Buscar atractivos...") },
+            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+            trailingIcon = {
+                if (query.isNotBlank()) {
+                    IconButton(onClick = { onQueryChange("") }) {
+                        Icon(Icons.Filled.Clear, contentDescription = "Limpiar")
+                    }
+                }
+            },
+            shape = RoundedCornerShape(24.dp),
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White
             )
-        },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White.copy(alpha = 0.9f))
-    )
+        )
+    }
 }
 
 @Composable

@@ -9,8 +9,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.AddLocationAlt
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.EditLocationAlt
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Landscape
@@ -48,6 +50,8 @@ import com.example.segundoentregable.ui.components.OpenStatusBadge
 import com.example.segundoentregable.ui.components.RatingBar
 import com.example.segundoentregable.ui.components.ReviewCard
 import com.example.segundoentregable.ui.components.AttractionImage
+import com.example.segundoentregable.ui.components.ExpandableText
+import com.example.segundoentregable.ui.components.ZoomableImageViewer
 import com.example.segundoentregable.utils.NavigationUtils
 
 @Composable
@@ -145,7 +149,12 @@ fun AttractionDetailScreen(
                     // Indicador de Abierto/Cerrado
                     OpenStatusBadge(horario = atractivo.horario)
                     Spacer(Modifier.height(16.dp))
-                    Text(atractivo.descripcionLarga, style = MaterialTheme.typography.bodyLarge)
+                    // Descripción expandible
+                    ExpandableText(
+                        text = atractivo.descripcionLarga,
+                        style = MaterialTheme.typography.bodyLarge,
+                        collapsedMaxLines = 4
+                    )
                 }
             }
 
@@ -172,12 +181,19 @@ fun AttractionDetailScreen(
             item {
                 ActionButtonsSection(
                     isFavorito = uiState.isFavorito,
+                    isInRoute = uiState.isInRoute,
                     onToggleFavorite = {
                         if (isUserLoggedIn) {
                             viewModel.onToggleFavorite()
                         } else {
                             navController.navigate("login")
                         }
+                    },
+                    onToggleRoute = {
+                        viewModel.onToggleRoute()
+                    },
+                    onGoToPlanner = {
+                        navController.navigate("planner")
                     },
                     onGoToMap = {
                         navController.navigate(BottomBarScreen.Mapa.route)
@@ -253,26 +269,57 @@ private fun DetailTopBar(navController: NavController) {
 
 @Composable
 private fun GaleriaSection(galeria: List<GaleriaFoto>) {
-    Column(Modifier.padding(vertical = 8.dp)) {
-        Text(
-            "Galería de fotos",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(horizontal = 16.dp)
+    var showImageViewer by remember { mutableStateOf(false) }
+    var selectedImageIndex by remember { mutableStateOf(0) }
+    
+    // Visor de imágenes a pantalla completa
+    if (showImageViewer) {
+        ZoomableImageViewer(
+            images = galeria.map { it.urlFoto },
+            initialPage = selectedImageIndex,
+            onDismiss = { showImageViewer = false }
         )
+    }
+    
+    Column(Modifier.padding(vertical = 8.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Galería de fotos",
+                style = MaterialTheme.typography.titleLarge
+            )
+            Text(
+                "${galeria.size} fotos",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+        }
         Spacer(Modifier.height(8.dp))
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            items(galeria) { foto ->
-                AttractionImage(
-                    imageUrl = foto.urlFoto,
-                    contentDescription = "Foto ${foto.orden + 1}",
-                    modifier = Modifier
-                        .size(150.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
-                )
+            items(galeria.size) { index ->
+                val foto = galeria[index]
+                Card(
+                    onClick = {
+                        selectedImageIndex = index
+                        showImageViewer = true
+                    },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    AttractionImage(
+                        imageUrl = foto.urlFoto,
+                        contentDescription = "Foto ${index + 1}",
+                        modifier = Modifier.size(150.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
         }
     }
@@ -404,7 +451,10 @@ private fun InfoAdicionalSection(atractivo: AtractivoTuristico) {
 @Composable
 private fun ActionButtonsSection(
     isFavorito: Boolean,
+    isInRoute: Boolean,
     onToggleFavorite: () -> Unit,
+    onToggleRoute: () -> Unit,
+    onGoToPlanner: () -> Unit,
     onGoToMap: () -> Unit,
     onComoLlegar: () -> Unit
 ) {
@@ -414,10 +464,10 @@ private fun ActionButtonsSection(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Fila 1: Guardar y Ver en Mapa
+        // Fila 1: Guardar (favorito) y Añadir a Mi Ruta
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             OutlinedButton(
                 onClick = onToggleFavorite,
@@ -427,23 +477,63 @@ private fun ActionButtonsSection(
                     if (isFavorito) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
                     contentDescription = "Guardar",
                     modifier = Modifier.size(ButtonDefaults.IconSize),
-                    tint = if(isFavorito) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    tint = if (isFavorito) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text(if (isFavorito) "Guardado" else "Guardar")
             }
 
+            // Botón de Añadir a Mi Ruta
+            OutlinedButton(
+                onClick = onToggleRoute,
+                modifier = Modifier.weight(1f),
+                colors = if (isInRoute) {
+                    ButtonDefaults.outlinedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                } else {
+                    ButtonDefaults.outlinedButtonColors()
+                }
+            ) {
+                Icon(
+                    if (isInRoute) Icons.Filled.EditLocationAlt else Icons.Filled.AddLocationAlt,
+                    contentDescription = "Mi Ruta",
+                    modifier = Modifier.size(ButtonDefaults.IconSize),
+                    tint = if (isInRoute) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text(if (isInRoute) "En Mi Ruta" else "Mi Ruta")
+            }
+        }
+
+        // Fila 2: Ver en Mapa
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             OutlinedButton(
                 onClick = onGoToMap,
                 modifier = Modifier.weight(1f)
             ) {
-                Icon(Icons.Filled.Map, contentDescription = null, Modifier.size(16.dp))
+                Icon(Icons.Filled.Map, contentDescription = null, Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text("Ver en Mapa")
             }
+
+            // Si está en la ruta, mostrar botón para ir al planificador
+            if (isInRoute) {
+                Button(
+                    onClick = onGoToPlanner,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Filled.Navigation, contentDescription = null, Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("Ver Mi Ruta")
+                }
+            }
         }
         
-        // Fila 2: Botón principal "Cómo Llegar"
+        // Fila 3: Botón principal "Cómo Llegar"
         Button(
             onClick = onComoLlegar,
             modifier = Modifier.fillMaxWidth()

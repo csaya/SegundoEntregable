@@ -7,6 +7,7 @@ import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.repository.AttractionRepository
 import com.example.segundoentregable.data.repository.FavoriteRepository
 import com.example.segundoentregable.data.repository.UserRepository
+import com.example.segundoentregable.data.repository.UserRouteRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -71,6 +72,21 @@ class FavoritesViewModel(
                 loadFavorites()
             } catch (e: Exception) {
                 Log.e("FavoritesVM", "Error toggle favorito", e)
+            }
+        }
+    }
+
+    /**
+     * Crea una ruta a partir de los favoritos seleccionados
+     */
+    fun createRouteFromFavorites(selectedIds: List<String>, userRouteRepo: UserRouteRepository) {
+        viewModelScope.launch {
+            try {
+                // Limpiar ruta anterior y agregar los seleccionados
+                userRouteRepo.createRouteFromAtractivos(selectedIds)
+                Log.d("FavoritesVM", "Ruta creada con ${selectedIds.size} favoritos")
+            } catch (e: Exception) {
+                Log.e("FavoritesVM", "Error creando ruta desde favoritos", e)
             }
         }
     }

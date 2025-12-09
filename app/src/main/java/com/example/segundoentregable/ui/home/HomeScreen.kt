@@ -136,6 +136,13 @@ fun HomeScreen(
                     Spacer(Modifier.height(24.dp))
                 }
 
+                // MI RUTA PERSONAL (Acceso al Planner)
+                MiRutaSection(
+                    onVerMiRuta = { navController.navigate("planner") }
+                )
+
+                Spacer(Modifier.height(16.dp))
+
                 // RUTAS TURÍSTICAS
                 RutasSection(
                     onVerRutas = { navController.navigate("rutas") }
@@ -244,6 +251,43 @@ private fun RutasSection(
             }
             Button(onClick = onVerRutas) {
                 Text("Ver rutas")
+            }
+        }
+    }
+}
+
+@Composable
+private fun MiRutaSection(
+    onVerMiRuta: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "📍 Mi Ruta de Hoy",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "Planifica y optimiza tu recorrido personal",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+            Button(onClick = onVerMiRuta) {
+                Text("Ver ruta")
             }
         }
     }

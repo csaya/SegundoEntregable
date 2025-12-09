@@ -22,6 +22,7 @@ class AttractionDetailViewModelFactory(
             attractionRepo = app.attractionRepository, // Inyectamos el repo existente
             favoriteRepo = app.favoriteRepository,     // Inyectamos el repo existente
             userRepo = app.userRepository,             // Inyectamos el repo existente
+            userRouteRepo = app.userRouteRepository,
             savedStateHandle = savedStateHandle
         ) as T
     }

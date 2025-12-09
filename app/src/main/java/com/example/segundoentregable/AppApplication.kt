@@ -9,6 +9,7 @@ import com.example.segundoentregable.data.repository.AttractionRepository
 import com.example.segundoentregable.data.repository.FavoriteRepository
 import com.example.segundoentregable.data.repository.RutaRepository
 import com.example.segundoentregable.data.repository.UserRepository
+import com.example.segundoentregable.data.repository.UserRouteRepository
 import com.example.segundoentregable.data.location.LocationService
 import com.example.segundoentregable.data.location.ProximityService
 import com.example.segundoentregable.data.sync.ReviewSyncWorker
@@ -54,6 +55,10 @@ class AppApplication : Application() {
 
     val rutaRepository by lazy {
         RutaRepository(database.rutaDao())
+    }
+
+    val userRouteRepository by lazy {
+        UserRouteRepository(database.userRouteDao())
     }
 
     val locationService by lazy {

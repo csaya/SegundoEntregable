@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 
 sealed class BottomBarScreen(val route: String, val label: String, val icon: ImageVector) {
@@ -29,6 +30,11 @@ private val bottomBarScreens = listOf(
     BottomBarScreen.Perfil,
 )
 
+/**
+ * AppBottomBar con comportamiento estándar tipo Instagram/Spotify:
+ * - Si cambias de pestaña: guarda estado y restaura al volver
+ * - Si tocas la pestaña actual: vuelve a la raíz de esa sección (popBackStack)
+ */
 @Composable
 fun AppBottomBar(navController: NavController) {
 
@@ -37,17 +43,39 @@ fun AppBottomBar(navController: NavController) {
 
     NavigationBar {
         bottomBarScreens.forEach { screen ->
+            // Determinar si esta pestaña está seleccionada
+            // Considera rutas anidadas como "detail/{id}" que pertenecen a "home"
+            val isSelected = when {
+                currentRoute == screen.route -> true
+                screen == BottomBarScreen.Home && currentRoute?.startsWith("detail") == true -> true
+                screen == BottomBarScreen.Home && currentRoute?.startsWith("list") == true -> true
+                screen == BottomBarScreen.Home && currentRoute?.startsWith("rutas") == true -> true
+                screen == BottomBarScreen.Home && currentRoute?.startsWith("planner") == true -> true
+                else -> false
+            }
+            
             NavigationBarItem(
                 icon = { Icon(screen.icon, contentDescription = screen.label) },
                 label = { Text(screen.label) },
-                selected = currentRoute == screen.route,
+                selected = isSelected,
                 onClick = {
+                    // SIEMPRE navegamos con el patrón estándar
                     navController.navigate(screen.route) {
-                        popUpTo(navController.graph.startDestinationId) {
+                        // Pop hasta el inicio del grafo
+                        popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
+                        // Evita copias múltiples si tocas rápido
                         launchSingleTop = true
+                        // Restaura estado
                         restoreState = true
+                    }
+                    
+                    // LÓGICA DE RESELECCIÓN EXPLÍCITA:
+                    // Si la ruta actual YA es la de la pantalla tocada (o una sub-ruta),
+                    // forzamos volver a su raíz
+                    if (isSelected && currentRoute != screen.route) {
+                        navController.popBackStack(screen.route, inclusive = false)
                     }
                 }
             )

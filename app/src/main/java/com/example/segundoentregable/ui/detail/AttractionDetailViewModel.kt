@@ -9,6 +9,7 @@ import com.example.segundoentregable.data.model.Review
 import com.example.segundoentregable.data.repository.AttractionRepository
 import com.example.segundoentregable.data.repository.FavoriteRepository
 import com.example.segundoentregable.data.repository.UserRepository
+import com.example.segundoentregable.data.repository.UserRouteRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,7 @@ data class DetailUiState(
     val atractivo: AtractivoTuristico? = null,
     val reviews: List<Review> = emptyList(),
     val isFavorito: Boolean = false,
+    val isInRoute: Boolean = false,
     val isLoading: Boolean = false,
     val isReviewDialogVisible: Boolean = false,
     val isSubmittingReview: Boolean = false
@@ -33,6 +35,7 @@ class AttractionDetailViewModel(
     private val attractionRepo: AttractionRepository,
     private val favoriteRepo: FavoriteRepository,
     private val userRepo: UserRepository,
+    private val userRouteRepo: UserRouteRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -41,8 +44,21 @@ class AttractionDetailViewModel(
     private val _uiState = MutableStateFlow(DetailUiState())
     val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
 
+    // Evento único para mostrar Snackbar
+    private val _snackbarEvent = MutableStateFlow<String?>(null)
+    val snackbarEvent: StateFlow<String?> = _snackbarEvent.asStateFlow()
+
     init {
         loadData()
+        observeRouteStatus()
+    }
+
+    private fun observeRouteStatus() {
+        viewModelScope.launch {
+            userRouteRepo.isInRouteFlow(attractionId).collect { isInRoute ->
+                _uiState.update { it.copy(isInRoute = isInRoute) }
+            }
+        }
     }
 
     private fun loadData() {
@@ -94,6 +110,29 @@ class AttractionDetailViewModel(
                 Log.e(TAG, "Error al cambiar favorito", e)
             }
         }
+    }
+
+    /**
+     * Añade o quita el atractivo de la ruta del usuario
+     * @return true si se añadió, false si se quitó
+     */
+    fun onToggleRoute(): Boolean {
+        var wasAdded = false
+        viewModelScope.launch {
+            try {
+                wasAdded = userRouteRepo.toggleInRoute(attractionId)
+                val message = if (wasAdded) "Añadido a tu ruta" else "Quitado de tu ruta"
+                _snackbarEvent.value = message
+                Log.d(TAG, "Ruta actualizada: $wasAdded para $attractionId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error al cambiar ruta", e)
+            }
+        }
+        return wasAdded
+    }
+
+    fun clearSnackbarEvent() {
+        _snackbarEvent.value = null
     }
 
     fun showReviewDialog() {
