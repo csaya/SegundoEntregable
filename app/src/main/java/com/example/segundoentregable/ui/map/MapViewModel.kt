@@ -23,7 +23,9 @@ data class MapUiState(
     val searchQuery: String = "",
     val showOnlyFavorites: Boolean = false,
     val favoriteIds: Set<String> = emptySet(),
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val focusAttraction: AtractivoTuristico? = null,
+    val shouldAnimateCamera: Boolean = false
 )
 
 class MapViewModel(
@@ -141,8 +143,66 @@ class MapViewModel(
             state.copy(
                 searchQuery = "",
                 showOnlyFavorites = false,
-                filteredAtractivos = state.allAtractivos
+                filteredAtractivos = state.allAtractivos,
+                focusAttraction = null,
+                shouldAnimateCamera = false
             )
+        }
+    }
+
+    /**
+     * Foca la cámara en un atractivo específico por ID
+     */
+    fun focusOnAttraction(attractionId: String) {
+        viewModelScope.launch {
+            val atractivo = _uiState.value.allAtractivos.find { it.id == attractionId }
+                ?: withContext(Dispatchers.IO) { repo.getAtractivoPorId(attractionId) }
+            
+            if (atractivo != null) {
+                _uiState.update {
+                    it.copy(
+                        focusAttraction = atractivo,
+                        selectedAttraction = atractivo,
+                        shouldAnimateCamera = true
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * Foca la cámara en los resultados filtrados (si hay pocos)
+     */
+    fun focusOnFilteredResults() {
+        val filtered = _uiState.value.filteredAtractivos
+        if (filtered.size == 1) {
+            // Si hay un solo resultado, enfocar en él
+            _uiState.update {
+                it.copy(
+                    focusAttraction = filtered.first(),
+                    shouldAnimateCamera = true
+                )
+            }
+        } else if (filtered.size in 2..5) {
+            // Si hay pocos resultados, calcular el centro
+            val avgLat = filtered.map { it.latitud }.average()
+            val avgLon = filtered.map { it.longitud }.average()
+            // Crear un atractivo "virtual" para el centro
+            _uiState.update {
+                it.copy(
+                    focusAttraction = filtered.first().copy(latitud = avgLat, longitud = avgLon),
+                    shouldAnimateCamera = true
+                )
+            }
+        }
+    }
+
+    /**
+     * Marca que la animación de cámara ya se realizó
+     */
+    fun onCameraAnimationComplete() {
+        _uiState.update {
+            it.copy(shouldAnimateCamera = false)
         }
     }
 }

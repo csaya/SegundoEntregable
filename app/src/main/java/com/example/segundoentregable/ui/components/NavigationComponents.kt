@@ -18,7 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 
 sealed class BottomBarScreen(val route: String, val label: String, val icon: ImageVector) {
     object Home : BottomBarScreen("home", "Home", Icons.Filled.Home)
-    object Mapa : BottomBarScreen("mapa", "Mapa", Icons.Filled.Map)
+    object Mapa : BottomBarScreen("mapa?focusId={focusId}", "Mapa", Icons.Filled.Map)  // ✅ Con parámetro
     object Favoritos : BottomBarScreen("favoritos", "Favoritos", Icons.Filled.Favorite)
     object Perfil : BottomBarScreen("perfil", "Perfil", Icons.Filled.Person)
 }
@@ -31,9 +31,7 @@ private val bottomBarScreens = listOf(
 )
 
 /**
- * AppBottomBar con comportamiento estándar tipo Instagram/Spotify:
- * - Si cambias de pestaña: guarda estado y restaura al volver
- * - Si tocas la pestaña actual: vuelve a la raíz de esa sección (popBackStack)
+ * AppBottomBar con navegación que respeta el origen de pantallas compartidas
  */
 @Composable
 fun AppBottomBar(navController: NavController) {
@@ -41,41 +39,68 @@ fun AppBottomBar(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    val previousBackStackEntry = navController.previousBackStackEntry
+    val previousRoute = previousBackStackEntry?.destination?.route
+
     NavigationBar {
         bottomBarScreens.forEach { screen ->
-            // Determinar si esta pestaña está seleccionada
-            // Considera rutas anidadas como "detail/{id}" que pertenecen a "home"
-            val isSelected = when {
-                currentRoute == screen.route -> true
-                screen == BottomBarScreen.Home && currentRoute?.startsWith("detail") == true -> true
-                screen == BottomBarScreen.Home && currentRoute?.startsWith("list") == true -> true
-                screen == BottomBarScreen.Home && currentRoute?.startsWith("rutas") == true -> true
-                screen == BottomBarScreen.Home && currentRoute?.startsWith("planner") == true -> true
-                else -> false
+            val isSelected = when (screen) {
+                BottomBarScreen.Home -> {
+                    currentRoute == "home" ||
+                            currentRoute?.startsWith("rutas") == true ||
+                            currentRoute?.startsWith("planner") == true ||
+                            (currentRoute?.startsWith("detail/") == true && previousRoute == "home") ||
+                            (currentRoute?.startsWith("list") == true && previousRoute == "home")
+                }
+                BottomBarScreen.Mapa -> {
+                    // ✅ Ahora la ruta siempre es "mapa?focusId={focusId}"
+                    currentRoute == "mapa?focusId={focusId}" ||
+                            (currentRoute?.startsWith("detail/") == true &&
+                                    previousRoute == "mapa?focusId={focusId}")
+                }
+                BottomBarScreen.Favoritos -> {
+                    currentRoute == "favoritos" ||
+                            (currentRoute?.startsWith("detail/") == true && previousRoute == "favoritos")
+                }
+                BottomBarScreen.Perfil -> {
+                    currentRoute == "perfil"
+                }
             }
-            
+
+            // ✅ Detectar raíz: para Mapa, verificar que focusId esté vacío
+            val isAtRoot = when (screen) {
+                BottomBarScreen.Home -> currentRoute == "home"
+                BottomBarScreen.Mapa -> {
+                    val focusId = navBackStackEntry?.arguments?.getString("focusId")
+                    currentRoute == "mapa?focusId={focusId}" && focusId.isNullOrBlank()
+                }
+                BottomBarScreen.Favoritos -> currentRoute == "favoritos"
+                BottomBarScreen.Perfil -> currentRoute == "perfil"
+            }
+
             NavigationBarItem(
                 icon = { Icon(screen.icon, contentDescription = screen.label) },
                 label = { Text(screen.label) },
                 selected = isSelected,
                 onClick = {
-                    // SIEMPRE navegamos con el patrón estándar
-                    navController.navigate(screen.route) {
-                        // Pop hasta el inicio del grafo
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+                    if (isSelected) {
+                        if (!isAtRoot) {
+                            navController.popBackStack()
                         }
-                        // Evita copias múltiples si tocas rápido
-                        launchSingleTop = true
-                        // Restaura estado
-                        restoreState = true
-                    }
-                    
-                    // LÓGICA DE RESELECCIÓN EXPLÍCITA:
-                    // Si la ruta actual YA es la de la pantalla tocada (o una sub-ruta),
-                    // forzamos volver a su raíz
-                    if (isSelected && currentRoute != screen.route) {
-                        navController.popBackStack(screen.route, inclusive = false)
+                    } else {
+                        // ✅ Navegar a la ruta (con o sin parámetro)
+                        val targetRoute = when (screen) {
+                            BottomBarScreen.Mapa -> "mapa?focusId="  // ✅ focusId vacío
+                            else -> screen.route.split("?").first()  // Solo la base sin parámetros
+                        }
+
+                        navController.navigate(targetRoute) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 }
             )

@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
@@ -54,13 +55,14 @@ data class AttractionClusterItem(
 fun AttractionMapView(
     atractivos: List<AtractivoTuristico>,
     onMarkerClick: (AtractivoTuristico) -> Unit = {},
-    modifier: Modifier = Modifier.fillMaxSize()
+    modifier: Modifier = Modifier.fillMaxSize(),
+    cameraPositionState: CameraPositionState? = null
 ) {
     // Centro de Arequipa - constante
     val arequipaCenter = remember { LatLng(-16.3989, -71.5349) }
     
-    // Camera position memoizado
-    val cameraPositionState = rememberCameraPositionState {
+    // Camera position - usar el proporcionado o crear uno nuevo
+    val actualCameraState = cameraPositionState ?: rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(arequipaCenter, 11f)
     }
     
@@ -99,7 +101,7 @@ fun AttractionMapView(
 
     GoogleMap(
         modifier = modifier,
-        cameraPositionState = cameraPositionState,
+        cameraPositionState = actualCameraState,
         properties = mapProperties,
         uiSettings = uiSettings
     ) {

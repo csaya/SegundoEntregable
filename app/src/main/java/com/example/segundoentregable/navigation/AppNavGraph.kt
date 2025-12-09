@@ -27,12 +27,11 @@ fun AppNavGraph(
     navController: NavHostController,
     sessionViewModel: SessionViewModel
 ) {
-    // 1. Observamos el estado global de la sesión
     val isLoggedIn by sessionViewModel.isLoggedIn.collectAsState()
 
     NavHost(
         navController = navController,
-        startDestination = BottomBarScreen.Home.route // 2. Siempre inicia en Home
+        startDestination = BottomBarScreen.Home.route
     ) {
 
         // --- RUTAS PÚBLICAS ---
@@ -40,13 +39,27 @@ fun AppNavGraph(
             HomeScreen(navController = navController)
         }
 
-        composable(BottomBarScreen.Mapa.route) {
-            MapScreen(navController = navController)
+        // ✅ UNA SOLA ruta para Mapa con parámetro opcional
+        composable(
+            route = "mapa?focusId={focusId}",
+            arguments = listOf(
+                navArgument("focusId") {
+                    type = NavType.StringType
+                    defaultValue = ""  // ✅ Valor por defecto vacío
+                    nullable = true
+                }
+            )
+        ) { backStackEntry ->
+            val focusId = backStackEntry.arguments?.getString("focusId")?.takeIf { it.isNotBlank() }
+            MapScreen(
+                navController = navController,
+                focusAttractionId = focusId  // null si está vacío
+            )
         }
 
         composable(
             route = "list?query={query}",
-            arguments = listOf(navArgument("query") { 
+            arguments = listOf(navArgument("query") {
                 type = NavType.StringType
                 defaultValue = ""
             })
@@ -62,7 +75,6 @@ fun AppNavGraph(
             route = "detail/{attractionId}",
             arguments = listOf(navArgument("attractionId") { type = NavType.StringType })
         ) {
-            // 3. Pasamos el estado de sesión al Detalle
             AttractionDetailScreen(
                 navController = navController,
                 isUserLoggedIn = isLoggedIn
@@ -72,7 +84,6 @@ fun AppNavGraph(
         // --- RUTAS HÍBRIDAS / PROTEGIDAS ---
 
         composable(BottomBarScreen.Favoritos.route) {
-            // 4. Pasamos el estado a Favoritos para mostrar UI de invitado o lista real
             FavoritesScreen(
                 navController = navController,
                 isUserLoggedIn = isLoggedIn
@@ -85,12 +96,10 @@ fun AppNavGraph(
                     navController = navController,
                     onLogout = {
                         sessionViewModel.logout()
-                        // Al salir, vamos al Login pero limpiando el stack para seguridad
                         navController.navigate("login") { popUpTo(0) }
                     }
                 )
             } else {
-                // Si es invitado y toca Perfil, mostramos Login
                 LoginScreen(
                     navController = navController,
                     onLoginSuccess = { sessionViewModel.login() }

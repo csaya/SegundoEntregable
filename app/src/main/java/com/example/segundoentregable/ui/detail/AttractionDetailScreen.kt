@@ -82,14 +82,16 @@ fun AttractionDetailScreen(
         topBar = { DetailTopBar(navController = navController) },
         bottomBar = { AppBottomBar(navController = navController) },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    // CORRECCIÓN: Usar la constante definida en BottomBarScreen
-                    navController.navigate(BottomBarScreen.Mapa.route)
-                },
-                text = { Text("Ver en Mapa") },
-                icon = { Icon(Icons.Filled.Map, contentDescription = null) }
-            )
+            if (atractivo != null) {
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        // Navegar al mapa con foco en este atractivo
+                        navController.navigate("mapa?focusId=${atractivo.id}")
+                    },
+                    text = { Text("Ver en Mapa") },
+                    icon = { Icon(Icons.Filled.Map, contentDescription = null) }
+                )
+            }
         },
         floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
