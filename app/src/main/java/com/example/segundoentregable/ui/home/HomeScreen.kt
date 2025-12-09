@@ -119,7 +119,8 @@ fun HomeScreen(
                     RecomendacionesSection(
                         lista = uiState.recomendaciones,
                         onAtractivoClicked = { atractivoId ->
-                            navController.navigate("detail/$atractivoId")
+                            // ✅ CAMBIO: De "detail/$atractivoId" a esto:
+                            navController.navigate("detail/$atractivoId?origin=home")
                         }
                     )
                     Spacer(Modifier.height(24.dp))
@@ -130,7 +131,8 @@ fun HomeScreen(
                     CercanosSection(
                         lista = uiState.cercanos,
                         onAtractivoClicked = { atractivoId ->
-                            navController.navigate("detail/$atractivoId")
+                            // ✅ CAMBIO: De "detail/$atractivoId" a esto:
+                            navController.navigate("detail/$atractivoId?origin=home")
                         }
                     )
                     Spacer(Modifier.height(24.dp))
@@ -192,7 +194,13 @@ private fun RecomendacionesSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(lista) { atractivo ->
-                RecomendacionCard(atractivo, onClick = { onAtractivoClicked(atractivo.id) })
+                RecomendacionCard(
+                    atractivo,
+                    onClick = {
+                        // ✅ CAMBIO AQUÍ: Agregar ?origin=home
+                        onAtractivoClicked(atractivo.id)
+                    }
+                )
             }
         }
     }
@@ -212,7 +220,13 @@ private fun CercanosSection(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 lista.forEach { atractivo ->
-                    CercanoItemRow(atractivo, onClick = { onAtractivoClicked(atractivo.id) })
+                    CercanoItemRow(
+                        atractivo,
+                        onClick = {
+                            // ✅ CAMBIO AQUÍ: Agregar ?origin=home
+                            onAtractivoClicked(atractivo.id)
+                        }
+                    )
                 }
             }
         }

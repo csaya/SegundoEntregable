@@ -39,13 +39,18 @@ fun AppNavGraph(
             HomeScreen(navController = navController)
         }
 
-        // ✅ UNA SOLA ruta para Mapa con parámetro opcional
+        // ✅ Mapa con parámetros opcionales: focusId y origin
         composable(
-            route = "mapa?focusId={focusId}",
+            route = "mapa?focusId={focusId}&origin={origin}",
             arguments = listOf(
                 navArgument("focusId") {
                     type = NavType.StringType
-                    defaultValue = ""  // ✅ Valor por defecto vacío
+                    defaultValue = ""
+                    nullable = true
+                },
+                navArgument("origin") {
+                    type = NavType.StringType
+                    defaultValue = ""
                     nullable = true
                 }
             )
@@ -53,7 +58,7 @@ fun AppNavGraph(
             val focusId = backStackEntry.arguments?.getString("focusId")?.takeIf { it.isNotBlank() }
             MapScreen(
                 navController = navController,
-                focusAttractionId = focusId  // null si está vacío
+                focusAttractionId = focusId
             )
         }
 
@@ -71,9 +76,16 @@ fun AppNavGraph(
             )
         }
 
+        // ✅ Detail con parámetro origin
         composable(
-            route = "detail/{attractionId}",
-            arguments = listOf(navArgument("attractionId") { type = NavType.StringType })
+            route = "detail/{attractionId}?origin={origin}",
+            arguments = listOf(
+                navArgument("attractionId") { type = NavType.StringType },
+                navArgument("origin") {
+                    type = NavType.StringType
+                    defaultValue = "home"
+                }
+            )
         ) {
             AttractionDetailScreen(
                 navController = navController,

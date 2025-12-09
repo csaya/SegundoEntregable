@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
@@ -47,24 +45,30 @@ fun MapScreen(
     )
 
     val uiState by mapViewModel.uiState.collectAsState()
+
+    // Centro de Arequipa
     val arequipaCenter = remember { LatLng(-16.3989, -71.5349) }
 
+    // Estado de cámara controlado
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(arequipaCenter, 11f)
     }
 
+    // ✅ Aplicar filtro de favoritos si viene de FavoritesScreen
     LaunchedEffect(showOnlyFavorites, favoriteIds) {
         if (showOnlyFavorites && favoriteIds.isNotEmpty()) {
             mapViewModel.setShowOnlyFavorites(true, favoriteIds.toSet())
         }
     }
 
+    // ✅ Foco en atractivo específico (desde DetailScreen con focusId)
     LaunchedEffect(focusAttractionId) {
         if (!focusAttractionId.isNullOrBlank()) {
             mapViewModel.focusOnAttraction(focusAttractionId)
         }
     }
 
+    // ✅ Animar cámara cuando hay foco específico (desde Detail)
     LaunchedEffect(uiState.shouldAnimateCamera, uiState.focusAttraction) {
         if (uiState.shouldAnimateCamera && uiState.focusAttraction != null) {
             val attr = uiState.focusAttraction!!
@@ -81,14 +85,18 @@ fun MapScreen(
         }
     }
 
-    LaunchedEffect(uiState.filteredAtractivos.size, uiState.searchQuery) {
-        if (uiState.searchQuery.length > 2 &&
-            uiState.filteredAtractivos.size in 1..3) {
+    // ✅ Foco automático en resultados de búsqueda (cuando hay pocos resultados)
+    LaunchedEffect(uiState.filteredAtractivos, uiState.searchQuery) {
+        // Activar solo si hay búsqueda activa Y pocos resultados
+        if (uiState.searchQuery.length >= 3 &&
+            uiState.filteredAtractivos.size in 1..5 &&
+            uiState.filteredAtractivos.isNotEmpty()) {
 
             val boundsBuilder = com.google.android.gms.maps.model.LatLngBounds.builder()
             var validPoints = 0
+
             uiState.filteredAtractivos.forEach {
-                if (it.latitud != 0.0) {
+                if (it.latitud != 0.0 && it.longitud != 0.0) {
                     boundsBuilder.include(LatLng(it.latitud, it.longitud))
                     validPoints++
                 }
@@ -97,12 +105,29 @@ fun MapScreen(
             if (validPoints > 0) {
                 try {
                     val bounds = boundsBuilder.build()
-                    cameraPositionState.animate(CameraUpdateFactory.newLatLngBounds(bounds, 100))
-                } catch (e: Exception) { }
+                    // Padding de 150px para que se vean bien todos los marcadores
+                    cameraPositionState.animate(
+                        CameraUpdateFactory.newLatLngBounds(bounds, 150),
+                        durationMs = 800
+                    )
+                } catch (e: Exception) {
+                    // Si bounds es inválido (ej: un solo punto muy cercano), enfocar directo
+                    if (validPoints == 1) {
+                        val single = uiState.filteredAtractivos.first()
+                        cameraPositionState.animate(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(single.latitud, single.longitud),
+                                15f
+                            ),
+                            durationMs = 800
+                        )
+                    }
+                }
             }
         }
     }
 
+    // Configuración del BottomSheet
     val sheetState = rememberStandardBottomSheetState(
         initialValue = SheetValue.Hidden,
         skipHiddenState = false
@@ -111,6 +136,7 @@ fun MapScreen(
         bottomSheetState = sheetState
     )
 
+    // ✅ Efecto para abrir/cerrar el sheet
     LaunchedEffect(uiState.selectedAttraction) {
         if (uiState.selectedAttraction != null) {
             sheetState.expand()
@@ -135,6 +161,7 @@ fun MapScreen(
                     query = uiState.searchQuery,
                     onQueryChange = { mapViewModel.onSearchQueryChange(it) },
                     showingFavorites = uiState.showOnlyFavorites,
+                    showingFocusedOnly = !uiState.focusedAttractionId.isNullOrBlank(), // ✅ Nuevo
                     onClearFilters = { mapViewModel.clearFilters() }
                 )
             },
@@ -142,7 +169,9 @@ fun MapScreen(
                 uiState.selectedAttraction?.let { atractivo ->
                     AttractionDetailSheet(
                         atractivo = atractivo,
-                        onVerMasClicked = { navController.navigate("detail/${atractivo.id}") },
+                        onVerMasClicked = {
+                            navController.navigate("detail/${atractivo.id}?origin=mapa")
+                        },
                         bottomPadding = bottomNavHeight
                     )
                 }
@@ -163,7 +192,9 @@ fun MapScreen(
                     cameraPositionState = cameraPositionState,
                 )
 
-                if (uiState.searchQuery.isNotBlank() || uiState.showOnlyFavorites) {
+                // Badge de resultados
+                if ((uiState.searchQuery.isNotBlank() || uiState.showOnlyFavorites) &&
+                    uiState.focusedAttractionId.isNullOrBlank()) {
                     Surface(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
@@ -189,18 +220,25 @@ private fun MapTopBar(
     query: String,
     onQueryChange: (String) -> Unit,
     showingFavorites: Boolean,
-    onClearFilters: () -> Unit
+    onClearFilters: () -> Unit,
+    // ✅ Nuevo parámetro
+    showingFocusedOnly: Boolean = false
 ) {
     Column {
         TopAppBar(
-            title = { 
+            title = {
                 Text(
-                    if (showingFavorites) "Mapa - Favoritos" else "Mapa", 
+                    when {
+                        showingFocusedOnly -> "Mapa - Vista detalle"
+                        showingFavorites -> "Mapa - Favoritos"
+                        else -> "Mapa"
+                    },
                     fontWeight = FontWeight.Bold
-                ) 
+                )
             },
             actions = {
-                if (showingFavorites) {
+                // ✅ Botón para limpiar filtros (favoritos o focus)
+                if (showingFavorites || showingFocusedOnly) {
                     TextButton(onClick = onClearFilters) {
                         Text("Ver todos")
                     }
@@ -208,34 +246,37 @@ private fun MapTopBar(
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White.copy(alpha = 0.9f))
         )
-        
-        // Barra de búsqueda
-        OutlinedTextField(
-            value = query,
-            onValueChange = onQueryChange,
-            placeholder = { Text("Buscar atractivos...") },
-            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-            trailingIcon = {
-                if (query.isNotBlank()) {
-                    IconButton(onClick = { onQueryChange("") }) {
-                        Icon(Icons.Filled.Clear, contentDescription = "Limpiar")
+
+        // Barra de búsqueda (solo si NO estamos en modo focus único)
+        if (!showingFocusedOnly) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = onQueryChange,
+                placeholder = { Text("Buscar atractivos...") },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                trailingIcon = {
+                    if (query.isNotBlank()) {
+                        IconButton(onClick = { onQueryChange("") }) {
+                            Icon(Icons.Filled.Clear, contentDescription = "Limpiar")
+                        }
                     }
-                }
-            },
-            shape = RoundedCornerShape(24.dp),
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
+                },
+                shape = RoundedCornerShape(24.dp),
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                )
             )
-        )
+        }
     }
 }
+
 
 @Composable
 private fun AttractionDetailSheet(

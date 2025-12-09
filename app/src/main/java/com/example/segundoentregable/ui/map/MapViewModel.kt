@@ -25,14 +25,15 @@ data class MapUiState(
     val favoriteIds: Set<String> = emptySet(),
     val isLoading: Boolean = true,
     val focusAttraction: AtractivoTuristico? = null,
-    val shouldAnimateCamera: Boolean = false
+    val shouldAnimateCamera: Boolean = false,
+    // ✅ Nuevo campo para saber si estamos en modo "focus único"
+    val focusedAttractionId: String? = null
 )
 
 class MapViewModel(
     private val repo: AttractionRepository,
     private val isDataReadyFlow: StateFlow<Boolean>
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(MapUiState())
     val uiState: StateFlow<MapUiState> = _uiState.asStateFlow()
 
@@ -74,8 +75,19 @@ class MapViewModel(
      */
     fun onSearchQueryChange(query: String) {
         _uiState.update { state ->
-            val filtered = applyFilters(state.allAtractivos, query, state.showOnlyFavorites, state.favoriteIds)
-            state.copy(searchQuery = query, filteredAtractivos = filtered)
+            // ✅ Si hay búsqueda, limpiar el focusedAttractionId
+            val filtered = applyFilters(
+                state.allAtractivos,
+                query,
+                state.showOnlyFavorites,
+                state.favoriteIds,
+                null // Sin focus cuando hay búsqueda
+            )
+            state.copy(
+                searchQuery = query,
+                filteredAtractivos = filtered,
+                focusedAttractionId = null // Limpiar focus
+            )
         }
     }
 
@@ -85,25 +97,38 @@ class MapViewModel(
     fun setShowOnlyFavorites(show: Boolean, favoriteIds: Set<String> = emptySet()) {
         _uiState.update { state ->
             val newFavoriteIds = if (show) favoriteIds else state.favoriteIds
-            val filtered = applyFilters(state.allAtractivos, state.searchQuery, show, newFavoriteIds)
+            val filtered = applyFilters(
+                state.allAtractivos,
+                state.searchQuery,
+                show,
+                newFavoriteIds,
+                null // Sin focus cuando hay filtro de favoritos
+            )
             state.copy(
                 showOnlyFavorites = show,
                 favoriteIds = newFavoriteIds,
-                filteredAtractivos = filtered
+                filteredAtractivos = filtered,
+                focusedAttractionId = null // Limpiar focus
             )
         }
     }
 
     /**
-     * Aplica los filtros de búsqueda y favoritos
+     * Aplica los filtros de búsqueda, favoritos y focus único
      */
     private fun applyFilters(
         all: List<AtractivoTuristico>,
         query: String,
         onlyFavorites: Boolean,
-        favoriteIds: Set<String>
+        favoriteIds: Set<String>,
+        focusedId: String? = null
     ): List<AtractivoTuristico> {
         var result = all
+
+        // ✅ Filtrar por focus único (prioridad máxima)
+        if (!focusedId.isNullOrBlank()) {
+            return result.filter { it.id == focusedId }
+        }
 
         // Filtrar por favoritos si está activo
         if (onlyFavorites && favoriteIds.isNotEmpty()) {
@@ -115,8 +140,8 @@ class MapViewModel(
             val lowerQuery = query.lowercase()
             result = result.filter { atractivo ->
                 atractivo.nombre.lowercase().contains(lowerQuery) ||
-                atractivo.categoria.lowercase().contains(lowerQuery) ||
-                atractivo.ubicacion.lowercase().contains(lowerQuery)
+                        atractivo.categoria.lowercase().contains(lowerQuery) ||
+                        atractivo.ubicacion.lowercase().contains(lowerQuery)
             }
         }
 
@@ -145,54 +170,34 @@ class MapViewModel(
                 showOnlyFavorites = false,
                 filteredAtractivos = state.allAtractivos,
                 focusAttraction = null,
-                shouldAnimateCamera = false
+                shouldAnimateCamera = false,
+                focusedAttractionId = null // ✅ Limpiar focus
             )
         }
     }
 
     /**
-     * Foca la cámara en un atractivo específico por ID
+     * ✅ Foca la cámara en un atractivo específico por ID
+     * Y filtra para mostrar SOLO ese atractivo
      */
     fun focusOnAttraction(attractionId: String) {
         viewModelScope.launch {
             val atractivo = _uiState.value.allAtractivos.find { it.id == attractionId }
                 ?: withContext(Dispatchers.IO) { repo.getAtractivoPorId(attractionId) }
-            
+
             if (atractivo != null) {
+                // ✅ Filtrar para mostrar solo este atractivo
+                val filtered = listOf(atractivo)
+
                 _uiState.update {
                     it.copy(
                         focusAttraction = atractivo,
                         selectedAttraction = atractivo,
-                        shouldAnimateCamera = true
+                        shouldAnimateCamera = true,
+                        focusedAttractionId = attractionId, // ✅ Guardar el ID enfocado
+                        filteredAtractivos = filtered // ✅ Solo mostrar este
                     )
                 }
-            }
-        }
-    }
-
-    /**
-     * Foca la cámara en los resultados filtrados (si hay pocos)
-     */
-    fun focusOnFilteredResults() {
-        val filtered = _uiState.value.filteredAtractivos
-        if (filtered.size == 1) {
-            // Si hay un solo resultado, enfocar en él
-            _uiState.update {
-                it.copy(
-                    focusAttraction = filtered.first(),
-                    shouldAnimateCamera = true
-                )
-            }
-        } else if (filtered.size in 2..5) {
-            // Si hay pocos resultados, calcular el centro
-            val avgLat = filtered.map { it.latitud }.average()
-            val avgLon = filtered.map { it.longitud }.average()
-            // Crear un atractivo "virtual" para el centro
-            _uiState.update {
-                it.copy(
-                    focusAttraction = filtered.first().copy(latitud = avgLat, longitud = avgLon),
-                    shouldAnimateCamera = true
-                )
             }
         }
     }

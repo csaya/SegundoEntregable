@@ -158,7 +158,8 @@ fun FavoritesScreen(
                             FavoriteListItem(
                                 atractivo = atractivo,
                                 onItemClick = {
-                                    navController.navigate("detail/${atractivo.id}")
+                                    // ✅ CAMBIO: De "detail/${atractivo.id}" a esto:
+                                    navController.navigate("detail/${atractivo.id}?origin=favoritos")
                                 },
                                 onFavoriteClick = {
                                     viewModel.onToggleFavorite(atractivo.id)

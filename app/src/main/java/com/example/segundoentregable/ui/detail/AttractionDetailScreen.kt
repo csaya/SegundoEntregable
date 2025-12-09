@@ -62,6 +62,10 @@ fun AttractionDetailScreen(
     val context = LocalContext.current
     val application = context.applicationContext as Application
 
+    // ✅ Obtener el origin de los argumentos
+    val navBackStackEntry = navController.currentBackStackEntry
+    val origin = navBackStackEntry?.arguments?.getString("origin") ?: "home"
+
     val viewModel: AttractionDetailViewModel = viewModel(
         factory = AttractionDetailViewModelFactory(application)
     )
@@ -80,22 +84,8 @@ fun AttractionDetailScreen(
 
     Scaffold(
         topBar = { DetailTopBar(navController = navController) },
-        bottomBar = { AppBottomBar(navController = navController) },
-        floatingActionButton = {
-            if (atractivo != null) {
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        // Navegar al mapa con foco en este atractivo
-                        navController.navigate("mapa?focusId=${atractivo.id}")
-                    },
-                    text = { Text("Ver en Mapa") },
-                    icon = { Icon(Icons.Filled.Map, contentDescription = null) }
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.Center
+        bottomBar = { AppBottomBar(navController = navController) }
     ) { innerPadding ->
-
         if (atractivo == null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
@@ -197,8 +187,9 @@ fun AttractionDetailScreen(
                     onGoToPlanner = {
                         navController.navigate("planner")
                     },
+                    // ✅ Navegar al mapa pasando el origin
                     onGoToMap = {
-                        navController.navigate(BottomBarScreen.Mapa.route)
+                        navController.navigate("mapa?focusId=${atractivo.id}&origin=$origin")
                     },
                     onComoLlegar = {
                         NavigationUtils.openGoogleMapsNavigation(

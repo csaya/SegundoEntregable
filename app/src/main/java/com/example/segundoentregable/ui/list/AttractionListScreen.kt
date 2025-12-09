@@ -133,7 +133,8 @@ fun AttractionListScreen(
                             AttractionListItem(
                                 atractivo = atractivo,
                                 onClick = {
-                                    navController.navigate("detail/${atractivo.id}")
+                                    // ✅ CAMBIO: De "detail/${atractivo.id}" a esto:
+                                    navController.navigate("detail/${atractivo.id}?origin=home")
                                 }
                             )
                         }
