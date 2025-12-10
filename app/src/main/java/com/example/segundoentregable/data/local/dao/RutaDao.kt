@@ -92,4 +92,15 @@ interface RutaDao {
         deleteParadasByRuta(ruta.id)
         insertParadas(paradas)
     }
+    
+    // ========== SINCRONIZACIÓN ==========
+    
+    @Query("SELECT * FROM rutas WHERE tipo = 'usuario' AND isSynced = 0")
+    suspend fun getUnsyncedUserRoutes(): List<RutaEntity>
+    
+    @Query("UPDATE rutas SET isSynced = 1 WHERE id = :rutaId")
+    suspend fun markAsSynced(rutaId: String)
+    
+    @Query("UPDATE rutas SET isSynced = 1 WHERE id IN (:ids)")
+    suspend fun markMultipleAsSynced(ids: List<String>)
 }

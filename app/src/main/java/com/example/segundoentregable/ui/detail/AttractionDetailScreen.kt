@@ -12,6 +12,8 @@ import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.AddLocationAlt
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditLocationAlt
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Info
@@ -260,11 +262,39 @@ fun AttractionDetailScreen(
             items(uiState.reviews) { review ->
                 ReviewCard(
                     review = review,
+                    currentUserEmail = uiState.currentUserEmail,
+                    onLike = { viewModel.onLikeReview(it) },
+                    onDislike = { viewModel.onDislikeReview(it) },
+                    onEdit = if (review.userEmail == uiState.currentUserEmail) {
+                        { viewModel.startEditingReview(review) }
+                    } else null,
+                    onDelete = if (review.userEmail == uiState.currentUserEmail) {
+                        { viewModel.showDeleteConfirmation(review) }
+                    } else null,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 )
             }
 
             item { Spacer(Modifier.height(80.dp)) }
+        }
+        
+        // Diálogo de edición de reseña
+        uiState.editingReview?.let { review ->
+            EditReviewDialog(
+                review = review,
+                onDismiss = { viewModel.cancelEditingReview() },
+                onSubmit = { newRating, newComment ->
+                    viewModel.updateReview(review.id, newRating, newComment)
+                }
+            )
+        }
+        
+        // Diálogo de confirmación de eliminación
+        uiState.showDeleteConfirmation?.let { review ->
+            DeleteReviewConfirmationDialog(
+                onConfirm = { viewModel.confirmDeleteReview(review.id) },
+                onDismiss = { viewModel.cancelDeleteConfirmation() }
+            )
         }
     }
 }
@@ -648,6 +678,154 @@ fun AddReviewDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        },
+        shape = RoundedCornerShape(16.dp)
+    )
+}
+
+@Composable
+fun EditReviewDialog(
+    review: com.example.segundoentregable.data.model.Review,
+    onDismiss: () -> Unit,
+    onSubmit: (Float, String) -> Unit
+) {
+    var rating by remember { mutableFloatStateOf(review.rating) }
+    var comment by remember { mutableStateOf(review.comment) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { 
+            Text(
+                "Editar reseña",
+                style = MaterialTheme.typography.headlineSmall
+            ) 
+        },
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    "Tu calificación",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+                Spacer(Modifier.height(8.dp))
+                
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    (1..5).forEach { star ->
+                        IconButton(
+                            onClick = { rating = star.toFloat() },
+                            modifier = Modifier.size(48.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (rating >= star) Icons.Filled.Star else Icons.Filled.StarBorder,
+                                contentDescription = "$star estrellas",
+                                tint = if (rating >= star) Color(0xFFFFB800) else Color.Gray,
+                                modifier = Modifier.size(36.dp)
+                            )
+                        }
+                    }
+                }
+                
+                Text(
+                    text = when (rating.toInt()) {
+                        1 -> "Muy malo"
+                        2 -> "Malo"
+                        3 -> "Regular"
+                        4 -> "Bueno"
+                        5 -> "Excelente"
+                        else -> ""
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFFFFB800)
+                )
+
+                Spacer(Modifier.height(20.dp))
+
+                OutlinedTextField(
+                    value = comment,
+                    onValueChange = { comment = it },
+                    label = { Text("Tu comentario") },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3,
+                    maxLines = 5,
+                    shape = RoundedCornerShape(12.dp)
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onSubmit(rating, comment) },
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(Icons.Filled.Edit, null, Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Guardar Cambios")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        },
+        shape = RoundedCornerShape(16.dp)
+    )
+}
+
+@Composable
+fun DeleteReviewConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                Icons.Filled.Delete,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(48.dp)
+            )
+        },
+        title = { 
+            Text(
+                "Eliminar reseña",
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            ) 
+        },
+        text = {
+            Text(
+                "¿Estás seguro de que quieres eliminar esta reseña? Esta acción no se puede deshacer.",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(Icons.Filled.Delete, null, Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Eliminar")
+            }
+        },
+        dismissButton = {
+            OutlinedButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(8.dp)
+            ) {
                 Text("Cancelar")
             }
         },

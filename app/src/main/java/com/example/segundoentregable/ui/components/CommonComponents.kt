@@ -7,11 +7,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.StarHalf
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material.icons.filled.StarHalf
 import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.*
@@ -89,6 +90,8 @@ fun ReviewCard(
     currentUserEmail: String? = null,
     onLike: ((String) -> Unit)? = null,
     onDislike: ((String) -> Unit)? = null,
+    onEdit: (() -> Unit)? = null,
+    onDelete: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val isOwnReview = currentUserEmail != null && review.userEmail == currentUserEmail
@@ -175,60 +178,99 @@ fun ReviewCard(
                 )
             }
             
-            // Acciones: Útil / No útil
+            // Acciones: Útil / No útil / Editar / Eliminar
             Spacer(Modifier.height(10.dp))
             Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    "¿Útil?",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
-                
-                // Botón Útil
+                // Calificación de utilidad
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .clickable(enabled = onLike != null && !isOwnReview) { onLike?.invoke(review.id) }
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        Icons.Filled.ThumbUp,
-                        contentDescription = "Útil",
-                        modifier = Modifier.size(16.dp),
-                        tint = if (review.likes > 0) MaterialTheme.colorScheme.primary else Color.Gray
-                    )
-                    Spacer(Modifier.width(4.dp))
                     Text(
-                        review.likes.toString(),
+                        "¿Útil?",
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (review.likes > 0) MaterialTheme.colorScheme.primary else Color.Gray
+                        color = Color.Gray
                     )
+                    
+                    // Botón Útil
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable(enabled = onLike != null && !isOwnReview) { onLike?.invoke(review.id) }
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.ThumbUp,
+                            contentDescription = "Útil",
+                            modifier = Modifier.size(16.dp),
+                            tint = if (review.likes > 0) MaterialTheme.colorScheme.primary else Color.Gray
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            review.likes.toString(),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (review.likes > 0) MaterialTheme.colorScheme.primary else Color.Gray
+                        )
+                    }
+                    
+                    // Botón No útil
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable(enabled = onDislike != null && !isOwnReview) { onDislike?.invoke(review.id) }
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.ThumbDown,
+                            contentDescription = "No útil",
+                            modifier = Modifier.size(16.dp),
+                            tint = if (review.dislikes > 0) MaterialTheme.colorScheme.error else Color.Gray
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            review.dislikes.toString(),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (review.dislikes > 0) MaterialTheme.colorScheme.error else Color.Gray
+                        )
+                    }
                 }
                 
-                // Botón No útil
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .clickable(enabled = onDislike != null && !isOwnReview) { onDislike?.invoke(review.id) }
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    Icon(
-                        Icons.Filled.ThumbDown,
-                        contentDescription = "No útil",
-                        modifier = Modifier.size(16.dp),
-                        tint = if (review.dislikes > 0) MaterialTheme.colorScheme.error else Color.Gray
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Text(
-                        review.dislikes.toString(),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if (review.dislikes > 0) MaterialTheme.colorScheme.error else Color.Gray
-                    )
+                // Botones de edición/eliminación (solo para propia reseña)
+                if (isOwnReview && (onEdit != null || onDelete != null)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        onEdit?.let {
+                            IconButton(
+                                onClick = it,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    Icons.Filled.Edit,
+                                    contentDescription = "Editar",
+                                    modifier = Modifier.size(18.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                        onDelete?.let {
+                            IconButton(
+                                onClick = it,
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    Icons.Filled.Delete,
+                                    contentDescription = "Eliminar",
+                                    modifier = Modifier.size(18.dp),
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

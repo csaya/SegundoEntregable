@@ -29,7 +29,11 @@ data class DetailUiState(
     val isReviewDialogVisible: Boolean = false,
     val isSubmittingReview: Boolean = false,
     val isLoggedIn: Boolean = false,
-    val requiresLogin: Boolean = false  // Para mostrar diálogo de login
+    val requiresLogin: Boolean = false,
+    val currentUserEmail: String? = null,
+    // Para edición/eliminación de reseñas
+    val editingReview: Review? = null,
+    val showDeleteConfirmation: Review? = null
 )
 
 // Ahora hereda de ViewModel (no AndroidViewModel) porque ya inyectamos los repos
@@ -91,7 +95,8 @@ class AttractionDetailViewModel(
                         reviews = reviews,
                         isFavorito = isFavorito,
                         isLoggedIn = isLoggedIn,
-                        isLoading = false
+                        isLoading = false,
+                        currentUserEmail = userEmail
                     )
                 }
             } catch (e: Exception) {
@@ -205,6 +210,86 @@ class AttractionDetailViewModel(
                 e.printStackTrace()
             } finally {
                 _uiState.update { it.copy(isSubmittingReview = false) }
+            }
+        }
+    }
+    
+    // ========== CALIFICACIÓN DE RESEÑAS ==========
+    
+    fun onLikeReview(reviewId: String) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    attractionRepo.likeReview(reviewId)
+                }
+                loadData() // Recargar para ver cambios
+            } catch (e: Exception) {
+                Log.e(TAG, "Error al dar like: ${e.message}")
+            }
+        }
+    }
+    
+    fun onDislikeReview(reviewId: String) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    attractionRepo.dislikeReview(reviewId)
+                }
+                loadData()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error al dar dislike: ${e.message}")
+            }
+        }
+    }
+    
+    // ========== EDICIÓN DE RESEÑAS ==========
+    
+    fun startEditingReview(review: Review) {
+        _uiState.update { it.copy(editingReview = review) }
+    }
+    
+    fun cancelEditingReview() {
+        _uiState.update { it.copy(editingReview = null) }
+    }
+    
+    fun updateReview(reviewId: String, newRating: Float, newComment: String) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    attractionRepo.updateReview(reviewId, newRating, newComment)
+                }
+                _uiState.update { it.copy(editingReview = null) }
+                _snackbarEvent.value = "Reseña actualizada"
+                loadData()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error al actualizar reseña: ${e.message}")
+                _snackbarEvent.value = "Error al actualizar reseña"
+            }
+        }
+    }
+    
+    // ========== ELIMINACIÓN DE RESEÑAS ==========
+    
+    fun showDeleteConfirmation(review: Review) {
+        _uiState.update { it.copy(showDeleteConfirmation = review) }
+    }
+    
+    fun cancelDeleteConfirmation() {
+        _uiState.update { it.copy(showDeleteConfirmation = null) }
+    }
+    
+    fun confirmDeleteReview(reviewId: String) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    attractionRepo.deleteReview(reviewId)
+                }
+                _uiState.update { it.copy(showDeleteConfirmation = null) }
+                _snackbarEvent.value = "Reseña eliminada"
+                loadData()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error al eliminar reseña: ${e.message}")
+                _snackbarEvent.value = "Error al eliminar reseña"
             }
         }
     }

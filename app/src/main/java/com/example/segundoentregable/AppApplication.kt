@@ -14,6 +14,7 @@ import com.example.segundoentregable.data.location.LocationService
 import com.example.segundoentregable.data.location.ProximityService
 import com.example.segundoentregable.data.sync.FavoriteSyncWorker
 import com.example.segundoentregable.data.sync.ReviewSyncWorker
+import com.example.segundoentregable.data.sync.RutaSyncWorker
 import com.example.segundoentregable.utils.DataImporter
 import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
@@ -55,7 +56,7 @@ class AppApplication : Application() {
     }
 
     val rutaRepository by lazy {
-        RutaRepository(database.rutaDao())
+        RutaRepository(database.rutaDao(), this)
     }
 
     val userRouteRepository by lazy {
@@ -93,6 +94,7 @@ class AppApplication : Application() {
         // Programar sincronización periódica
         ReviewSyncWorker.schedulePeriodicSync(this)
         FavoriteSyncWorker.schedulePeriodicSync(this)
+        RutaSyncWorker.schedulePeriodicSync(this)
         Log.d(TAG, "WorkManager configurado para sincronización")
     }
 

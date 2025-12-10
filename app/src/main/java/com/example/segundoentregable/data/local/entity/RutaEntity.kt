@@ -16,7 +16,8 @@ import androidx.room.PrimaryKey
     indices = [
         Index("categoria"),
         Index("tipo"),
-        Index("userId")
+        Index("userId"),
+        Index("isSynced")
     ]
 )
 data class RutaEntity(
@@ -38,7 +39,8 @@ data class RutaEntity(
     val userId: String? = null,         // Email del usuario dueño
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L,
-    val tiempoEstimadoMinutos: Int = 0
+    val tiempoEstimadoMinutos: Int = 0,
+    val isSynced: Boolean = false       // Para sincronización offline-first
 ) {
     companion object {
         const val TIPO_PREDEFINIDA = "predefinida"

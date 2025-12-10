@@ -1,20 +1,29 @@
 package com.example.segundoentregable.data.repository
 
+import android.content.Context
+import android.util.Log
+import com.example.segundoentregable.data.firebase.FirestoreRutaService
 import com.example.segundoentregable.data.local.dao.RutaDao
 import com.example.segundoentregable.data.local.entity.AtractivoEntity
 import com.example.segundoentregable.data.local.entity.RutaEntity
 import com.example.segundoentregable.data.local.entity.RutaParadaEntity
 import com.example.segundoentregable.data.model.AtractivoTuristico
+import com.example.segundoentregable.data.sync.RutaSyncWorker
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+
+private const val TAG = "RutaRepository"
 
 /**
  * Repositorio para gestionar rutas turísticas.
  * Soporta tanto rutas predefinidas como rutas de usuario.
  */
 class RutaRepository(
-    private val rutaDao: RutaDao
+    private val rutaDao: RutaDao,
+    private val context: Context? = null
 ) {
+    private val firestoreService = FirestoreRutaService()
     /**
      * Obtener todas las rutas como Flow
      */
@@ -109,7 +118,8 @@ class RutaRepository(
             userId = userId,
             createdAt = now,
             updatedAt = now,
-            tiempoEstimadoMinutos = tiempoEstimadoMinutos
+            tiempoEstimadoMinutos = tiempoEstimadoMinutos,
+            isSynced = false
         )
 
         val paradas = atractivos.mapIndexed { index, atractivo ->
@@ -123,6 +133,10 @@ class RutaRepository(
         }
 
         rutaDao.saveUserRouteWithParadas(ruta, paradas)
+        
+        // Disparar sincronización
+        context?.let { RutaSyncWorker.syncNow(it) }
+        
         return routeId
     }
 
@@ -132,6 +146,16 @@ class RutaRepository(
     suspend fun deleteUserRoute(rutaId: String) {
         rutaDao.deleteParadasByRuta(rutaId)
         rutaDao.deleteUserRoute(rutaId)
+        
+        // Eliminar de Firebase
+        withContext(Dispatchers.IO) {
+            try {
+                firestoreService.deleteRuta(rutaId)
+                Log.d(TAG, "Ruta eliminada de Firebase: $rutaId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error eliminando ruta de Firebase: ${e.message}")
+            }
+        }
     }
 
     /**

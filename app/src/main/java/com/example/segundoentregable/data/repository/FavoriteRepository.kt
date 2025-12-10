@@ -1,37 +1,73 @@
 package com.example.segundoentregable.data.repository
 
 import android.content.Context
+import android.util.Log
+import com.example.segundoentregable.data.firebase.FirestoreFavoriteService
 import com.example.segundoentregable.data.local.dao.FavoritoDao
 import com.example.segundoentregable.data.local.entity.FavoritoEntity
 import com.example.segundoentregable.data.sync.FavoriteSyncWorker
-import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+private const val TAG = "FavoriteRepository"
 
 /**
  * Repositorio para favoritos con soporte offline-first.
  * Los favoritos se guardan localmente y se sincronizan con Firebase cuando hay conexión.
+ * 
+ * ID determinístico: {userEmail}_{attractionId} para evitar duplicados
  */
 class FavoriteRepository(
     private val favoritoDao: FavoritoDao,
     private val context: Context
 ) {
+    private val firestoreService = FirestoreFavoriteService()
+    
+    /**
+     * Genera un ID determinístico para evitar duplicados
+     */
+    private fun generateFavoriteId(userEmail: String, attractionId: String): String {
+        return "${userEmail}_$attractionId"
+    }
 
-    suspend fun toggleFavorito(userEmail: String, attractionId: String) {
+    suspend fun toggleFavorito(userEmail: String, attractionId: String): Boolean {
         val count = favoritoDao.isFavorito(userEmail, attractionId)
+        val wasAdded: Boolean
+        
         if (count > 0) {
+            // Eliminar favorito
+            val favoriteId = generateFavoriteId(userEmail, attractionId)
             favoritoDao.deleteFavorito(userEmail, attractionId)
+            
+            // Intentar eliminar de Firebase inmediatamente
+            withContext(Dispatchers.IO) {
+                try {
+                    firestoreService.deleteFavorite(favoriteId)
+                    Log.d(TAG, "Favorito eliminado de Firebase: $favoriteId")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error eliminando de Firebase: ${e.message}")
+                    // Se intentará de nuevo en la próxima sincronización
+                }
+            }
+            wasAdded = false
         } else {
+            // Agregar favorito con ID determinístico
+            val favoriteId = generateFavoriteId(userEmail, attractionId)
             favoritoDao.insertFavorito(
                 FavoritoEntity(
-                    id = UUID.randomUUID().toString(),
+                    id = favoriteId,
                     userEmail = userEmail,
                     attractionId = attractionId,
                     isSynced = false,
                     addedAt = System.currentTimeMillis()
                 )
             )
+            wasAdded = true
         }
+        
         // Disparar sincronización inmediata
         FavoriteSyncWorker.syncNow(context)
+        return wasAdded
     }
 
     suspend fun isFavorito(userEmail: String, attractionId: String): Boolean {

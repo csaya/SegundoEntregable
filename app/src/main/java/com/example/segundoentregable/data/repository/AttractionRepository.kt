@@ -134,6 +134,26 @@ class AttractionRepository(
         )
         reviewDao.insertReviews(listOf(newReview))
     }
+    
+    // ========== CALIFICACIÓN DE RESEÑAS ==========
+    
+    suspend fun likeReview(reviewId: String) {
+        reviewDao.incrementLikes(reviewId)
+    }
+    
+    suspend fun dislikeReview(reviewId: String) {
+        reviewDao.incrementDislikes(reviewId)
+    }
+    
+    // ========== EDICIÓN/ELIMINACIÓN DE RESEÑAS ==========
+    
+    suspend fun updateReview(reviewId: String, rating: Float, comment: String) {
+        reviewDao.updateReview(reviewId, rating, comment)
+    }
+    
+    suspend fun deleteReview(reviewId: String) {
+        reviewDao.deleteReview(reviewId)
+    }
 
     private fun ReviewEntity.toModel(): Review {
         return Review(

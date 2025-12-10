@@ -1,166 +1,262 @@
 {
   "rutas": [
     {
-      "id": "ruta_sillar",
-      "nombre": "Ruta del Sillar",
-      "descripcion": "Descubre el origen del sillar blanco que da identidad a Arequipa. Visita las canteras donde se extrae esta piedra volcánica y conoce el trabajo artesanal de los cortadores.",
-      "categoria": "cultural",
-      "duracionEstimada": "4-5 horas",
-      "distanciaTotal": 25.5,
-      "dificultad": "moderada",
-      "imagenPrincipal": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Cantera_de_sillar_en_A%C3%B1ashuayco.jpg/1280px-Cantera_de_sillar_en_A%C3%B1ashuayco.jpg",
-      "puntoInicio": "Plaza de Armas",
-      "puntoFin": "Canteras de Añashuayco",
-      "recomendaciones": "Llevar protector solar, agua y calzado cómodo. Mejor visitar por la mañana.",
+      "id": "ruta_001",
+      "nombre": "City Tour Arequipa",
+      "descripcion": "Recorrido clásico por el centro histórico Patrimonio UNESCO. Visita la Plaza de Armas, Catedral Basílica, Iglesia La Compañía, el famoso Monasterio de Santa Catalina y el Mirador de Yanahuara con vistas panorámicas del volcán Misti.",
+      "categoria": "Cultural - Histórico",
+      "duracionEstimada": "Medio día (4 horas)",
+      "distanciaTotal": 5.2,
+      "dificultad": "Fácil",
+      "imagenPrincipal": "https://consultasenlinea.mincetur.gob.pe/fichaInventario/foto.aspx?cod=625904",
+      "puntoInicio": "Plaza de Armas de Arequipa",
+      "puntoFin": "Mirador de Yanahuara",
+      "recomendaciones": "Usar ropa cómoda y sombrero. Protector solar obligatorio. Entrada Santa Catalina S/.45. Muchos sitios cierran 12:00-15:00. Iniciar 09:00-14:00 hrs.",
+      "tipo": "predefinida",
+      "tiempoEstimadoMinutos": 240,
       "orden": 1
     },
     {
-      "id": "ruta_centro_historico",
-      "nombre": "Centro Histórico Colonial",
-      "descripcion": "Recorre los principales monumentos del centro histórico de Arequipa, declarado Patrimonio de la Humanidad por la UNESCO. Iglesias, casonas y plazas te esperan.",
-      "categoria": "cultural",
-      "duracionEstimada": "3-4 horas",
-      "distanciaTotal": 3.2,
-      "dificultad": "facil",
-      "imagenPrincipal": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Arequipa%2C_Plaza_de_Armas_and_Volc%C3%A1n_Misti_-_panoramio.jpg/1280px-Arequipa%2C_Plaza_de_Armas_and_Volc%C3%A1n_Misti_-_panoramio.jpg",
-      "puntoInicio": "Plaza de Armas",
-      "puntoFin": "Barrio de San Lázaro",
-      "recomendaciones": "Visitar temprano para evitar el sol. Los domingos hay menos tráfico.",
+      "id": "ruta_002",
+      "nombre": "Ruta del Sillar",
+      "descripcion": "Tour icónico desde 2014 que explora el origen de la 'Ciudad Blanca'. Visita las canteras activas de Añashuayco donde artesanos tallan la piedra volcánica blanca. Incluye Mirador de Yanahuara y su iglesia colonial. Tour creado por emprendedores locales.",
+      "categoria": "Cultural - Artesanal",
+      "duracionEstimada": "Medio día (4 horas)",
+      "distanciaTotal": 12.8,
+      "dificultad": "Fácil",
+      "imagenPrincipal": "https://consultasenlinea.mincetur.gob.pe/fichaInventario/foto.aspx?cod=605690",
+      "puntoInicio": "Mirador de Yanahuara",
+      "puntoFin": "Canteras de Añashuayco",
+      "recomendaciones": "Calzado cerrado para canteras. Lentes de sol (polvo de sillar). Sombrero y bloqueador. Entrada canteras S/.5. Contratar guía local autorizado. Mejor horario: 14:00-18:00.",
+      "tipo": "predefinida",
+      "tiempoEstimadoMinutos": 240,
       "orden": 2
     },
     {
-      "id": "ruta_gastronomica",
-      "nombre": "Sabores de Arequipa",
-      "descripcion": "Degusta los platos típicos arequipeños en las tradicionales picanterías. Desde el rocoto relleno hasta el adobo, una experiencia culinaria única.",
-      "categoria": "gastronomica",
-      "duracionEstimada": "5-6 horas",
-      "distanciaTotal": 8.0,
-      "dificultad": "facil",
-      "imagenPrincipal": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Rocoto_relleno.jpg/1280px-Rocoto_relleno.jpg",
-      "puntoInicio": "Mercado San Camilo",
-      "puntoFin": "Picantería La Lucila",
-      "recomendaciones": "Reservar con anticipación en picanterías. Ir con hambre!",
+      "id": "ruta_003",
+      "nombre": "Tour Campiña Arequipeña",
+      "descripcion": "Escapada a la tradicional campiña de Arequipa. Recorre La Mansión del Fundador (s.XVI), el Molino de Sabandía (primer molino colonial), y los pueblos tradicionales de Characato y Paucarpata. Paisajes de andenería y vida rural arequipeña.",
+      "categoria": "Cultural - Rural",
+      "duracionEstimada": "Medio día (4 horas)",
+      "distanciaTotal": 22.0,
+      "dificultad": "Fácil",
+      "imagenPrincipal": "https://consultasenlinea.mincetur.gob.pe/fichaInventario/foto.aspx?cod=292114",
+      "puntoInicio": "Centro de Arequipa",
+      "puntoFin": "Pueblo de Characato",
+      "recomendaciones": "Entrada Mansión S/.15, Molino S/.5. Probar rocoto relleno en Characato. Ideal domingos para ver plaza de pueblo. Llevar efectivo. Tour 14:00-18:00 hrs.",
+      "tipo": "predefinida",
+      "tiempoEstimadoMinutos": 240,
       "orden": 3
     },
     {
-      "id": "ruta_campiña",
-      "nombre": "Campiña Arequipeña",
-      "descripcion": "Explora los pueblos tradicionales de la campiña: Sachaca, Tiabaya, y Sabandía. Paisajes verdes, molinos coloniales y tranquilidad.",
-      "categoria": "naturaleza",
-      "duracionEstimada": "Medio día",
-      "distanciaTotal": 15.0,
-      "dificultad": "facil",
-      "imagenPrincipal": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Molino_de_Sabandia.jpg/1280px-Molino_de_Sabandia.jpg",
-      "puntoInicio": "Centro de Arequipa",
-      "puntoFin": "Molino de Sabandía",
-      "recomendaciones": "Ideal para ciclismo. Llevar cámara para los paisajes.",
+      "id": "ruta_004",
+      "nombre": "Tour Reserva Nacional Salinas y Aguada Blanca",
+      "descripcion": "Expedición a la Reserva Nacional (4,300 msnm) hogar de vicuñas, alpacas, llamas y flamencos. Observa la fauna andina en bofedales y lagunas. Paisaje de puna con vistas a los volcanes Misti, Chachani y Pichu Pichu. Tour de medio día o día completo.",
+      "categoria": "Naturaleza - Fauna",
+      "duracionEstimada": "Medio día (5 horas)",
+      "distanciaTotal": 85.0,
+      "dificultad": "Moderado",
+      "imagenPrincipal": "https://consultasenlinea.mincetur.gob.pe/fichaInventario/foto.aspx?cod=526840",
+      "puntoInicio": "Arequipa",
+      "puntoFin": "Laguna Salinas / Patahuasi",
+      "recomendaciones": "Salir muy temprano (05:00). Ropa abrigada (0-10°C). Protección UV. Aclimatarse 1 día antes. Llevar coca/mate de coca para mal de altura. Evitar enero-marzo (lluvias).",
+      "tipo": "predefinida",
+      "tiempoEstimadoMinutos": 300,
       "orden": 4
+    },
+    {
+      "id": "ruta_005",
+      "nombre": "Ascenso Volcán Misti - 2 Días",
+      "descripcion": "Expedición de andinismo al volcán guardián de Arequipa (5,822 msnm). Día 1: Ascenso a campamento base (4,600m). Día 2: Cumbre al amanecer y descenso. Vistas espectaculares de Arequipa y volcanes vecinos. Requiere buena condición física.",
+      "categoria": "Aventura - Andinismo",
+      "duracionEstimada": "2 días / 1 noche",
+      "distanciaTotal": 18.0,
+      "dificultad": "Difícil",
+      "imagenPrincipal": "https://consultasenlinea.mincetur.gob.pe/fichaInventario/foto.aspx?cod=582517",
+      "puntoInicio": "Arequipa (refugio ruta sur o norte)",
+      "puntoFin": "Cumbre Volcán Misti 5,822m",
+      "recomendaciones": "OBLIGATORIO: agencia certificada con guía AGMP. Aclimatarse 2-3 días. Sleeping -15°C, ropa térmica. Mejor época: abril-noviembre. Permiso SERNANP (ruta norte). Examen médico recomendado.",
+      "tipo": "predefinida",
+      "tiempoEstimadoMinutos": 2880,
+      "orden": 5
+    },
+    {
+      "id": "ruta_006",
+      "nombre": "Tour Cuevas de Sumbay - Arte Rupestre",
+      "descripcion": "Full day arqueológico a las Cuevas de Sumbay (4,127 msnm) con más de 500 pinturas rupestres de 8,000 años. Arte parietal con escenas de caza de camélidos. Atraviesa la Reserva de Salinas observando vicuñas. Patrimonio Cultural de la Nación.",
+      "categoria": "Cultural - Arqueológico",
+      "duracionEstimada": "Día completo (8 horas)",
+      "distanciaTotal": 88.0,
+      "dificultad": "Moderado",
+      "imagenPrincipal": "https://consultasenlinea.mincetur.gob.pe/fichaInventario/foto.aspx?cod=518196",
+      "puntoInicio": "Arequipa",
+      "puntoFin": "Cuevas de Sumbay",
+      "recomendaciones": "Salir 06:00. Ropa muy abrigada (-5°C posible). Protección UV extrema. Aclimatarse previamente. NO tocar pinturas. Guía obligatorio. Evitar enero-marzo. Entrada comunal S/.10.",
+      "tipo": "predefinida",
+      "tiempoEstimadoMinutos": 480,
+      "orden": 6
+    },
+    {
+      "id": "ruta_007",
+      "nombre": "Tour Aguas Termales de Yura",
+      "descripcion": "Escapada de relax y bienestar a las pozas termales medicinales de Yura (30 km). Cuatro pozas con propiedades terapéuticas (29-32°C): sulfurosas, ferruginosas y alcalinas. Trekking opcional a cataratas. Entorno natural con vista a volcanes.",
+      "categoria": "Naturaleza - Wellness",
+      "duracionEstimada": "Medio día (4 horas)",
+      "distanciaTotal": 30.0,
+      "dificultad": "Fácil",
+      "imagenPrincipal": "https://consultasenlinea.mincetur.gob.pe/fichaInventario/foto.aspx?cod=297504",
+      "puntoInicio": "Arequipa",
+      "puntoFin": "Complejo Termal Yura",
+      "recomendaciones": "Llevar traje de baño y toalla. Máximo 1 hora en pozas. Entrada S/.10. Consultar contraindicaciones médicas. Horario pozas: 08:00-14:00. Llevar snacks (pocos restaurantes).",
+      "tipo": "predefinida",
+      "tiempoEstimadoMinutos": 240,
+      "orden": 7
     }
   ],
   "paradas": [
     {
-      "id": "p_sillar_1",
-      "rutaId": "ruta_sillar",
+      "id": "parada_001_001",
+      "rutaId": "ruta_001",
       "atractivoId": "mincetur_972",
       "orden": 1,
       "tiempoSugerido": "30 min",
-      "notas": "Punto de encuentro - Plaza de Armas"
+      "notas": "Plaza de Armas. Punto de encuentro. Explicación historia fundacional. Foto panorámica pileta Tuturutu."
     },
     {
-      "id": "p_sillar_2",
-      "rutaId": "ruta_sillar",
-      "atractivoId": "mincetur_974",
-      "orden": 2,
-      "tiempoSugerido": "1 hora",
-      "notas": "Monasterio Santa Catalina - observar sillar"
-    },
-    {
-      "id": "p_sillar_3",
-      "rutaId": "ruta_sillar",
-      "atractivoId": "mincetur_3941",
-      "orden": 3,
-      "tiempoSugerido": "2 horas",
-      "notas": "Canteras de Añashuayco - origen del sillar"
-    },
-    {
-      "id": "p_centro_1",
-      "rutaId": "ruta_centro_historico",
-      "atractivoId": "mincetur_972",
-      "orden": 1,
-      "tiempoSugerido": "45 min",
-      "notas": "Plaza de Armas y Catedral"
-    },
-    {
-      "id": "p_centro_2",
-      "rutaId": "ruta_centro_historico",
+      "id": "parada_001_002",
+      "rutaId": "ruta_001",
       "atractivoId": "mincetur_973",
       "orden": 2,
-      "tiempoSugerido": "45 min",
-      "notas": "Basílica Catedral de Arequipa"
-    },
-    {
-      "id": "p_centro_3",
-      "rutaId": "ruta_centro_historico",
-      "atractivoId": "mincetur_974",
-      "orden": 3,
-      "tiempoSugerido": "2 horas",
-      "notas": "Monasterio Santa Catalina"
-    },
-    {
-      "id": "p_centro_4",
-      "rutaId": "ruta_centro_historico",
-      "atractivoId": "mincetur_975",
-      "orden": 4,
       "tiempoSugerido": "30 min",
-      "notas": "Iglesia de la Compañía"
+      "notas": "Basílica Catedral. Órgano belga más grande de Sudamérica. Museo Catedralicio opcional (entrada adicional)."
     },
     {
-      "id": "p_centro_5",
-      "rutaId": "ruta_centro_historico",
+      "id": "parada_001_003",
+      "rutaId": "ruta_001",
+      "atractivoId": "mincetur_975",
+      "orden": 3,
+      "tiempoSugerido": "30 min",
+      "notas": "Iglesia La Compañía. Fachada barroca mestiza. Capilla San Ignacio con frescos policromos (entrada S/.5)."
+    },
+    {
+      "id": "parada_001_004",
+      "rutaId": "ruta_001",
+      "atractivoId": "mincetur_974",
+      "orden": 4,
+      "tiempoSugerido": "2 horas",
+      "notas": "Monasterio Santa Catalina. Ciudadela colonial 20,000m². Recorrido calles Toledo, Sevilla, claustros. Entrada S/.45."
+    },
+    {
+      "id": "parada_001_005",
+      "rutaId": "ruta_001",
       "atractivoId": "mincetur_597",
       "orden": 5,
       "tiempoSugerido": "30 min",
-      "notas": "Mirador de Yanahuara"
+      "notas": "Mirador Yanahuara. Arcos de sillar con poesía arequipeña. Vista panorámica Misti-Chachani-Pichu Pichu. Artesanías."
     },
     {
-      "id": "p_centro_6",
-      "rutaId": "ruta_centro_historico",
-      "atractivoId": "mincetur_989",
-      "orden": 6,
-      "tiempoSugerido": "30 min",
-      "notas": "Barrio de San Lázaro"
-    },
-    {
-      "id": "p_gastro_1",
-      "rutaId": "ruta_gastronomica",
-      "atractivoId": "mincetur_985",
+      "id": "parada_002_001",
+      "rutaId": "ruta_002",
+      "atractivoId": "mincetur_597",
       "orden": 1,
-      "tiempoSugerido": "1 hora",
-      "notas": "Centro Artesanal Fundo El Fierro"
-    },
-    {
-      "id": "p_gastro_2",
-      "rutaId": "ruta_gastronomica",
-      "atractivoId": "mincetur_972",
-      "orden": 2,
       "tiempoSugerido": "30 min",
-      "notas": "Plaza de Armas - cafés tradicionales"
+      "notas": "Inicio en Mirador Yanahuara. Explicación historia del sillar y arquitectura arequipeña."
     },
     {
-      "id": "p_campiña_1",
-      "rutaId": "ruta_campiña",
+      "id": "parada_002_002",
+      "rutaId": "ruta_002",
+      "atractivoId": "mincetur_588",
+      "orden": 2,
+      "tiempoSugerido": "20 min",
+      "notas": "Iglesia San Juan Bautista Yanahuara. Ejemplo arquitectura sillar colonial. Fachada barroca mestiza 1750."
+    },
+    {
+      "id": "parada_002_003",
+      "rutaId": "ruta_002",
+      "atractivoId": "mincetur_3941",
+      "orden": 3,
+      "tiempoSugerido": "2 horas",
+      "notas": "Canteras Añashuayco. Observar artesanos tallando bloques. Farallones 40m. Opcional: taller de tallado. Entrada S/.5."
+    },
+    {
+      "id": "parada_003_001",
+      "rutaId": "ruta_003",
       "atractivoId": "mincetur_596",
       "orden": 1,
-      "tiempoSugerido": "1.5 horas",
-      "notas": "Mansión del Fundador"
+      "tiempoSugerido": "1 hora",
+      "notas": "Mansión del Fundador (s.XVI). Casa-museo Garcí Manuel de Carbajal. Salones coloniales y capilla. Entrada S/.15."
     },
     {
-      "id": "p_campiña_2",
-      "rutaId": "ruta_campiña",
+      "id": "parada_003_002",
+      "rutaId": "ruta_003",
+      "atractivoId": "mincetur_590",
+      "orden": 2,
+      "tiempoSugerido": "45 min",
+      "notas": "Molino de Sabandía (1621). Primer molino de piedra colonial restaurado. Mecanismo original de molienda."
+    },
+    {
+      "id": "parada_003_003",
+      "rutaId": "ruta_003",
       "atractivoId": "mincetur_589",
+      "orden": 3,
+      "tiempoSugerido": "1 hora",
+      "notas": "Pueblo Characato. Plaza tradicional e iglesia San Juan Bautista. Degustación rocoto relleno y chicha de jora."
+    },
+    {
+      "id": "parada_004_001",
+      "rutaId": "ruta_004",
+      "atractivoId": "mincetur_610",
+      "orden": 1,
+      "tiempoSugerido": "3 horas",
+      "notas": "Reserva Salinas y Aguada Blanca. Avistamiento vicuñas, alpacas, flamencos. Bofedales y lagunas 4,300m. Ingreso libre."
+    },
+    {
+      "id": "parada_004_002",
+      "rutaId": "ruta_004",
+      "atractivoId": "mincetur_3942",
+      "orden": 2,
+      "tiempoSugerido": "30 min",
+      "notas": "Mirador Patahuasi. Vista panorámica volcanes y puna. Puesto artesanías fibra de alpaca. Baños y cafetería."
+    },
+    {
+      "id": "parada_005_001",
+      "rutaId": "ruta_005",
+      "atractivoId": "mincetur_599",
+      "orden": 1,
+      "tiempoSugerido": "2 días",
+      "notas": "DÍA 1: Refugio (3,400m) - Campamento base (4,600m) 6-7hrs. DÍA 2: Cumbre (5,822m) 4-5hrs subida, 3-4hrs bajada total."
+    },
+    {
+      "id": "parada_006_001",
+      "rutaId": "ruta_006",
+      "atractivoId": "mincetur_610",
+      "orden": 1,
+      "tiempoSugerido": "2 horas",
+      "notas": "Atravesar Reserva Salinas. Observación fauna: vicuñas, vizcachas, flamencos. Paradas fotográficas volcanes."
+    },
+    {
+      "id": "parada_006_002",
+      "rutaId": "ruta_006",
+      "atractivoId": "mincetur_598",
+      "orden": 2,
+      "tiempoSugerido": "2.5 horas",
+      "notas": "Cuevas Sumbay (4,127m). 9 abrigos rocosos. 500+ pinturas 8,000 años. Cueva Su-3 principal (enrejada). Guía comunal."
+    },
+    {
+      "id": "parada_007_001",
+      "rutaId": "ruta_007",
+      "atractivoId": "mincetur_606",
+      "orden": 1,
+      "tiempoSugerido": "2 horas",
+      "notas": "Complejo Termal Yura. 4 pozas: Tadeo Haenke, Tigre, Zamácola, Fierro Viejo (29-32°C). Entrada S/.10. Máx 1hr baño."
+    },
+    {
+      "id": "parada_007_002",
+      "rutaId": "ruta_007",
+      "atractivoId": "mincetur_3943",
       "orden": 2,
       "tiempoSugerido": "1 hora",
-      "notas": "Pueblo de Characato"
+      "notas": "Opcional: Trekking Catarata Yura. Sendero 45min. Catarata 15m altura. Paisaje rocoso y vegetación ribereña."
     }
   ]
 }
