@@ -86,50 +86,150 @@ fun RatingBar(
 @Composable
 fun ReviewCard(
     review: Review,
+    currentUserEmail: String? = null,
+    onLike: ((String) -> Unit)? = null,
+    onDislike: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
+    val isOwnReview = currentUserEmail != null && review.userEmail == currentUserEmail
+    
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        ),
+        shape = RoundedCornerShape(12.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        Column(
+            modifier = Modifier.padding(12.dp)
         ) {
-            // Placeholder imagen de perfil
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(Color.LightGray),
-                contentAlignment = Alignment.Center
+            // Header: Avatar, nombre, tiempo
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(Icons.Filled.Person, contentDescription = null, tint = Color.Gray)
+                // Avatar con inicial
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = review.userName.firstOrNull()?.uppercase() ?: "U",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                
+                Spacer(Modifier.width(12.dp))
+                
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            review.userName, 
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        if (isOwnReview) {
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                "(Tú)",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    Text(
+                        review.getRelativeTime(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                }
+                
+                // Rating
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Filled.Star,
+                        contentDescription = null,
+                        tint = Color(0xFFFFB800),
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        String.format("%.1f", review.rating),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
-            Column {
-                Text(review.userName, style = MaterialTheme.typography.titleMedium)
-                Text(review.date, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            
+            // Comentario
+            if (review.comment.isNotBlank()) {
+                Spacer(Modifier.height(10.dp))
+                Text(
+                    review.comment, 
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
-        }
-
-        Spacer(Modifier.height(8.dp))
-        RatingBar(rating = review.rating)
-        Spacer(Modifier.height(8.dp))
-        Text(review.comment, style = MaterialTheme.typography.bodyMedium)
-        Spacer(Modifier.height(8.dp))
-
-        // Likes/Dislikes
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Filled.ThumbUp, contentDescription = "Likes", Modifier.size(16.dp), tint = Color.Gray)
-                Spacer(Modifier.width(4.dp))
-                Text(review.likes.toString(), style = MaterialTheme.typography.bodySmall)
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Filled.ThumbDown, contentDescription = "Dislikes", Modifier.size(16.dp), tint = Color.Gray)
-                Spacer(Modifier.width(4.dp))
-                Text(review.dislikes.toString(), style = MaterialTheme.typography.bodySmall)
+            
+            // Acciones: Útil / No útil
+            Spacer(Modifier.height(10.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "¿Útil?",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+                
+                // Botón Útil
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable(enabled = onLike != null && !isOwnReview) { onLike?.invoke(review.id) }
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.ThumbUp,
+                        contentDescription = "Útil",
+                        modifier = Modifier.size(16.dp),
+                        tint = if (review.likes > 0) MaterialTheme.colorScheme.primary else Color.Gray
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        review.likes.toString(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (review.likes > 0) MaterialTheme.colorScheme.primary else Color.Gray
+                    )
+                }
+                
+                // Botón No útil
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable(enabled = onDislike != null && !isOwnReview) { onDislike?.invoke(review.id) }
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.ThumbDown,
+                        contentDescription = "No útil",
+                        modifier = Modifier.size(16.dp),
+                        tint = if (review.dislikes > 0) MaterialTheme.colorScheme.error else Color.Gray
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        review.dislikes.toString(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (review.dislikes > 0) MaterialTheme.colorScheme.error else Color.Gray
+                    )
+                }
             }
         }
     }

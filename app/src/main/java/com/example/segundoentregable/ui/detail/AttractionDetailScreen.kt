@@ -21,6 +21,8 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -569,39 +571,86 @@ fun AddReviewDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Escribe tu reseña") },
+        title = { 
+            Text(
+                "¿Qué te pareció?",
+                style = MaterialTheme.typography.headlineSmall
+            ) 
+        },
         text = {
-            Column {
-                Text("Calificación:")
-                // Slider simple para rating (puedes mejorarlo con estrellas clicables)
-                Slider(
-                    value = rating,
-                    onValueChange = { rating = it },
-                    valueRange = 1f..5f,
-                    steps = 3
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // Estrellas clicables
+                Text(
+                    "Tu calificación",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
                 )
-                Text(text = "${rating.toInt()} Estrellas", style = MaterialTheme.typography.bodySmall)
+                Spacer(Modifier.height(8.dp))
+                
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    (1..5).forEach { star ->
+                        IconButton(
+                            onClick = { rating = star.toFloat() },
+                            modifier = Modifier.size(48.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (rating >= star) Icons.Filled.Star else Icons.Filled.StarBorder,
+                                contentDescription = "$star estrellas",
+                                tint = if (rating >= star) Color(0xFFFFB800) else Color.Gray,
+                                modifier = Modifier.size(36.dp)
+                            )
+                        }
+                    }
+                }
+                
+                Text(
+                    text = when (rating.toInt()) {
+                        1 -> "Muy malo"
+                        2 -> "Malo"
+                        3 -> "Regular"
+                        4 -> "Bueno"
+                        5 -> "Excelente"
+                        else -> ""
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFFFFB800)
+                )
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(20.dp))
 
                 OutlinedTextField(
                     value = comment,
                     onValueChange = { comment = it },
-                    label = { Text("Comentario") },
+                    label = { Text("Cuéntanos tu experiencia (opcional)") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 3
+                    minLines = 3,
+                    maxLines = 5,
+                    shape = RoundedCornerShape(12.dp)
                 )
             }
         },
         confirmButton = {
-            Button(onClick = { onSubmit(rating, comment) }) {
-                Text("Publicar")
+            Button(
+                onClick = { onSubmit(rating, comment) },
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(Icons.Filled.Star, null, Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Publicar Reseña")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text("Cancelar")
             }
-        }
+        },
+        shape = RoundedCornerShape(16.dp)
     )
 }

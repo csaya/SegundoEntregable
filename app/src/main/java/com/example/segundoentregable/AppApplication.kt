@@ -12,6 +12,7 @@ import com.example.segundoentregable.data.repository.UserRepository
 import com.example.segundoentregable.data.repository.UserRouteRepository
 import com.example.segundoentregable.data.location.LocationService
 import com.example.segundoentregable.data.location.ProximityService
+import com.example.segundoentregable.data.sync.FavoriteSyncWorker
 import com.example.segundoentregable.data.sync.ReviewSyncWorker
 import com.example.segundoentregable.utils.DataImporter
 import com.google.firebase.FirebaseApp
@@ -50,7 +51,7 @@ class AppApplication : Application() {
     }
 
     val favoriteRepository by lazy {
-        FavoriteRepository(database.favoritoDao())
+        FavoriteRepository(database.favoritoDao(), this)
     }
 
     val rutaRepository by lazy {
@@ -89,9 +90,10 @@ class AppApplication : Application() {
         // Importar datos desde assets si no se ha hecho antes
         importDataIfNeeded()
 
-        // Programar sincronización periódica de reseñas
+        // Programar sincronización periódica
         ReviewSyncWorker.schedulePeriodicSync(this)
-        Log.d(TAG, "WorkManager configurado para sincronización de reseñas")
+        FavoriteSyncWorker.schedulePeriodicSync(this)
+        Log.d(TAG, "WorkManager configurado para sincronización")
     }
 
     private fun importDataIfNeeded() {

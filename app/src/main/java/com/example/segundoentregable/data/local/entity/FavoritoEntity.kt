@@ -18,12 +18,15 @@ import androidx.room.PrimaryKey
     ],
     indices = [
         Index("userEmail"),
-        Index("attractionId")
+        Index("attractionId"),
+        Index("isSynced")
     ]
 )
 data class FavoritoEntity(
     @PrimaryKey
     val id: String,
     val userEmail: String,
-    val attractionId: String
+    val attractionId: String,
+    val isSynced: Boolean = false,
+    val addedAt: Long = System.currentTimeMillis()
 )

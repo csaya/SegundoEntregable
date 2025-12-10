@@ -1,11 +1,19 @@
 package com.example.segundoentregable.data.repository
 
+import android.content.Context
 import com.example.segundoentregable.data.local.dao.FavoritoDao
 import com.example.segundoentregable.data.local.entity.FavoritoEntity
+import com.example.segundoentregable.data.sync.FavoriteSyncWorker
 import java.util.UUID
 
-// RECIBE DAO, NO CONTEXTO
-class FavoriteRepository(private val favoritoDao: FavoritoDao) {
+/**
+ * Repositorio para favoritos con soporte offline-first.
+ * Los favoritos se guardan localmente y se sincronizan con Firebase cuando hay conexión.
+ */
+class FavoriteRepository(
+    private val favoritoDao: FavoritoDao,
+    private val context: Context
+) {
 
     suspend fun toggleFavorito(userEmail: String, attractionId: String) {
         val count = favoritoDao.isFavorito(userEmail, attractionId)
@@ -16,10 +24,14 @@ class FavoriteRepository(private val favoritoDao: FavoritoDao) {
                 FavoritoEntity(
                     id = UUID.randomUUID().toString(),
                     userEmail = userEmail,
-                    attractionId = attractionId
+                    attractionId = attractionId,
+                    isSynced = false,
+                    addedAt = System.currentTimeMillis()
                 )
             )
         }
+        // Disparar sincronización inmediata
+        FavoriteSyncWorker.syncNow(context)
     }
 
     suspend fun isFavorito(userEmail: String, attractionId: String): Boolean {
@@ -28,5 +40,9 @@ class FavoriteRepository(private val favoritoDao: FavoritoDao) {
 
     suspend fun getFavoritosByUser(userEmail: String): List<String> {
         return favoritoDao.getFavoritosByUser(userEmail)
+    }
+    
+    suspend fun getAllFavoritosByUser(userEmail: String): List<FavoritoEntity> {
+        return favoritoDao.getAllFavoritosByUser(userEmail)
     }
 }

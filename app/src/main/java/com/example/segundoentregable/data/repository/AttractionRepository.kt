@@ -139,11 +139,13 @@ class AttractionRepository(
         return Review(
             id = id,
             userName = userName,
+            userEmail = userEmail,
             date = date,
             rating = rating,
             comment = comment,
             likes = likes,
-            dislikes = dislikes
+            dislikes = dislikes,
+            createdAt = createdAt
         )
     }
 }
