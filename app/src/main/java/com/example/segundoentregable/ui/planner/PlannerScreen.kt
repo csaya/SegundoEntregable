@@ -121,7 +121,8 @@ fun PlannerScreen(
                         onViewDetail = { atractivo ->
                             navController.navigate("detail/${atractivo.id}")
                         },
-                        isConnected = isConnected
+                        isConnected = isConnected,
+                        context = context // ✅ Pasar el contexto aquí
                     )
                 }
             }
@@ -227,7 +228,8 @@ private fun RouteItemsList(
     onRemove: (AtractivoTuristico) -> Unit,
     onNavigate: (AtractivoTuristico) -> Unit,
     onViewDetail: (AtractivoTuristico) -> Unit,
-    isConnected: Boolean
+    isConnected: Boolean,
+    context: android.content.Context // ✅ Agregar este parámetro
 ) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
@@ -244,20 +246,56 @@ private fun RouteItemsList(
                 isConnected = isConnected
             )
         }
-        
-        // Botón para iniciar navegación
+
+        // ✅ Botón para iniciar navegación CON TODOS LOS PUNTOS
         if (atractivos.isNotEmpty()) {
             item {
                 Spacer(Modifier.height(16.dp))
+
+                // Texto informativo
+                Text(
+                    text = if (atractivos.size > 10) {
+                        "Google Maps permite hasta 10 puntos. Se navegará por los primeros 10."
+                    } else {
+                        "Se navegará por todos los ${atractivos.size} puntos en orden."
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+
+                Spacer(Modifier.height(8.dp))
+
                 Button(
-                    onClick = { atractivos.firstOrNull()?.let { onNavigate(it) } },
+                    onClick = {
+                        // ✅ Convertir atractivos a Destination
+                        val destinations = atractivos.map {
+                            NavigationUtils.Destination(
+                                latitude = it.latitud,
+                                longitude = it.longitud,
+                                name = it.nombre
+                            )
+                        }
+
+                        // ✅ Abrir con todos los waypoints
+                        NavigationUtils.openGoogleMapsWithWaypoints(
+                            context = context, // ✅ Ahora funciona
+                            destinations = destinations,
+                            startFromCurrentLocation = true
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = isConnected
                 ) {
                     Icon(Icons.Filled.Navigation, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Iniciar Navegación al Primer Punto")
+                    Text("Iniciar Navegación Completa (${atractivos.size} puntos)")
                 }
+
+                Spacer(Modifier.height(80.dp))
             }
         }
     }
