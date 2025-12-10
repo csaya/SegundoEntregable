@@ -80,6 +80,18 @@ class UserRepository(
 
     fun getCurrentUserEmail(): String? = prefs.getCurrentUserEmail()
 
+    /**
+     * Asegurar que el usuario exista en Room (crear si no existe).
+     * Usado después de login con Firebase para mantener consistencia.
+     */
+    suspend fun ensureUserExistsInRoom(email: String, name: String = "Usuario") {
+        val existingUser = userDao.getUserByEmail(email)
+        if (existingUser == null) {
+            // Crear usuario local sin contraseña (login solo via Firebase)
+            userDao.insertUser(UserEntity(email, name, ""))
+        }
+    }
+
     fun isUserLoggedIn(): Boolean {
         return (getCurrentUserEmail() != null)
     }

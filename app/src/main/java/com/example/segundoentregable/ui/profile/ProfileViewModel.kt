@@ -49,10 +49,12 @@ class ProfileViewModel(
                     )
                 }
             } else {
+                // Usuario no logueado - no debería llegar aquí normalmente
+                // pero si llega, mostrar mensaje para iniciar sesión
                 _uiState.update {
                     it.copy(
-                        userName = "Invitado",
-                        userEmail = "Inicia sesión para ver tu perfil"
+                        userName = "Sin sesión",
+                        userEmail = "Inicia sesión para acceder a tu perfil"
                     )
                 }
             }

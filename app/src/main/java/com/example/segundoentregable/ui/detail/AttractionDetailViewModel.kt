@@ -27,7 +27,9 @@ data class DetailUiState(
     val isInRoute: Boolean = false,
     val isLoading: Boolean = false,
     val isReviewDialogVisible: Boolean = false,
-    val isSubmittingReview: Boolean = false
+    val isSubmittingReview: Boolean = false,
+    val isLoggedIn: Boolean = false,
+    val requiresLogin: Boolean = false  // Para mostrar diálogo de login
 )
 
 // Ahora hereda de ViewModel (no AndroidViewModel) porque ya inyectamos los repos
@@ -65,21 +67,30 @@ class AttractionDetailViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                val userEmail = userRepo.getCurrentUserEmail() ?: "guest_user"
+                val userEmail = userRepo.getCurrentUserEmail()
+                val isLoggedIn = userEmail != null
 
                 // Cargar atractivo completo con galería, actividades y estado de favorito
                 val atractivo = withContext(Dispatchers.IO) {
-                    attractionRepo.getAtractivoCompletoSync(attractionId, userEmail)
+                    attractionRepo.getAtractivoCompletoSync(attractionId, userEmail ?: "")
                 }
                 val reviews = withContext(Dispatchers.IO) {
                     attractionRepo.getReviewsForAttraction(attractionId)
                 }
 
+                // Solo cargar favorito si está logueado
+                val isFavorito = if (isLoggedIn) {
+                    withContext(Dispatchers.IO) {
+                        favoriteRepo.isFavorito(userEmail!!, attractionId)
+                    }
+                } else false
+
                 _uiState.update {
                     it.copy(
                         atractivo = atractivo,
                         reviews = reviews,
-                        isFavorito = atractivo?.isFavorito ?: false,
+                        isFavorito = isFavorito,
+                        isLoggedIn = isLoggedIn,
                         isLoading = false
                     )
                 }
@@ -92,7 +103,14 @@ class AttractionDetailViewModel(
 
     fun onToggleFavorite() {
         viewModelScope.launch {
-            val userEmail = userRepo.getCurrentUserEmail() ?: "guest_user"
+            val userEmail = userRepo.getCurrentUserEmail()
+            
+            // Verificar si está logueado
+            if (userEmail == null) {
+                _uiState.update { it.copy(requiresLogin = true) }
+                _snackbarEvent.value = "Inicia sesión para guardar favoritos"
+                return@launch
+            }
 
             try {
                 // 1. Ejecutar el cambio en base de datos
@@ -103,13 +121,21 @@ class AttractionDetailViewModel(
 
                 // 3. Actualizar la UI
                 _uiState.update { it.copy(isFavorito = nuevoEstado) }
+                
+                val msg = if (nuevoEstado) "Añadido a favoritos" else "Eliminado de favoritos"
+                _snackbarEvent.value = msg
 
                 Log.d(TAG, "Favorito actualizado: $nuevoEstado para $attractionId")
 
             } catch (e: Exception) {
                 Log.e(TAG, "Error al cambiar favorito", e)
+                _snackbarEvent.value = "Error al guardar favorito"
             }
         }
+    }
+    
+    fun clearRequiresLogin() {
+        _uiState.update { it.copy(requiresLogin = false) }
     }
 
     /**

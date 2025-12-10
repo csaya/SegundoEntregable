@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.segundoentregable.AppApplication
-import com.example.segundoentregable.data.local.entity.SavedRouteEntity
+import com.example.segundoentregable.data.local.entity.RutaEntity
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.ui.components.AttractionImage
 import com.example.segundoentregable.ui.components.ConnectivityBanner
@@ -121,15 +121,23 @@ fun PlannerScreen(
                     }
                 },
                 actions = {
-                    // Botón cargar rutas guardadas
+                    // Botón cargar rutas guardadas (solo si hay rutas)
                     if (uiState.savedRoutes.isNotEmpty()) {
                         IconButton(onClick = { viewModel.showLoadDialog() }) {
                             Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Cargar ruta")
                         }
                     }
-                    // Botón guardar ruta actual
+                    // Botón guardar ruta actual (mostrar siempre si hay ruta)
                     if (!uiState.isEmpty) {
-                        IconButton(onClick = { viewModel.showSaveDialog() }) {
+                        IconButton(
+                            onClick = { 
+                                if (uiState.isLoggedIn) {
+                                    viewModel.showSaveDialog() 
+                                } else {
+                                    navController.navigate("login")
+                                }
+                            }
+                        ) {
                             Icon(Icons.Filled.Save, contentDescription = "Guardar ruta")
                         }
                         IconButton(onClick = { viewModel.clearRoute() }) {
@@ -545,12 +553,12 @@ private fun SaveRouteDialog(
 
 @Composable
 private fun LoadRouteDialog(
-    savedRoutes: List<SavedRouteEntity>,
+    savedRoutes: List<RutaEntity>,
     onDismiss: () -> Unit,
     onLoad: (String) -> Unit,
     onDelete: (String) -> Unit
 ) {
-    var routeToDelete by remember { mutableStateOf<SavedRouteEntity?>(null) }
+    var routeToDelete by remember { mutableStateOf<RutaEntity?>(null) }
 
     // Diálogo de confirmación para eliminar
     routeToDelete?.let { route ->
@@ -622,7 +630,7 @@ private fun LoadRouteDialog(
 
 @Composable
 private fun SavedRouteItem(
-    route: SavedRouteEntity,
+    route: RutaEntity,
     onLoad: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -656,14 +664,9 @@ private fun SavedRouteItem(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.padding(top = 4.dp)
                 ) {
-                    Text(
-                        text = "${route.itemCount} lugares",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    if (route.totalDistance > 0) {
+                    if (route.distanciaTotal > 0) {
                         Text(
-                            text = RouteOptimizer.formatDistance(route.totalDistance.toDouble()),
+                            text = RouteOptimizer.formatDistance(route.distanciaTotal.toDouble()),
                             style = MaterialTheme.typography.labelSmall,
                             color = Color.Gray
                         )

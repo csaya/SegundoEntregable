@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.segundoentregable.AppApplication
 import com.example.segundoentregable.data.model.AtractivoTuristico
-
 import com.example.segundoentregable.ui.components.AppBottomBar
 import com.example.segundoentregable.ui.components.CercanoItemRow
 import com.example.segundoentregable.ui.components.RecomendacionCard
@@ -47,6 +47,9 @@ fun HomeScreen(
     val uiState by homeViewModel.uiState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
+    // Obtener ProximityService para notificaciones
+    val app = application as AppApplication
+
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -54,8 +57,9 @@ fun HomeScreen(
                 permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
 
         if (isGranted) {
-            // Si el usuario acepta, actualizamos la lista
+            // Actualizar ubicación y activar notificaciones de proximidad
             homeViewModel.updateLocation()
+            app.proximityService.startMonitoring()
         }
     }
 

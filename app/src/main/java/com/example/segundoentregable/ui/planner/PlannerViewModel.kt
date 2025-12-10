@@ -6,10 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.AppApplication
-import com.example.segundoentregable.data.local.entity.SavedRouteEntity
+import com.example.segundoentregable.data.local.entity.RutaEntity
 import com.example.segundoentregable.data.location.LocationService
 import com.example.segundoentregable.data.model.AtractivoTuristico
-import com.example.segundoentregable.data.repository.SavedRouteRepository
+import com.example.segundoentregable.data.repository.RutaRepository
+import com.example.segundoentregable.data.repository.UserRepository
 import com.example.segundoentregable.data.repository.UserRouteRepository
 import com.example.segundoentregable.utils.RouteOptimizer
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,16 +39,20 @@ data class PlannerUiState(
     val isEmpty: Boolean = true,
     val error: String? = null,
     // Rutas guardadas
-    val savedRoutes: List<SavedRouteEntity> = emptyList(),
+    val savedRoutes: List<RutaEntity> = emptyList(),
     val showSaveDialog: Boolean = false,
     val showLoadDialog: Boolean = false,
     val saveSuccess: Boolean = false,
-    val loadedRouteName: String? = null
+    val loadedRouteName: String? = null,
+    // Estado de autenticación
+    val isLoggedIn: Boolean = false,
+    val currentUserEmail: String? = null
 )
 
 class PlannerViewModel(
     private val userRouteRepository: UserRouteRepository,
-    private val savedRouteRepository: SavedRouteRepository,
+    private val rutaRepository: RutaRepository,
+    private val userRepository: UserRepository,
     private val locationService: LocationService,
     private val isDataReadyFlow: StateFlow<Boolean>
 ) : ViewModel() {
@@ -64,8 +69,20 @@ class PlannerViewModel(
             Log.d(TAG, "Esperando a que los datos estén listos...")
             isDataReadyFlow.first { it }
             Log.d(TAG, "Datos listos, observando ruta del usuario...")
+            
+            // Verificar estado de login
+            val email = userRepository.getCurrentUserEmail()
+            _uiState.update { 
+                it.copy(
+                    isLoggedIn = email != null,
+                    currentUserEmail = email
+                )
+            }
+            
             observeUserRoute()
-            observeSavedRoutes()
+            if (email != null) {
+                observeSavedRoutes(email)
+            }
             loadUserLocation()
         }
     }
@@ -94,11 +111,11 @@ class PlannerViewModel(
     }
 
     /**
-     * Observa las rutas guardadas
+     * Observa las rutas guardadas del usuario
      */
-    private fun observeSavedRoutes() {
+    private fun observeSavedRoutes(userId: String) {
         viewModelScope.launch {
-            savedRouteRepository.getAllRoutesFlow().collect { routes ->
+            rutaRepository.getUserRoutes(userId).collect { routes ->
                 _uiState.update { it.copy(savedRoutes = routes) }
             }
         }
@@ -222,22 +239,30 @@ class PlannerViewModel(
     }
 
     /**
-     * Guarda la ruta actual con un nombre
+     * Guarda la ruta actual con un nombre.
+     * Requiere que el usuario esté autenticado.
      */
     fun saveCurrentRoute(nombre: String, descripcion: String = "") {
         val state = _uiState.value
         val atractivos = getNavigationList()
         
         if (atractivos.isEmpty() || nombre.isBlank()) return
+        
+        val userId = state.currentUserEmail
+        if (userId == null) {
+            _uiState.update { it.copy(error = "Debes iniciar sesión para guardar rutas") }
+            return
+        }
 
         viewModelScope.launch {
             try {
-                savedRouteRepository.saveRoute(
+                rutaRepository.saveUserRoute(
+                    userId = userId,
                     nombre = nombre.trim(),
                     descripcion = descripcion.trim(),
                     atractivos = atractivos,
-                    totalDistance = state.totalDistanceKm,
-                    estimatedTime = state.estimatedTimeMinutes
+                    distanciaTotal = state.totalDistanceKm,
+                    tiempoEstimadoMinutos = state.estimatedTimeMinutes
                 )
                 _uiState.update { 
                     it.copy(
@@ -260,8 +285,8 @@ class PlannerViewModel(
     fun loadSavedRoute(routeId: String) {
         viewModelScope.launch {
             try {
-                val route = savedRouteRepository.getRouteById(routeId) ?: return@launch
-                val atractivos = savedRouteRepository.getRouteAtractivos(routeId)
+                val route = rutaRepository.getRutaById(routeId) ?: return@launch
+                val atractivos = rutaRepository.getAtractivosByRuta(routeId)
                 
                 if (atractivos.isEmpty()) {
                     _uiState.update { it.copy(error = "La ruta está vacía") }
@@ -292,7 +317,7 @@ class PlannerViewModel(
     fun deleteSavedRoute(routeId: String) {
         viewModelScope.launch {
             try {
-                savedRouteRepository.deleteRoute(routeId)
+                rutaRepository.deleteUserRoute(routeId)
                 Log.d(TAG, "Ruta eliminada: $routeId")
             } catch (e: Exception) {
                 Log.e(TAG, "Error eliminando ruta", e)
@@ -317,7 +342,8 @@ class PlannerViewModelFactory(
         if (modelClass.isAssignableFrom(PlannerViewModel::class.java)) {
             return PlannerViewModel(
                 userRouteRepository = app.userRouteRepository,
-                savedRouteRepository = app.savedRouteRepository,
+                rutaRepository = app.rutaRepository,
+                userRepository = app.userRepository,
                 locationService = app.locationService,
                 isDataReadyFlow = app.isDataReady
             ) as T

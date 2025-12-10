@@ -68,4 +68,28 @@ interface RutaDao {
      */
     @Query("SELECT COUNT(*) FROM ruta_paradas WHERE rutaId = :rutaId")
     suspend fun countParadas(rutaId: String): Int
+
+    // ========== RUTAS DE USUARIO ==========
+
+    @Query("SELECT * FROM rutas WHERE tipo = 'usuario' AND userId = :userId ORDER BY updatedAt DESC")
+    fun getUserRoutes(userId: String): Flow<List<RutaEntity>>
+
+    @Query("SELECT * FROM rutas WHERE tipo = 'usuario' AND userId = :userId ORDER BY updatedAt DESC")
+    suspend fun getUserRoutesList(userId: String): List<RutaEntity>
+
+    @Query("SELECT * FROM rutas WHERE tipo = 'predefinida' ORDER BY orden ASC")
+    fun getPredefinedRoutes(): Flow<List<RutaEntity>>
+
+    @Query("DELETE FROM rutas WHERE id = :rutaId AND tipo = 'usuario'")
+    suspend fun deleteUserRoute(rutaId: String)
+
+    @Query("UPDATE rutas SET nombre = :nombre, descripcion = :descripcion, updatedAt = :updatedAt WHERE id = :rutaId")
+    suspend fun updateRoute(rutaId: String, nombre: String, descripcion: String, updatedAt: Long)
+
+    @Transaction
+    suspend fun saveUserRouteWithParadas(ruta: RutaEntity, paradas: List<RutaParadaEntity>) {
+        insertRuta(ruta)
+        deleteParadasByRuta(ruta.id)
+        insertParadas(paradas)
+    }
 }

@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -71,7 +72,27 @@ fun AttractionDetailScreen(
     )
 
     val uiState by viewModel.uiState.collectAsState()
+    val snackbarEvent by viewModel.snackbarEvent.collectAsState()
     val atractivo = uiState.atractivo
+
+    // SnackbarHost para mensajes
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Mostrar snackbar cuando hay evento
+    LaunchedEffect(snackbarEvent) {
+        snackbarEvent?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.clearSnackbarEvent()
+        }
+    }
+
+    // Navegar a login si se requiere
+    LaunchedEffect(uiState.requiresLogin) {
+        if (uiState.requiresLogin) {
+            navController.navigate("login")
+            viewModel.clearRequiresLogin()
+        }
+    }
 
     if (uiState.isReviewDialogVisible) {
         AddReviewDialog(

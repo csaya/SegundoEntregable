@@ -8,12 +8,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "favoritos",
     foreignKeys = [
-        ForeignKey(
-            entity = UserEntity::class,
-            parentColumns = ["email"],
-            childColumns = ["userEmail"],
-            onDelete = ForeignKey.CASCADE
-        ),
+        // Solo FK a atractivo - usuario viene de Firebase Auth
         ForeignKey(
             entity = AtractivoEntity::class,
             parentColumns = ["id"],
