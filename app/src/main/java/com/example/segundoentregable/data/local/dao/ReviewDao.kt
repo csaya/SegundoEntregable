@@ -41,8 +41,14 @@ interface ReviewDao {
     @Query("UPDATE reviews SET likes = likes + 1 WHERE id = :reviewId")
     suspend fun incrementLikes(reviewId: String)
     
+    @Query("UPDATE reviews SET likes = CASE WHEN likes > 0 THEN likes - 1 ELSE 0 END WHERE id = :reviewId")
+    suspend fun decrementLikes(reviewId: String)
+    
     @Query("UPDATE reviews SET dislikes = dislikes + 1 WHERE id = :reviewId")
     suspend fun incrementDislikes(reviewId: String)
+    
+    @Query("UPDATE reviews SET dislikes = CASE WHEN dislikes > 0 THEN dislikes - 1 ELSE 0 END WHERE id = :reviewId")
+    suspend fun decrementDislikes(reviewId: String)
     
     // Métodos para editar/eliminar reseñas
     @Query("UPDATE reviews SET rating = :rating, comment = :comment, isSynced = 0 WHERE id = :reviewId")

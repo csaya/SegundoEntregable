@@ -184,20 +184,26 @@ fun RutaDetalleScreen(
                         )
                     }
                     
-                    // Botón iniciar ruta
+                    // Botón iniciar ruta con todos los waypoints
                     item {
                         Spacer(Modifier.height(16.dp))
                         Button(
                             onClick = {
-                                // Navegar al primer punto
-                                detalleState.atractivos.firstOrNull()?.let { primer ->
-                                    NavigationUtils.openGoogleMapsNavigation(
-                                        context = context,
-                                        latitude = primer.latitud,
-                                        longitude = primer.longitud,
-                                        label = primer.nombre
+                                // Crear lista de destinos con todos los atractivos de la ruta
+                                val destinations = detalleState.atractivos.map { atractivo ->
+                                    NavigationUtils.Destination(
+                                        latitude = atractivo.latitud,
+                                        longitude = atractivo.longitud,
+                                        name = atractivo.nombre
                                     )
                                 }
+                                
+                                // Abrir Google Maps con todos los puntos
+                                NavigationUtils.openGoogleMapsWithWaypoints(
+                                    context = context,
+                                    destinations = destinations,
+                                    startFromCurrentLocation = true
+                                )
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -206,7 +212,7 @@ fun RutaDetalleScreen(
                         ) {
                             Icon(Icons.Filled.Navigation, contentDescription = null)
                             Spacer(Modifier.width(8.dp))
-                            Text("Iniciar Ruta")
+                            Text("Iniciar Ruta (${detalleState.atractivos.size} paradas)")
                         }
                         Spacer(Modifier.height(32.dp))
                     }

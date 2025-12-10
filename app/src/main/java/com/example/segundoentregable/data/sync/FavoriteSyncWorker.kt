@@ -12,6 +12,8 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.example.segundoentregable.data.firebase.FirestoreFavoriteService
 import com.example.segundoentregable.data.local.AppDatabase
+import com.example.segundoentregable.data.local.SharedPrefManager
+import com.example.segundoentregable.data.local.entity.FavoritoEntity
 import java.util.concurrent.TimeUnit
 
 /**
@@ -27,13 +29,22 @@ class FavoriteSyncWorker(
     params: WorkerParameters
 ) : CoroutineWorker(context, params) {
 
-    private val favoritoDao = AppDatabase.getInstance(context).favoritoDao()
+    private val database = AppDatabase.getInstance(applicationContext)
+    private val favoritoDao = database.favoritoDao()
+    private val prefs = SharedPrefManager.getInstance(applicationContext)
     private val firestoreService = FirestoreFavoriteService()
 
     override suspend fun doWork(): Result {
         Log.d(TAG, "Iniciando sincronización de favoritos...")
         
         return try {
+            // Obtener email del usuario logueado
+            val userEmail = prefs.getCurrentUserEmail()
+            if (userEmail == null) {
+                Log.d(TAG, "No hay usuario logueado, saltando sincronización")
+                return Result.success()
+            }
+            
             // 1. Subir favoritos no sincronizados
             val unsyncedFavoritos = favoritoDao.getUnsyncedFavoritos()
             Log.d(TAG, "Favoritos pendientes de subir: ${unsyncedFavoritos.size}")
@@ -48,6 +59,33 @@ class FavoriteSyncWorker(
                 }.onFailure { error ->
                     Log.e(TAG, "Error subiendo favoritos: ${error.message}")
                 }
+            }
+            
+            // 2. Descargar favoritos del usuario desde Firebase
+            Log.d(TAG, "Descargando favoritos desde Firebase para $userEmail...")
+            val downloadResult = firestoreService.getFavoritesForUser(userEmail)
+            downloadResult.onSuccess { remoteFavorites ->
+                Log.d(TAG, "Favoritos remotos recibidos: ${remoteFavorites.size}")
+                
+                // Obtener IDs locales
+                val localIds = favoritoDao.getFavoritoIdsByUser(userEmail)
+                
+                // Insertar favoritos remotos que no existan localmente
+                remoteFavorites.forEach { remoteFav ->
+                    if (remoteFav.id !in localIds) {
+                        val localFav = FavoritoEntity(
+                            id = remoteFav.id,
+                            userEmail = remoteFav.userEmail,
+                            attractionId = remoteFav.attractionId,
+                            addedAt = remoteFav.addedAt,
+                            isSynced = true // Ya está sincronizado
+                        )
+                        favoritoDao.insertFavorito(localFav)
+                        Log.d(TAG, "Favorito descargado: ${remoteFav.attractionId}")
+                    }
+                }
+            }.onFailure { error ->
+                Log.e(TAG, "Error descargando favoritos: ${error.message}")
             }
             
             Log.d(TAG, "Sincronización de favoritos completada")

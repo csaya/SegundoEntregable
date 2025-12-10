@@ -6,7 +6,9 @@ import com.example.segundoentregable.data.local.dao.AtractivoDao
 import com.example.segundoentregable.data.local.dao.FavoritoDao
 import com.example.segundoentregable.data.local.dao.GaleriaFotoDao
 import com.example.segundoentregable.data.local.dao.ReviewDao
+import com.example.segundoentregable.data.local.dao.ReviewVoteDao
 import com.example.segundoentregable.data.local.entity.ReviewEntity
+import com.example.segundoentregable.data.local.entity.ReviewVoteEntity
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.model.Review
 import com.example.segundoentregable.data.model.toDomainModel
@@ -18,7 +20,8 @@ class AttractionRepository(
     private val reviewDao: ReviewDao,
     private val galeriaFotoDao: GaleriaFotoDao,
     private val actividadDao: ActividadDao,
-    private val favoritoDao: FavoritoDao
+    private val favoritoDao: FavoritoDao,
+    private val reviewVoteDao: ReviewVoteDao? = null
 ) {
 
     // Ya no se necesita initializeData() porque DataImporter carga los datos desde JSON
@@ -137,12 +140,76 @@ class AttractionRepository(
     
     // ========== CALIFICACIÓN DE RESEÑAS ==========
     
-    suspend fun likeReview(reviewId: String) {
-        reviewDao.incrementLikes(reviewId)
+    /**
+     * Obtiene el voto actual del usuario para una reseña.
+     * @return true = like, false = dislike, null = no ha votado
+     */
+    suspend fun getUserVote(reviewId: String, userEmail: String): Boolean? {
+        return reviewVoteDao?.getUserVoteType(reviewId, userEmail)
     }
     
-    suspend fun dislikeReview(reviewId: String) {
-        reviewDao.incrementDislikes(reviewId)
+    /**
+     * Dar like a una reseña. Si ya dio like, lo quita. Si dio dislike, cambia a like.
+     * @return El nuevo estado: true = liked, false = removed like, null = error
+     */
+    suspend fun toggleLikeReview(reviewId: String, userEmail: String): Boolean? {
+        val voteDao = reviewVoteDao ?: return null
+        
+        val currentVote = voteDao.getVote(reviewId, userEmail)
+        
+        return when {
+            // Ya dio like -> quitar voto
+            currentVote?.isLike == true -> {
+                voteDao.deleteVote(reviewId, userEmail)
+                reviewDao.decrementLikes(reviewId)
+                false
+            }
+            // Dio dislike -> cambiar a like
+            currentVote?.isLike == false -> {
+                voteDao.insertVote(ReviewVoteEntity(reviewId, userEmail, isLike = true))
+                reviewDao.decrementDislikes(reviewId)
+                reviewDao.incrementLikes(reviewId)
+                true
+            }
+            // No ha votado -> dar like
+            else -> {
+                voteDao.insertVote(ReviewVoteEntity(reviewId, userEmail, isLike = true))
+                reviewDao.incrementLikes(reviewId)
+                true
+            }
+        }
+    }
+    
+    /**
+     * Dar dislike a una reseña. Si ya dio dislike, lo quita. Si dio like, cambia a dislike.
+     * @return El nuevo estado: true = disliked, false = removed dislike, null = error
+     */
+    suspend fun toggleDislikeReview(reviewId: String, userEmail: String): Boolean? {
+        val voteDao = reviewVoteDao ?: return null
+        
+        val currentVote = voteDao.getVote(reviewId, userEmail)
+        
+        return when {
+            // Ya dio dislike -> quitar voto
+            currentVote?.isLike == false -> {
+                voteDao.deleteVote(reviewId, userEmail)
+                reviewDao.decrementDislikes(reviewId)
+                false
+            }
+            // Dio like -> cambiar a dislike
+            currentVote?.isLike == true -> {
+                voteDao.insertVote(ReviewVoteEntity(reviewId, userEmail, isLike = false))
+                reviewDao.decrementLikes(reviewId)
+                reviewDao.incrementDislikes(reviewId)
+                true
+            }
+            // No ha votado -> dar dislike
+            else -> {
+                voteDao.insertVote(ReviewVoteEntity(reviewId, userEmail, isLike = false))
+                reviewDao.incrementDislikes(reviewId)
+                true
+            }
+        }
     }
     
     // ========== EDICIÓN/ELIMINACIÓN DE RESEÑAS ==========

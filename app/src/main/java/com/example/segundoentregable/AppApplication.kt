@@ -27,7 +27,7 @@ import okhttp3.OkHttpClient
 
 private const val TAG = "AppApplication"
 private const val PREFS_NAME = "app_prefs"
-private const val KEY_DATA_VERSION = "data_version_v5" // Incrementar cuando cambie el esquema
+private const val KEY_DATA_VERSION = "data_version_v6" // Incrementar cuando cambie el esquema
 
 class AppApplication : Application() {
 
@@ -47,7 +47,8 @@ class AppApplication : Application() {
             database.reviewDao(),
             database.galeriaFotoDao(),
             database.actividadDao(),
-            database.favoritoDao()
+            database.favoritoDao(),
+            database.reviewVoteDao()
         )
     }
 
@@ -100,7 +101,7 @@ class AppApplication : Application() {
 
     private fun importDataIfNeeded() {
         val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        val currentVersion = 5 // Incrementar cuando cambie el esquema de datos
+        val currentVersion = 6 // Incrementar cuando cambie el esquema de datos
         val savedVersion = prefs.getInt(KEY_DATA_VERSION, 0)
 
         CoroutineScope(Dispatchers.IO).launch {

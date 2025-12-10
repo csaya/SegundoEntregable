@@ -9,6 +9,7 @@ import com.example.segundoentregable.data.local.dao.AtractivoDao
 import com.example.segundoentregable.data.local.dao.FavoritoDao
 import com.example.segundoentregable.data.local.dao.GaleriaFotoDao
 import com.example.segundoentregable.data.local.dao.ReviewDao
+import com.example.segundoentregable.data.local.dao.ReviewVoteDao
 import com.example.segundoentregable.data.local.dao.RutaDao
 import com.example.segundoentregable.data.local.dao.UserDao
 import com.example.segundoentregable.data.local.dao.UserRouteDao
@@ -17,6 +18,7 @@ import com.example.segundoentregable.data.local.entity.AtractivoEntity
 import com.example.segundoentregable.data.local.entity.FavoritoEntity
 import com.example.segundoentregable.data.local.entity.GaleriaFotoEntity
 import com.example.segundoentregable.data.local.entity.ReviewEntity
+import com.example.segundoentregable.data.local.entity.ReviewVoteEntity
 import com.example.segundoentregable.data.local.entity.RutaEntity
 import com.example.segundoentregable.data.local.entity.RutaParadaEntity
 import com.example.segundoentregable.data.local.entity.UserEntity
@@ -32,9 +34,10 @@ import com.example.segundoentregable.data.local.entity.UserRouteItemEntity
         ActividadEntity::class,
         RutaEntity::class,
         RutaParadaEntity::class,
-        UserRouteItemEntity::class
+        UserRouteItemEntity::class,
+        ReviewVoteEntity::class
     ],
-    version = 11,
+    version = 12,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -47,6 +50,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun actividadDao(): ActividadDao
     abstract fun rutaDao(): RutaDao
     abstract fun userRouteDao(): UserRouteDao
+    abstract fun reviewVoteDao(): ReviewVoteDao
 
     companion object {
         @Volatile

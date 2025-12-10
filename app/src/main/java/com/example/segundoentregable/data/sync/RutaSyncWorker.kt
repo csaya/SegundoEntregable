@@ -12,6 +12,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.example.segundoentregable.data.firebase.FirestoreRutaService
 import com.example.segundoentregable.data.local.AppDatabase
+import com.example.segundoentregable.data.local.SharedPrefManager
 import java.util.concurrent.TimeUnit
 
 /**
@@ -22,14 +23,23 @@ class RutaSyncWorker(
     params: WorkerParameters
 ) : CoroutineWorker(context, params) {
 
-    private val rutaDao = AppDatabase.getInstance(context).rutaDao()
+    private val database = AppDatabase.getInstance(applicationContext)
+    private val rutaDao = database.rutaDao()
+    private val prefs = SharedPrefManager.getInstance(applicationContext)
     private val firestoreService = FirestoreRutaService()
 
     override suspend fun doWork(): Result {
         Log.d(TAG, "Iniciando sincronización de rutas...")
         
         return try {
-            // Subir rutas no sincronizadas
+            // Obtener email del usuario logueado
+            val userEmail = prefs.getCurrentUserEmail()
+            if (userEmail == null) {
+                Log.d(TAG, "No hay usuario logueado, saltando sincronización")
+                return Result.success()
+            }
+            
+            // 1. Subir rutas no sincronizadas
             val unsyncedRoutes = rutaDao.getUnsyncedUserRoutes()
             Log.d(TAG, "Rutas pendientes de subir: ${unsyncedRoutes.size}")
             
@@ -43,6 +53,30 @@ class RutaSyncWorker(
                 }.onFailure { error ->
                     Log.e(TAG, "Error subiendo ruta ${ruta.id}: ${error.message}")
                 }
+            }
+            
+            // 2. Descargar rutas del usuario desde Firebase
+            Log.d(TAG, "Descargando rutas desde Firebase para $userEmail...")
+            val downloadResult = firestoreService.getRutasForUser(userEmail)
+            downloadResult.onSuccess { remoteRoutes ->
+                Log.d(TAG, "Rutas remotas recibidas: ${remoteRoutes.size}")
+                
+                // Obtener IDs locales de rutas de usuario
+                val localRoutes = rutaDao.getUserRoutesList(userEmail)
+                val localIds = localRoutes.map { it.id }.toSet()
+                
+                // Insertar rutas remotas que no existan localmente
+                remoteRoutes.forEach { (ruta, paradas) ->
+                    if (ruta.id !in localIds) {
+                        // Marcar como sincronizada al descargar
+                        val syncedRuta = ruta.copy(isSynced = true)
+                        rutaDao.insertRuta(syncedRuta)
+                        rutaDao.insertParadas(paradas)
+                        Log.d(TAG, "Ruta descargada: ${ruta.nombre}")
+                    }
+                }
+            }.onFailure { error ->
+                Log.e(TAG, "Error descargando rutas: ${error.message}")
             }
             
             Log.d(TAG, "Sincronización de rutas completada")

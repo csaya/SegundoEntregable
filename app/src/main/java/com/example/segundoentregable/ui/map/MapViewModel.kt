@@ -27,9 +27,12 @@ data class MapUiState(
     val focusAttraction: AtractivoTuristico? = null,
     val shouldAnimateCamera: Boolean = false,
     val focusedAttractionId: String? = null,
-    // ✅ Nuevos campos para vista de ruta
+    // Campos para vista de ruta
     val routeMode: Boolean = false,
-    val routeAtractivos: List<AtractivoTuristico> = emptyList()
+    val routeAtractivos: List<AtractivoTuristico> = emptyList(),
+    // Ubicación del usuario para inicio de ruta
+    val userLatitude: Double? = null,
+    val userLongitude: Double? = null
 )
 
 class MapViewModel(
@@ -241,6 +244,18 @@ class MapViewModel(
     fun onCameraAnimationComplete() {
         _uiState.update {
             it.copy(shouldAnimateCamera = false)
+        }
+    }
+    
+    /**
+     * Actualiza la ubicación del usuario para inicio de ruta.
+     */
+    fun updateUserLocation(latitude: Double, longitude: Double) {
+        _uiState.update {
+            it.copy(
+                userLatitude = latitude,
+                userLongitude = longitude
+            )
         }
     }
 }

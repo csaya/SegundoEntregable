@@ -165,10 +165,10 @@
     {
       "id": "parada_002_002",
       "rutaId": "ruta_002",
-      "atractivoId": "mincetur_588",
+      "atractivoId": "mincetur_587",
       "orden": 2,
       "tiempoSugerido": "20 min",
-      "notas": "Iglesia San Juan Bautista Yanahuara. Ejemplo arquitectura sillar colonial. Fachada barroca mestiza 1750."
+      "notas": "Iglesia San Miguel Arcángel de Cayma. Joya arquitectónica con decoraciones en sillar. Fachada barroca mestiza 1730."
     },
     {
       "id": "parada_002_003",
@@ -189,7 +189,7 @@
     {
       "id": "parada_003_002",
       "rutaId": "ruta_003",
-      "atractivoId": "mincetur_590",
+      "atractivoId": "mincetur_976",
       "orden": 2,
       "tiempoSugerido": "45 min",
       "notas": "Molino de Sabandía (1621). Primer molino de piedra colonial restaurado. Mecanismo original de molienda."
@@ -213,10 +213,10 @@
     {
       "id": "parada_004_002",
       "rutaId": "ruta_004",
-      "atractivoId": "mincetur_3942",
+      "atractivoId": "mincetur_599",
       "orden": 2,
       "tiempoSugerido": "30 min",
-      "notas": "Mirador Patahuasi. Vista panorámica volcanes y puna. Puesto artesanías fibra de alpaca. Baños y cafetería."
+      "notas": "Volcán Misti. Vista panorámica desde mirador. Paisaje icónico de Arequipa."
     },
     {
       "id": "parada_005_001",
@@ -253,10 +253,10 @@
     {
       "id": "parada_007_002",
       "rutaId": "ruta_007",
-      "atractivoId": "mincetur_3943",
+      "atractivoId": "mincetur_610",
       "orden": 2,
       "tiempoSugerido": "1 hora",
-      "notas": "Opcional: Trekking Catarata Yura. Sendero 45min. Catarata 15m altura. Paisaje rocoso y vegetación ribereña."
+      "notas": "Reserva Salinas y Aguada Blanca. Paisaje de puna con flora y fauna andina."
     }
   ]
 }

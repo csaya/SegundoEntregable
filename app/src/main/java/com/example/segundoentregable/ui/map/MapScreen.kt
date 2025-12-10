@@ -29,12 +29,21 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.Cap
+import com.google.android.gms.maps.model.Dash
+import com.google.android.gms.maps.model.Gap
+import com.google.android.gms.maps.model.JointType
+import com.google.android.gms.maps.model.RoundCap
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,6 +79,20 @@ fun MapScreen(
             val ids = routeIdsParam.split(",").filter { it.isNotBlank() }
             if (ids.isNotEmpty()) {
                 mapViewModel.loadRouteView(ids)
+                
+                // Obtener ubicación del usuario para inicio de ruta
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                        location?.let {
+                            mapViewModel.updateUserLocation(it.latitude, it.longitude)
+                        }
+                    }
+                }
             }
         }
     }
@@ -272,28 +295,69 @@ fun MapScreen(
                     )
                 ) {
                     // Dibujar polyline en modo ruta
-                    if (uiState.routeMode && uiState.routeAtractivos.size >= 2) {
-                        val points = uiState.routeAtractivos.map {
-                            LatLng(it.latitud, it.longitud)
+                    if (uiState.routeMode && uiState.routeAtractivos.isNotEmpty()) {
+                        // Construir puntos: ubicación del usuario (si existe) + paradas
+                        val routePoints = mutableListOf<LatLng>()
+                        
+                        // Capturar valores locales para smart cast
+                        val userLat = uiState.userLatitude
+                        val userLon = uiState.userLongitude
+                        
+                        // Agregar ubicación del usuario como punto inicial
+                        if (userLat != null && userLon != null) {
+                            routePoints.add(LatLng(userLat, userLon))
                         }
-
-                        Polyline(
-                            points = points,
-                            color = MaterialTheme.colorScheme.primary,
-                            width = 10f
-                        )
+                        
+                        // Agregar paradas de la ruta
+                        uiState.routeAtractivos.forEach {
+                            routePoints.add(LatLng(it.latitud, it.longitud))
+                        }
+                        
+                        // Dibujar línea punteada si hay al menos 2 puntos
+                        if (routePoints.size >= 2) {
+                            // Patrón: dash de 20px, gap de 15px
+                            val pattern = listOf(Dash(20f), Gap(15f))
+                            
+                            Polyline(
+                                points = routePoints,
+                                color = Color(0xFF1976D2), // Azul material
+                                width = 8f,
+                                pattern = pattern,
+                                geodesic = true, // Línea curva siguiendo la curvatura de la tierra
+                                jointType = JointType.ROUND,
+                                startCap = RoundCap(),
+                                endCap = RoundCap()
+                            )
+                        }
+                        
+                        // Marcador de ubicación del usuario (Tu ubicación)
+                        if (userLat != null && userLon != null) {
+                            Marker(
+                                state = MarkerState(position = LatLng(userLat, userLon)),
+                                title = "Tu ubicación",
+                                snippet = "Punto de inicio",
+                                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)
+                            )
+                        }
                     }
 
-                    // Marcadores
+                    // Marcadores de atractivos
                     uiState.filteredAtractivos.forEachIndexed { index, atractivo ->
                         val position = LatLng(atractivo.latitud, atractivo.longitud)
 
                         if (uiState.routeMode) {
                             // Marcador numerado para ruta
+                            val markerNumber = index + 1
+                            val markerTitle = when (index) {
+                                0 -> "① INICIO: ${atractivo.nombre}"
+                                uiState.routeAtractivos.lastIndex -> "⓿ FIN: ${atractivo.nombre}"
+                                else -> "② Parada $markerNumber: ${atractivo.nombre}"
+                            }
+                            
                             Marker(
                                 state = MarkerState(position = position),
-                                title = "${index + 1}. ${atractivo.nombre}",
-                                snippet = atractivo.categoria,
+                                title = markerTitle,
+                                snippet = "Parada #$markerNumber · ${atractivo.categoria}",
                                 onClick = {
                                     mapViewModel.selectAttraction(atractivo)
                                     false
@@ -302,7 +366,7 @@ fun MapScreen(
                                     when (index) {
                                         0 -> BitmapDescriptorFactory.HUE_GREEN // Inicio verde
                                         uiState.routeAtractivos.lastIndex -> BitmapDescriptorFactory.HUE_RED // Final rojo
-                                        else -> BitmapDescriptorFactory.HUE_AZURE // Intermedios azul
+                                        else -> BitmapDescriptorFactory.HUE_ORANGE // Intermedios naranja
                                     }
                                 )
                             )

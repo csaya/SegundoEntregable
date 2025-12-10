@@ -218,26 +218,52 @@ class AttractionDetailViewModel(
     
     fun onLikeReview(reviewId: String) {
         viewModelScope.launch {
+            val userEmail = userRepo.getCurrentUserEmail()
+            if (userEmail == null) {
+                _snackbarEvent.value = "Inicia sesión para votar"
+                return@launch
+            }
+            
             try {
-                withContext(Dispatchers.IO) {
-                    attractionRepo.likeReview(reviewId)
+                val result = withContext(Dispatchers.IO) {
+                    attractionRepo.toggleLikeReview(reviewId, userEmail)
                 }
                 loadData() // Recargar para ver cambios
+                
+                when (result) {
+                    true -> _snackbarEvent.value = "Te gustó esta reseña"
+                    false -> _snackbarEvent.value = "Voto eliminado"
+                    null -> _snackbarEvent.value = "Error al votar"
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error al dar like: ${e.message}")
+                _snackbarEvent.value = "Error al votar"
             }
         }
     }
     
     fun onDislikeReview(reviewId: String) {
         viewModelScope.launch {
+            val userEmail = userRepo.getCurrentUserEmail()
+            if (userEmail == null) {
+                _snackbarEvent.value = "Inicia sesión para votar"
+                return@launch
+            }
+            
             try {
-                withContext(Dispatchers.IO) {
-                    attractionRepo.dislikeReview(reviewId)
+                val result = withContext(Dispatchers.IO) {
+                    attractionRepo.toggleDislikeReview(reviewId, userEmail)
                 }
                 loadData()
+                
+                when (result) {
+                    true -> _snackbarEvent.value = "No te gustó esta reseña"
+                    false -> _snackbarEvent.value = "Voto eliminado"
+                    null -> _snackbarEvent.value = "Error al votar"
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error al dar dislike: ${e.message}")
+                _snackbarEvent.value = "Error al votar"
             }
         }
     }
