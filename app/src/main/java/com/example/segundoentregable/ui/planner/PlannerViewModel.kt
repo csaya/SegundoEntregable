@@ -264,14 +264,20 @@ class PlannerViewModel(
                     distanciaTotal = state.totalDistanceKm,
                     tiempoEstimadoMinutos = state.estimatedTimeMinutes
                 )
+                
+                // Limpiar la ruta temporal después de guardar
+                userRouteRepository.clearRoute()
+                
                 _uiState.update { 
                     it.copy(
                         showSaveDialog = false,
                         saveSuccess = true,
-                        loadedRouteName = nombre.trim()
+                        loadedRouteName = null,  // Reset nombre
+                        isOptimized = false,
+                        optimizedRoute = emptyList()
                     ) 
                 }
-                Log.d(TAG, "Ruta guardada: $nombre")
+                Log.d(TAG, "Ruta guardada y limpiada: $nombre")
             } catch (e: Exception) {
                 Log.e(TAG, "Error guardando ruta", e)
                 _uiState.update { it.copy(error = "Error al guardar la ruta") }

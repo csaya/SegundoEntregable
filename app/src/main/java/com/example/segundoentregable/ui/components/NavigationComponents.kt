@@ -1,5 +1,6 @@
 package com.example.segundoentregable.ui.components
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
@@ -30,34 +31,40 @@ private val bottomBarScreens = listOf(
     BottomBarScreen.Perfil,
 )
 
+private const val TAG = "AppBottomBar"
+
 @Composable
 fun AppBottomBar(navController: NavController) {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
-    val mapOrigin = if (currentRoute?.startsWith("mapa?") == true) {
-        navBackStackEntry?.arguments?.getString("origin")
-    } else null
-
-    val detailOrigin = if (currentRoute?.startsWith("detail/") == true) {
-        navBackStackEntry?.arguments?.getString("origin")
-    } else null
+    
+    // Obtener origin desde los argumentos
+    val mapOrigin = navBackStackEntry?.arguments?.getString("origin")
+    val detailOrigin = navBackStackEntry?.arguments?.getString("origin")
+    val routeIds = navBackStackEntry?.arguments?.getString("routeIds")
+    
+    // Log para debug
+    Log.d(TAG, "currentRoute=$currentRoute, mapOrigin=$mapOrigin, routeIds=$routeIds")
 
     NavigationBar {
         bottomBarScreens.forEach { screen ->
+            // Determinar si el mapa viene de rutas/planner (parte de Home)
+            val isMapFromRoutes = currentRoute?.startsWith("mapa") == true && !routeIds.isNullOrBlank()
+            
             val isSelected = when (screen) {
                 BottomBarScreen.Home -> {
                     currentRoute == "home" ||
                             currentRoute?.startsWith("rutas") == true ||
                             currentRoute?.startsWith("planner") == true ||
+                            currentRoute == "mis_rutas" ||
                             (currentRoute?.startsWith("detail/") == true && detailOrigin == "home") ||
                             (currentRoute?.startsWith("list") == true) ||
-                            (currentRoute?.startsWith("mapa") == true && mapOrigin == "home")
+                            (currentRoute?.startsWith("mapa") == true && (mapOrigin == "home" || isMapFromRoutes))
                 }
                 BottomBarScreen.Mapa -> {
                     currentRoute?.startsWith("mapa") == true &&
-                            (mapOrigin.isNullOrBlank() || mapOrigin == "mapa") ||
+                            mapOrigin.isNullOrBlank() && routeIds.isNullOrBlank() ||
                             (currentRoute?.startsWith("detail/") == true && detailOrigin == "mapa")
                 }
                 BottomBarScreen.Favoritos -> {
@@ -69,10 +76,12 @@ fun AppBottomBar(navController: NavController) {
                     currentRoute == "perfil" || currentRoute == "login"
                 }
             }
+            
+            Log.d(TAG, "screen=${screen.route}, isSelected=$isSelected, isMapFromRoutes=$isMapFromRoutes")
 
             val isAtRoot = when (screen) {
                 BottomBarScreen.Home -> currentRoute == "home"
-                BottomBarScreen.Mapa -> currentRoute?.startsWith("mapa") == true && mapOrigin.isNullOrBlank()
+                BottomBarScreen.Mapa -> currentRoute == "mapa" && mapOrigin.isNullOrBlank() && routeIds.isNullOrBlank()
                 BottomBarScreen.Favoritos -> currentRoute == "favoritos"
                 BottomBarScreen.Perfil -> currentRoute == "perfil"
             }
@@ -82,27 +91,18 @@ fun AppBottomBar(navController: NavController) {
                 label = { Text(screen.label) },
                 selected = isSelected,
                 onClick = {
-                    // Si ya estamos en esta sección
-                    if (isSelected) {
-                        // Si no estamos en la raíz, volver a la raíz de esta sección
-                        if (!isAtRoot) {
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = false
-                                }
-                                launchSingleTop = true
-                            }
+                    Log.d(TAG, "onClick: ${screen.route}, isSelected=$isSelected, isAtRoot=$isAtRoot")
+                    
+                    // SIEMPRE navegar limpiamente sin guardar estado del mapa
+                    // Esto evita congelamientos por estados inválidos
+                    navController.navigate(screen.route) {
+                        // Limpiar todo el backstack hasta el inicio
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = false  // NO guardar estado - causa congelamientos
+                            inclusive = false
                         }
-                        // Si ya estamos en la raíz, no hacer nada
-                    } else {
-                        // Navegar a la nueva sección
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
+                        launchSingleTop = true
+                        restoreState = false  // NO restaurar estado - causa congelamientos
                     }
                 }
             )

@@ -18,6 +18,7 @@ import com.example.segundoentregable.ui.map.MapScreen
 import com.example.segundoentregable.ui.planner.PlannerScreen
 import com.example.segundoentregable.ui.profile.ProfileScreen
 import com.example.segundoentregable.ui.register.RegisterScreen
+import com.example.segundoentregable.ui.routes.MisRutasScreen
 import com.example.segundoentregable.ui.routes.RutaDetalleScreen
 import com.example.segundoentregable.ui.routes.RutasScreen
 import com.example.segundoentregable.ui.session.SessionViewModel
@@ -162,6 +163,11 @@ fun AppNavGraph(
         // Planificador de rutas personales
         composable("planner") {
             PlannerScreen(navController = navController)
+        }
+        
+        // Mis Rutas guardadas (CRUD completo)
+        composable("mis_rutas") {
+            MisRutasScreen(navController = navController)
         }
     }
 }

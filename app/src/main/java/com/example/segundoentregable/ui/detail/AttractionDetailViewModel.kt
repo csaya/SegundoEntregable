@@ -140,21 +140,28 @@ class AttractionDetailViewModel(
 
     /**
      * Añade o quita el atractivo de la ruta del usuario
-     * @return true si se añadió, false si se quitó
      */
-    fun onToggleRoute(): Boolean {
-        var wasAdded = false
+    fun onToggleRoute() {
         viewModelScope.launch {
+            val userEmail = userRepo.getCurrentUserEmail()
+            
+            // Verificar si está logueado
+            if (userEmail == null) {
+                _uiState.update { it.copy(requiresLogin = true) }
+                _snackbarEvent.value = "Inicia sesión para crear rutas"
+                return@launch
+            }
+            
             try {
-                wasAdded = userRouteRepo.toggleInRoute(attractionId)
+                val wasAdded = userRouteRepo.toggleInRoute(attractionId)
                 val message = if (wasAdded) "Añadido a tu ruta" else "Quitado de tu ruta"
                 _snackbarEvent.value = message
                 Log.d(TAG, "Ruta actualizada: $wasAdded para $attractionId")
             } catch (e: Exception) {
                 Log.e(TAG, "Error al cambiar ruta", e)
+                _snackbarEvent.value = "Error al modificar ruta"
             }
         }
-        return wasAdded
     }
 
     fun clearSnackbarEvent() {

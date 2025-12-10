@@ -12,7 +12,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 data class ProfileUiState(
-    val userName: String = "Cargando...",
+    val isLoggedIn: Boolean = false,
+    val isLoading: Boolean = true,
+    val userName: String = "",
     val userEmail: String = "",
     val downloadedGuides: Int = 3,
     val notificationsEnabled: Boolean = false
@@ -32,33 +34,57 @@ class ProfileViewModel(
 
     private fun loadUserProfile() {
         viewModelScope.launch {
-            val user = withContext(Dispatchers.IO) {
-                val email = repo.getCurrentUserEmail()
-                if (email != null) {
-                    repo.getUser(email)
-                } else {
-                    null
+            val email = withContext(Dispatchers.IO) {
+                repo.getCurrentUserEmail()
+            }
+            
+            if (email == null) {
+                // No hay sesión activa
+                _uiState.update {
+                    it.copy(
+                        isLoggedIn = false,
+                        isLoading = false,
+                        userName = "",
+                        userEmail = ""
+                    )
                 }
+                return@launch
+            }
+            
+            // Hay email, buscar usuario
+            val user = withContext(Dispatchers.IO) {
+                repo.getUser(email)
             }
 
             if (user != null) {
                 _uiState.update {
                     it.copy(
+                        isLoggedIn = true,
+                        isLoading = false,
                         userName = user.name,
                         userEmail = user.email
                     )
                 }
             } else {
-                // Usuario no logueado - no debería llegar aquí normalmente
-                // pero si llega, mostrar mensaje para iniciar sesión
+                // Email en SharedPrefs pero usuario no en DB (datos corruptos)
+                // Limpiar sesión
+                withContext(Dispatchers.IO) {
+                    repo.logout()
+                }
                 _uiState.update {
                     it.copy(
-                        userName = "Sin sesión",
-                        userEmail = "Inicia sesión para acceder a tu perfil"
+                        isLoggedIn = false,
+                        isLoading = false,
+                        userName = "",
+                        userEmail = ""
                     )
                 }
             }
         }
+    }
+    
+    fun refreshProfile() {
+        loadUserProfile()
     }
 
     fun onNotificationsToggled(isEnabled: Boolean) {

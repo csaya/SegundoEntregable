@@ -148,9 +148,10 @@ fun HomeScreen(
                     Spacer(Modifier.height(24.dp))
                 }
 
-                // MI RUTA PERSONAL (Acceso al Planner)
-                MiRutaSection(
-                    onVerMiRuta = { navController.navigate("planner") }
+                // PLANIFICADOR Y MIS RUTAS
+                PlanificadorSection(
+                    onNuevaRuta = { navController.navigate("planner") },
+                    onMisRutas = { navController.navigate("mis_rutas") }
                 )
 
                 Spacer(Modifier.height(16.dp))
@@ -391,37 +392,72 @@ private fun RutaCard(
 }
 
 @Composable
-private fun MiRutaSection(
-    onVerMiRuta: () -> Unit
+private fun PlanificadorSection(
+    onNuevaRuta: () -> Unit,
+    onMisRutas: () -> Unit
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f)
+    Column {
+        Text(
+            "Planifica tu Recorrido",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
         )
-    ) {
+        Spacer(Modifier.height(12.dp))
+        
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "📍 Mi Ruta de Hoy",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+            // Crear nueva ruta
+            Card(
+                modifier = Modifier.weight(1f).clickable(onClick = onNuevaRuta),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = "Planifica y optimiza tu recorrido personal",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("➕", style = MaterialTheme.typography.headlineMedium)
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "Nueva Ruta",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "Crea tu recorrido",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                    )
+                }
             }
-            Button(onClick = onVerMiRuta) {
-                Text("Ver ruta")
+            
+            // Mis rutas guardadas
+            Card(
+                modifier = Modifier.weight(1f).clickable(onClick = onMisRutas),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("📂", style = MaterialTheme.typography.headlineMedium)
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "Mis Rutas",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "Ver guardadas",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                    )
+                }
             }
         }
     }
