@@ -26,8 +26,10 @@ data class MapUiState(
     val isLoading: Boolean = true,
     val focusAttraction: AtractivoTuristico? = null,
     val shouldAnimateCamera: Boolean = false,
-    // ✅ Nuevo campo para saber si estamos en modo "focus único"
-    val focusedAttractionId: String? = null
+    val focusedAttractionId: String? = null,
+    // ✅ Nuevos campos para vista de ruta
+    val routeMode: Boolean = false,
+    val routeAtractivos: List<AtractivoTuristico> = emptyList()
 )
 
 class MapViewModel(
@@ -70,30 +72,23 @@ class MapViewModel(
         }
     }
 
-    /**
-     * Actualiza el query de búsqueda y filtra los atractivos
-     */
     fun onSearchQueryChange(query: String) {
         _uiState.update { state ->
-            // ✅ Si hay búsqueda, limpiar el focusedAttractionId
             val filtered = applyFilters(
                 state.allAtractivos,
                 query,
                 state.showOnlyFavorites,
                 state.favoriteIds,
-                null // Sin focus cuando hay búsqueda
+                null
             )
             state.copy(
                 searchQuery = query,
                 filteredAtractivos = filtered,
-                focusedAttractionId = null // Limpiar focus
+                focusedAttractionId = null
             )
         }
     }
 
-    /**
-     * Activa/desactiva el modo de solo favoritos
-     */
     fun setShowOnlyFavorites(show: Boolean, favoriteIds: Set<String> = emptySet()) {
         _uiState.update { state ->
             val newFavoriteIds = if (show) favoriteIds else state.favoriteIds
@@ -102,20 +97,17 @@ class MapViewModel(
                 state.searchQuery,
                 show,
                 newFavoriteIds,
-                null // Sin focus cuando hay filtro de favoritos
+                null
             )
             state.copy(
                 showOnlyFavorites = show,
                 favoriteIds = newFavoriteIds,
                 filteredAtractivos = filtered,
-                focusedAttractionId = null // Limpiar focus
+                focusedAttractionId = null
             )
         }
     }
 
-    /**
-     * Aplica los filtros de búsqueda, favoritos y focus único
-     */
     private fun applyFilters(
         all: List<AtractivoTuristico>,
         query: String,
@@ -125,17 +117,14 @@ class MapViewModel(
     ): List<AtractivoTuristico> {
         var result = all
 
-        // ✅ Filtrar por focus único (prioridad máxima)
         if (!focusedId.isNullOrBlank()) {
             return result.filter { it.id == focusedId }
         }
 
-        // Filtrar por favoritos si está activo
         if (onlyFavorites && favoriteIds.isNotEmpty()) {
             result = result.filter { it.id in favoriteIds }
         }
 
-        // Filtrar por búsqueda
         if (query.isNotBlank()) {
             val lowerQuery = query.lowercase()
             result = result.filter { atractivo ->
@@ -160,9 +149,6 @@ class MapViewModel(
         }
     }
 
-    /**
-     * Limpia los filtros
-     */
     fun clearFilters() {
         _uiState.update { state ->
             state.copy(
@@ -171,22 +157,19 @@ class MapViewModel(
                 filteredAtractivos = state.allAtractivos,
                 focusAttraction = null,
                 shouldAnimateCamera = false,
-                focusedAttractionId = null // ✅ Limpiar focus
+                focusedAttractionId = null,
+                routeMode = false, // ✅ Salir del modo ruta
+                routeAtractivos = emptyList()
             )
         }
     }
 
-    /**
-     * ✅ Foca la cámara en un atractivo específico por ID
-     * Y filtra para mostrar SOLO ese atractivo
-     */
     fun focusOnAttraction(attractionId: String) {
         viewModelScope.launch {
             val atractivo = _uiState.value.allAtractivos.find { it.id == attractionId }
                 ?: withContext(Dispatchers.IO) { repo.getAtractivoPorId(attractionId) }
 
             if (atractivo != null) {
-                // ✅ Filtrar para mostrar solo este atractivo
                 val filtered = listOf(atractivo)
 
                 _uiState.update {
@@ -194,8 +177,8 @@ class MapViewModel(
                         focusAttraction = atractivo,
                         selectedAttraction = atractivo,
                         shouldAnimateCamera = true,
-                        focusedAttractionId = attractionId, // ✅ Guardar el ID enfocado
-                        filteredAtractivos = filtered // ✅ Solo mostrar este
+                        focusedAttractionId = attractionId,
+                        filteredAtractivos = filtered
                     )
                 }
             }
@@ -203,8 +186,48 @@ class MapViewModel(
     }
 
     /**
-     * Marca que la animación de cámara ya se realizó
+     * ✅ NUEVO: Carga una ruta en el mapa
+     * @param routeIds Lista de IDs de atractivos en orden
      */
+    fun loadRouteView(routeIds: List<String>) {
+        viewModelScope.launch {
+            Log.d(TAG, "Cargando vista de ruta con ${routeIds.size} puntos")
+
+            val routeAtractivos = _uiState.value.allAtractivos.filter {
+                it.id in routeIds
+            }.sortedBy { atractivo ->
+                routeIds.indexOf(atractivo.id) // Mantener el orden original
+            }
+
+            _uiState.update {
+                it.copy(
+                    routeMode = true,
+                    routeAtractivos = routeAtractivos,
+                    filteredAtractivos = routeAtractivos,
+                    shouldAnimateCamera = true,
+                    searchQuery = "",
+                    showOnlyFavorites = false,
+                    focusedAttractionId = null
+                )
+            }
+
+            Log.d(TAG, "Ruta cargada: ${routeAtractivos.size} atractivos")
+        }
+    }
+
+    /**
+     * ✅ NUEVO: Sale del modo ruta
+     */
+    fun exitRouteMode() {
+        _uiState.update { state ->
+            state.copy(
+                routeMode = false,
+                routeAtractivos = emptyList(),
+                filteredAtractivos = state.allAtractivos
+            )
+        }
+    }
+
     fun onCameraAnimationComplete() {
         _uiState.update {
             it.copy(shouldAnimateCamera = false)

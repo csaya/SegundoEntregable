@@ -122,7 +122,8 @@ fun PlannerScreen(
                             navController.navigate("detail/${atractivo.id}")
                         },
                         isConnected = isConnected,
-                        context = context // ✅ Pasar el contexto aquí
+                        context = context,
+                        navController = navController
                     )
                 }
             }
@@ -229,7 +230,8 @@ private fun RouteItemsList(
     onNavigate: (AtractivoTuristico) -> Unit,
     onViewDetail: (AtractivoTuristico) -> Unit,
     isConnected: Boolean,
-    context: android.content.Context // ✅ Agregar este parámetro
+    context: android.content.Context,
+    navController: NavController
 ) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
@@ -251,6 +253,21 @@ private fun RouteItemsList(
         if (atractivos.isNotEmpty()) {
             item {
                 Spacer(Modifier.height(16.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        // Construir string de IDs separados por coma
+                        val routeIds = atractivos.joinToString(",") { it.id }
+                        navController.navigate("mapa?routeIds=$routeIds")
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Filled.Map, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Ver Ruta en Mapa")
+                }
+
+                Spacer(Modifier.height(8.dp))
 
                 // Texto informativo
                 Text(

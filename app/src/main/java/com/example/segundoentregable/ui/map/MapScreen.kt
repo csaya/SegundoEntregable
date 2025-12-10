@@ -28,6 +28,14 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +47,9 @@ fun MapScreen(
 ) {
     val context = LocalContext.current
     val application = context.applicationContext as Application
+
+    val navBackStackEntry = navController.currentBackStackEntry
+    val routeIdsParam = navBackStackEntry?.arguments?.getString("routeIds")
 
     val mapViewModel: MapViewModel = viewModel(
         factory = MapViewModelFactory(application)
@@ -52,6 +63,15 @@ fun MapScreen(
     // Estado de cámara controlado
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(arequipaCenter, 11f)
+    }
+
+    LaunchedEffect(routeIdsParam) {
+        if (!routeIdsParam.isNullOrBlank()) {
+            val ids = routeIdsParam.split(",").filter { it.isNotBlank() }
+            if (ids.isNotEmpty()) {
+                mapViewModel.loadRouteView(ids)
+            }
+        }
     }
 
     // ✅ Aplicar filtro de favoritos si viene de FavoritesScreen
@@ -68,18 +88,74 @@ fun MapScreen(
         }
     }
 
-    // ✅ Animar cámara cuando hay foco específico (desde Detail)
-    LaunchedEffect(uiState.shouldAnimateCamera, uiState.focusAttraction) {
-        if (uiState.shouldAnimateCamera && uiState.focusAttraction != null) {
-            val attr = uiState.focusAttraction!!
-            if (attr.latitud != 0.0 && attr.longitud != 0.0) {
-                cameraPositionState.animate(
-                    CameraUpdateFactory.newLatLngZoom(
-                        LatLng(attr.latitud, attr.longitud),
-                        16f
-                    ),
-                    durationMs = 1000
-                )
+    // ✅ Animar cámara para mostrar toda la ruta O punto específico
+    LaunchedEffect(uiState.shouldAnimateCamera, uiState.routeMode, uiState.focusAttraction) {
+        if (uiState.shouldAnimateCamera) {
+            when {
+                // Modo ruta: mostrar todos los puntos
+                uiState.routeMode && uiState.routeAtractivos.isNotEmpty() -> {
+                    val boundsBuilder = com.google.android.gms.maps.model.LatLngBounds.builder()
+                    var validPoints = 0
+
+                    uiState.routeAtractivos.forEach {
+                        if (it.latitud != 0.0 && it.longitud != 0.0) {
+                            boundsBuilder.include(LatLng(it.latitud, it.longitud))
+                            validPoints++
+                        }
+                    }
+
+                    // ✅ Validar que hay puntos válidos antes de animar
+                    if (validPoints >= 2) {
+                        try {
+                            val bounds = boundsBuilder.build()
+                            cameraPositionState.animate(
+                                CameraUpdateFactory.newLatLngBounds(bounds, 150),
+                                durationMs = 1000
+                            )
+                        } catch (e: Exception) {
+                            // Si falla bounds, hacer zoom al primer punto VÁLIDO
+                            val first = uiState.routeAtractivos.firstOrNull {
+                                it.latitud != 0.0 && it.longitud != 0.0
+                            }
+                            if (first != null) {
+                                cameraPositionState.animate(
+                                    CameraUpdateFactory.newLatLngZoom(
+                                        LatLng(first.latitud, first.longitud),
+                                        13f
+                                    ),
+                                    durationMs = 1000
+                                )
+                            }
+                        }
+                    } else if (validPoints == 1) {
+                        // Solo un punto válido
+                        val single = uiState.routeAtractivos.firstOrNull {
+                            it.latitud != 0.0 && it.longitud != 0.0
+                        }
+                        if (single != null) {
+                            cameraPositionState.animate(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    LatLng(single.latitud, single.longitud),
+                                    15f
+                                ),
+                                durationMs = 1000
+                            )
+                        }
+                    }
+                }
+                // Modo focus: zoom al punto específico
+                uiState.focusAttraction != null -> {
+                    val attr = uiState.focusAttraction!!
+                    if (attr.latitud != 0.0 && attr.longitud != 0.0) {
+                        cameraPositionState.animate(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(attr.latitud, attr.longitud),
+                                16f
+                            ),
+                            durationMs = 1000
+                        )
+                    }
+                }
             }
             mapViewModel.onCameraAnimationComplete()
         }
@@ -161,7 +237,9 @@ fun MapScreen(
                     query = uiState.searchQuery,
                     onQueryChange = { mapViewModel.onSearchQueryChange(it) },
                     showingFavorites = uiState.showOnlyFavorites,
-                    showingFocusedOnly = !uiState.focusedAttractionId.isNullOrBlank(), // ✅ Nuevo
+                    showingFocusedOnly = !uiState.focusedAttractionId.isNullOrBlank(),
+                    routeMode = uiState.routeMode, // ✅ NUEVO
+                    routeCount = uiState.routeAtractivos.size, // ✅ NUEVO
                     onClearFilters = { mapViewModel.clearFilters() }
                 )
             },
@@ -185,16 +263,69 @@ fun MapScreen(
                         bottom = bottomNavHeight
                     )
             ) {
-                AttractionMapView(
-                    atractivos = uiState.filteredAtractivos,
-                    onMarkerClick = { atractivo -> mapViewModel.selectAttraction(atractivo) },
+                GoogleMap(
                     modifier = Modifier.fillMaxSize(),
                     cameraPositionState = cameraPositionState,
-                )
+                    properties = MapProperties(isMyLocationEnabled = true),
+                    uiSettings = MapUiSettings(
+                        zoomControlsEnabled = false,
+                        myLocationButtonEnabled = true
+                    )
+                ) {
+                    // ✅ Dibujar polyline si estamos en modo ruta
+                    if (uiState.routeMode && uiState.routeAtractivos.size >= 2) {
+                        val points = uiState.routeAtractivos.map {
+                            LatLng(it.latitud, it.longitud)
+                        }
+
+                        Polyline(
+                            points = points,
+                            color = MaterialTheme.colorScheme.primary,
+                            width = 10f
+                        )
+                    }
+
+                    // ✅ Marcadores (numerados si es ruta, normales si no)
+                    uiState.filteredAtractivos.forEachIndexed { index, atractivo ->
+                        val position = LatLng(atractivo.latitud, atractivo.longitud)
+
+                        if (uiState.routeMode) {
+                            // Marcador numerado para ruta
+                            Marker(
+                                state = MarkerState(position = position),
+                                title = "${index + 1}. ${atractivo.nombre}",
+                                snippet = atractivo.categoria,
+                                onClick = {
+                                    mapViewModel.selectAttraction(atractivo)
+                                    false
+                                },
+                                icon = BitmapDescriptorFactory.defaultMarker(
+                                    when (index) {
+                                        0 -> BitmapDescriptorFactory.HUE_GREEN // Inicio verde
+                                        uiState.routeAtractivos.lastIndex -> BitmapDescriptorFactory.HUE_RED // Final rojo
+                                        else -> BitmapDescriptorFactory.HUE_AZURE // Intermedios azul
+                                    }
+                                )
+                            )
+                        } else {
+                            // Marcador normal
+                            Marker(
+                                state = MarkerState(position = position),
+                                title = atractivo.nombre,
+                                snippet = atractivo.categoria,
+                                onClick = {
+                                    mapViewModel.selectAttraction(atractivo)
+                                    false
+                                }
+                            )
+                        }
+                    }
+                }
 
                 // Badge de resultados
                 if ((uiState.searchQuery.isNotBlank() || uiState.showOnlyFavorites) &&
-                    uiState.focusedAttractionId.isNullOrBlank()) {
+                    uiState.focusedAttractionId.isNullOrBlank() &&
+                    !uiState.routeMode) {
                     Surface(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
@@ -221,14 +352,16 @@ private fun MapTopBar(
     onQueryChange: (String) -> Unit,
     showingFavorites: Boolean,
     onClearFilters: () -> Unit,
-    // ✅ Nuevo parámetro
-    showingFocusedOnly: Boolean = false
+    showingFocusedOnly: Boolean = false,
+    routeMode: Boolean = false, // ✅ NUEVO
+    routeCount: Int = 0 // ✅ NUEVO
 ) {
     Column {
         TopAppBar(
             title = {
                 Text(
                     when {
+                        routeMode -> "Mi Ruta ($routeCount puntos)"
                         showingFocusedOnly -> "Mapa - Vista detalle"
                         showingFavorites -> "Mapa - Favoritos"
                         else -> "Mapa"
@@ -238,7 +371,7 @@ private fun MapTopBar(
             },
             actions = {
                 // ✅ Botón para limpiar filtros (favoritos o focus)
-                if (showingFavorites || showingFocusedOnly) {
+                if (showingFavorites || showingFocusedOnly || routeMode) {
                     TextButton(onClick = onClearFilters) {
                         Text("Ver todos")
                     }
@@ -248,7 +381,7 @@ private fun MapTopBar(
         )
 
         // Barra de búsqueda (solo si NO estamos en modo focus único)
-        if (!showingFocusedOnly) {
+        if (!showingFocusedOnly && !routeMode) {
             OutlinedTextField(
                 value = query,
                 onValueChange = onQueryChange,

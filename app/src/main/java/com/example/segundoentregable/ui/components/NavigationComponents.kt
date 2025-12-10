@@ -18,7 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 
 sealed class BottomBarScreen(val route: String, val label: String, val icon: ImageVector) {
     object Home : BottomBarScreen("home", "Home", Icons.Filled.Home)
-    object Mapa : BottomBarScreen("mapa?focusId={focusId}&origin={origin}", "Mapa", Icons.Filled.Map)
+    object Mapa : BottomBarScreen("mapa", "Mapa", Icons.Filled.Map) // ✅ Ruta limpia sin parámetros
     object Favoritos : BottomBarScreen("favoritos", "Favoritos", Icons.Filled.Favorite)
     object Perfil : BottomBarScreen("perfil", "Perfil", Icons.Filled.Person)
 }
@@ -52,38 +52,33 @@ fun AppBottomBar(navController: NavController) {
                     currentRoute == "home" ||
                             currentRoute?.startsWith("rutas") == true ||
                             currentRoute?.startsWith("planner") == true ||
-                            // ✅ Si estoy en Detail con origin=home
                             (currentRoute?.startsWith("detail/") == true && detailOrigin == "home") ||
                             (currentRoute?.startsWith("list") == true) ||
-                            // ✅ Si estoy en Mapa con origin=home
-                            (currentRoute?.startsWith("mapa?") == true && mapOrigin == "home")
+                            (currentRoute?.startsWith("mapa") == true && mapOrigin == "home")
                 }
                 BottomBarScreen.Mapa -> {
-                    // Mapa seleccionado solo si NO tiene origin o si el origin es mapa
-                    (currentRoute?.startsWith("mapa?") == true) &&
-                            (mapOrigin.isNullOrBlank() || mapOrigin == "mapa") ||
-                            // Si estoy en Detail con origin=mapa
+                    // ✅ Mapa seleccionado si:
+                    // 1. Estamos en "mapa" sin parámetros (desde BottomBar)
+                    // 2. Estamos en "mapa?" con origin=mapa o sin origin
+                    currentRoute == "mapa" || // ✅ Ruta limpia
+                            ((currentRoute?.startsWith("mapa?") == true) &&
+                                    (mapOrigin.isNullOrBlank() || mapOrigin == "mapa")) ||
                             (currentRoute?.startsWith("detail/") == true && detailOrigin == "mapa")
                 }
                 BottomBarScreen.Favoritos -> {
                     currentRoute == "favoritos" ||
-                            // ✅ Si estoy en Detail con origin=favoritos
                             (currentRoute?.startsWith("detail/") == true && detailOrigin == "favoritos") ||
-                            // ✅ Si estoy en Mapa con origin=favoritos
-                            (currentRoute?.startsWith("mapa?") == true && mapOrigin == "favoritos")
+                            (currentRoute?.startsWith("mapa") == true && mapOrigin == "favoritos")
                 }
                 BottomBarScreen.Perfil -> {
-                    currentRoute == "perfil"
+                    currentRoute == "perfil" || currentRoute == "login"
                 }
             }
 
             // ✅ Detectar si estamos en la raíz
             val isAtRoot = when (screen) {
                 BottomBarScreen.Home -> currentRoute == "home"
-                BottomBarScreen.Mapa -> {
-                    val focusId = navBackStackEntry?.arguments?.getString("focusId")
-                    currentRoute?.startsWith("mapa?") == true && focusId.isNullOrBlank()
-                }
+                BottomBarScreen.Mapa -> currentRoute == "mapa" // ✅ Ruta limpia
                 BottomBarScreen.Favoritos -> currentRoute == "favoritos"
                 BottomBarScreen.Perfil -> currentRoute == "perfil"
             }
@@ -98,10 +93,9 @@ fun AppBottomBar(navController: NavController) {
                             navController.popBackStack()
                         }
                     } else {
-                        // ✅ Navegar a nueva pestaña
                         val targetRoute = when (screen) {
-                            BottomBarScreen.Mapa -> "mapa?focusId=&origin="
-                            else -> screen.route.split("?").firstOrNull() ?: screen.route
+                            BottomBarScreen.Mapa -> "mapa"
+                            else -> screen.route
                         }
 
                         navController.navigate(targetRoute) {

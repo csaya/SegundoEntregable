@@ -39,9 +39,16 @@ fun AppNavGraph(
             HomeScreen(navController = navController)
         }
 
+        composable("mapa") {
+            MapScreen(
+                navController = navController,
+                focusAttractionId = null
+            )
+        }
+
         // ✅ Mapa con parámetros opcionales: focusId y origin
         composable(
-            route = "mapa?focusId={focusId}&origin={origin}",
+            route = "mapa?focusId={focusId}&origin={origin}&routeIds={routeIds}", // ✅ Agregar &routeIds={routeIds}
             arguments = listOf(
                 navArgument("focusId") {
                     type = NavType.StringType
@@ -52,6 +59,11 @@ fun AppNavGraph(
                     type = NavType.StringType
                     defaultValue = ""
                     nullable = true
+                },
+                navArgument("routeIds") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = ""  // ✅ Cambiar null por "" para consistencia
                 }
             )
         ) { backStackEntry ->
