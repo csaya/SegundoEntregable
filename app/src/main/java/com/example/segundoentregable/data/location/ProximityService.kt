@@ -1,6 +1,7 @@
 package com.example.segundoentregable.data.location
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -17,86 +18,77 @@ import androidx.core.app.NotificationManagerCompat
 import com.example.segundoentregable.MainActivity
 import com.example.segundoentregable.R
 import com.example.segundoentregable.data.local.AppDatabase
-import com.example.segundoentregable.data.model.AtractivoTuristico
+import com.example.segundoentregable.data.local.entity.AtractivoEntity
 import com.example.segundoentregable.utils.RouteOptimizer
 import com.google.android.gms.location.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Servicio de proximidad que detecta cuando el usuario está cerca de un atractivo
- * y envía notificaciones locales.
- * 
- * Radio de detección: 500 metros
+ * Servicio de proximidad que detecta atractivos turísticos cercanos
+ * y envía notificaciones locales al usuario.
+ *
+ * Configuración:
+ * - Radio de detección: 5 km
+ * - Cooldown entre notificaciones: 1 minuto
+ * - Actualización de ubicación: cada 60 segundos (mínimo 30s)
+ * - Distancia mínima para actualización: 100 metros
  */
-class ProximityService(
-    private val context: Context
-) {
+class ProximityService(private val context: Context) {
+
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     private val database = AppDatabase.getInstance(context)
     private val sharedPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    
+
     private var locationCallback: LocationCallback? = null
     private var isMonitoring = false
-    
+
     companion object {
         private const val TAG = "ProximityService"
         private const val CHANNEL_ID = "proximity_notifications"
         private const val CHANNEL_NAME = "Lugares Cercanos"
         private const val NOTIFICATION_ID_BASE = 1000
+
         private const val PROXIMITY_RADIUS_METERS = 500.0
+        private const val NOTIFICATION_COOLDOWN_MS = 3600000L
+
         private const val PREFS_NAME = "proximity_prefs"
         private const val KEY_LAST_NOTIFIED = "last_notified_"
-        private const val NOTIFICATION_COOLDOWN_MS = 3600000L // 1 hora
+
+        private const val LOCATION_UPDATE_INTERVAL = 60000L
+        private const val LOCATION_MIN_UPDATE_INTERVAL = 30000L
+        private const val LOCATION_MIN_DISTANCE = 100f
     }
-    
+
     init {
         createNotificationChannel()
     }
-    
+
     /**
-     * Iniciar monitoreo de ubicación para detectar atractivos cercanos
+     * Iniciar monitoreo de ubicación
      */
     fun startMonitoring() {
-        if (isMonitoring) return
-        
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            Log.w(TAG, "Permiso de ubicación no concedido")
+        if (isMonitoring) {
+            restartMonitoring()
             return
         }
-        
-        val locationRequest = LocationRequest.Builder(
-            Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-            60000L // Cada 1 minuto
-        ).apply {
-            setMinUpdateIntervalMillis(30000L) // Mínimo 30 segundos
-            setMinUpdateDistanceMeters(100f) // Mínimo 100 metros de movimiento
-        }.build()
-        
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(result: LocationResult) {
-                result.lastLocation?.let { location ->
-                    checkNearbyAttractions(location)
-                }
-            }
+
+        if (!hasLocationPermission()) {
+            Log.e(TAG, "Permiso de ubicación no concedido")
+            return
         }
-        
-        fusedLocationClient.requestLocationUpdates(
-            locationRequest,
-            locationCallback!!,
-            Looper.getMainLooper()
-        )
-        
+
+        setupLocationCallback()
+        requestLocationUpdates()
+        checkLastKnownLocation()
+
         isMonitoring = true
         Log.d(TAG, "Monitoreo de proximidad iniciado")
     }
-    
+
     /**
      * Detener monitoreo de ubicación
      */
@@ -108,131 +100,187 @@ class ProximityService(
         isMonitoring = false
         Log.d(TAG, "Monitoreo de proximidad detenido")
     }
-    
+
     /**
-     * Verificar si hay atractivos cercanos y enviar notificación
+     * Limpiar cooldowns de notificaciones
+     */
+    fun clearCooldowns() {
+        sharedPrefs.edit().clear().apply()
+        Log.d(TAG, "Cooldowns limpiados")
+    }
+
+    // ========== MÉTODOS PRIVADOS ==========
+
+    private fun restartMonitoring() {
+        Log.d(TAG, "Reiniciando servicio de monitoreo")
+        stopMonitoring()
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(100)
+            startMonitoring()
+        }
+    }
+
+    private fun hasLocationPermission(): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun setupLocationCallback() {
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                result.lastLocation?.let { location ->
+                    checkNearbyAttractions(location)
+                }
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestLocationUpdates() {
+        if (!hasLocationPermission()) return
+
+        val locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+            LOCATION_UPDATE_INTERVAL
+        ).apply {
+            setMinUpdateIntervalMillis(LOCATION_MIN_UPDATE_INTERVAL)
+            setMinUpdateDistanceMeters(LOCATION_MIN_DISTANCE)
+        }.build()
+
+        try {
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback!!,
+                Looper.getMainLooper()
+            )
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Error al solicitar actualizaciones de ubicación", e)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun checkLastKnownLocation() {
+        if (!hasLocationPermission()) return
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let {
+                checkNearbyAttractions(it)
+            }
+        }
+    }
+
+    /**
+     * Verificar atractivos cercanos a la ubicación actual
      */
     private fun checkNearbyAttractions(userLocation: Location) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val atractivos = database.atractivoDao().getAllAtractivos()
-                
-                for (atractivo in atractivos) {
-                    val distance = RouteOptimizer.calculateDistance(
-                        userLocation.latitude,
-                        userLocation.longitude,
-                        atractivo.latitud,
-                        atractivo.longitud
-                    ) * 1000 // Convertir a metros
-                    
-                    if (distance <= PROXIMITY_RADIUS_METERS) {
-                        // Verificar cooldown
-                        if (shouldNotify(atractivo.id)) {
-                            withContext(Dispatchers.Main) {
-                                sendProximityNotification(
-                                    AtractivoTuristico(
-                                        id = atractivo.id,
-                                        codigoMincetur = atractivo.codigoMincetur,
-                                        nombre = atractivo.nombre,
-                                        descripcionCorta = atractivo.descripcionCorta,
-                                        descripcionLarga = atractivo.descripcionLarga,
-                                        ubicacion = atractivo.ubicacion,
-                                        latitud = atractivo.latitud,
-                                        longitud = atractivo.longitud,
-                                        departamento = atractivo.departamento,
-                                        provincia = atractivo.provincia,
-                                        distrito = atractivo.distrito,
-                                        altitud = atractivo.altitud,
-                                        categoria = atractivo.categoria,
-                                        tipo = atractivo.tipo,
-                                        subtipo = atractivo.subtipo,
-                                        jerarquia = atractivo.jerarquia,
-                                        precio = atractivo.precio,
-                                        precioDetalle = atractivo.precioDetalle,
-                                        horario = atractivo.horario,
-                                        horarioDetallado = atractivo.horarioDetallado,
-                                        epocaVisita = atractivo.epocaVisita,
-                                        tiempoVisitaSugerido = atractivo.tiempoVisitaSugerido,
-                                        estadoActual = atractivo.estadoActual,
-                                        observaciones = atractivo.observaciones,
-                                        tieneAccesibilidad = atractivo.tieneAccesibilidad,
-                                        imagenPrincipal = atractivo.imagenPrincipal,
-                                        rating = atractivo.rating,
-                                        distanciaTexto = "${distance.toInt()}m"
-                                    ),
-                                    distance.toInt()
-                                )
-                            }
-                            markAsNotified(atractivo.id)
+                val nearbyAttractions = atractivos.filter { atractivo ->
+                    val distance = calculateDistance(userLocation, atractivo)
+                    distance <= PROXIMITY_RADIUS_METERS
+                }
+
+                nearbyAttractions.forEach { atractivo ->
+                    val distance = calculateDistance(userLocation, atractivo).toInt()
+
+                    if (shouldNotify(atractivo.id)) {
+                        withContext(Dispatchers.Main) {
+                            sendProximityNotification(atractivo, distance)
                         }
+                        markAsNotified(atractivo.id)
                     }
                 }
+
             } catch (e: Exception) {
-                Log.e(TAG, "Error verificando atractivos cercanos: ${e.message}")
+                Log.e(TAG, "Error al verificar atractivos cercanos", e)
             }
         }
     }
-    
-    /**
-     * Verificar si debemos notificar (cooldown de 1 hora)
-     */
+
+    private fun calculateDistance(userLocation: Location, atractivo: AtractivoEntity): Double {
+        return RouteOptimizer.calculateDistance(
+            userLocation.latitude,
+            userLocation.longitude,
+            atractivo.latitud,
+            atractivo.longitud
+        ) * 1000 // Convertir km a metros
+    }
+
     private fun shouldNotify(atractivoId: String): Boolean {
         val lastNotified = sharedPrefs.getLong(KEY_LAST_NOTIFIED + atractivoId, 0)
         return System.currentTimeMillis() - lastNotified > NOTIFICATION_COOLDOWN_MS
     }
-    
-    /**
-     * Marcar atractivo como notificado
-     */
+
     private fun markAsNotified(atractivoId: String) {
         sharedPrefs.edit()
             .putLong(KEY_LAST_NOTIFIED + atractivoId, System.currentTimeMillis())
             .apply()
     }
-    
+
     /**
      * Enviar notificación de proximidad
      */
-    private fun sendProximityNotification(atractivo: AtractivoTuristico, distanceMeters: Int) {
-        // Intent para abrir el detalle del atractivo
-        val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            putExtra("attraction_id", atractivo.id)
+    @SuppressLint("MissingPermission")
+    private fun sendProximityNotification(atractivo: AtractivoEntity, distanceMeters: Int) {
+        if (!hasNotificationPermission()) {
+            Log.w(TAG, "Permiso de notificaciones no concedido")
+            return
         }
-        
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            atractivo.id.hashCode(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        
+
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("📍 Estás cerca de ${atractivo.nombre}")
             .setContentText("A solo ${distanceMeters}m. ¡Descúbrelo!")
-            .setStyle(NotificationCompat.BigTextStyle()
-                .bigText("${atractivo.descripcionCorta}\n\n⭐ Rating: ${atractivo.rating} | 📍 ${distanceMeters}m"))
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText("${atractivo.descripcionCorta}\n\n⭐ Rating: ${atractivo.rating} | 📍 ${distanceMeters}m")
+            )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
+            .setContentIntent(createPendingIntent(atractivo.id))
             .setAutoCancel(true)
             .build()
-        
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
-        ) {
+
+        try {
             NotificationManagerCompat.from(context).notify(
                 NOTIFICATION_ID_BASE + atractivo.id.hashCode(),
                 notification
             )
-            Log.d(TAG, "Notificación enviada para: ${atractivo.nombre}")
+            Log.d(TAG, "Notificación enviada: ${atractivo.nombre}")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error al enviar notificación", e)
         }
     }
-    
+
+    private fun hasNotificationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+    }
+
+    private fun createPendingIntent(attractionId: String): PendingIntent {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra("attraction_id", attractionId)
+        }
+
+        return PendingIntent.getActivity(
+            context,
+            attractionId.hashCode(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
     /**
-     * Crear canal de notificaciones (requerido para Android 8+)
+     * Crear canal de notificaciones (Android 8+)
      */
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -243,9 +291,9 @@ class ProximityService(
             ).apply {
                 description = "Notificaciones cuando estás cerca de un lugar turístico"
             }
-            
-            val notificationManager = context.getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
+
+            context.getSystemService(NotificationManager::class.java)
+                ?.createNotificationChannel(channel)
         }
     }
 }

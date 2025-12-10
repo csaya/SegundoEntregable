@@ -37,7 +37,7 @@ import com.example.segundoentregable.data.local.entity.UserRouteItemEntity
         UserRouteItemEntity::class,
         ReviewVoteEntity::class
     ],
-    version = 12,
+    version = 13,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

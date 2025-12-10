@@ -71,6 +71,8 @@ class RegisterViewModel(
                 }
 
                 if (ok) {
+                    repo.setCurrentUser(state.email.trim())
+
                     _registerSuccessEvent.emit(Unit)
                 } else {
                     _uiState.update { it.copy(errorMessage = "Correo ya registrado") }

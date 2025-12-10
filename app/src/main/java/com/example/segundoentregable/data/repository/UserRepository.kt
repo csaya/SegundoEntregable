@@ -31,19 +31,17 @@ class UserRepository(
         // Verificar si ya existe localmente
         val existingUser = userDao.getUserByEmail(user.email)
         if (existingUser != null) return false
-        
+
         // Guardar en Room
         userDao.insertUser(UserEntity(user.email, user.name, user.password))
-        
-        // Intentar sincronizar con Firebase si hay conexión
+
         if (connectivityObserver.isCurrentlyConnected()) {
-            val result = firebaseAuth.register(user.email, user.password)
-            // No fallar si Firebase falla - Room es la fuente de verdad
-            result.onFailure { 
+            val result = firebaseAuth.register(user.email, user.password, user.name) // ✅ Pasar nombre
+            result.onFailure {
                 // Log silencioso, el usuario está registrado localmente
             }
         }
-        
+
         return true
     }
 
@@ -53,21 +51,30 @@ class UserRepository(
      * 2. Si hay conexión, sincronizar sesión con Firebase
      */
     suspend fun login(email: String, password: String): Boolean {
-        // Validar contra Room primero
         val user = userDao.getUserByEmail(email)
         val localValid = user != null && user.password == password
-        
+
         if (!localValid) return false
-        
-        // Si hay conexión, sincronizar con Firebase
+
         if (connectivityObserver.isCurrentlyConnected()) {
             val result = firebaseAuth.login(email, password)
-            // Si Firebase falla pero Room validó, permitir acceso
-            // (el usuario puede estar offline o no sincronizado)
+
+            result.onSuccess { firebaseUser ->
+                val firebaseName = firebaseUser.displayName
+                val roomName = user?.name
+
+                if (!firebaseName.isNullOrBlank()) {
+                    userDao.insertUser(
+                        UserEntity(email, firebaseName, user?.password ?: "")
+                    )
+                } else if (!roomName.isNullOrBlank()) {
+                    firebaseAuth.updateDisplayName(roomName)
+                }
+            }
         }
-        
         return true
     }
+
 
     suspend fun getUser(email: String): User? {
         val userEntity = userDao.getUserByEmail(email)
@@ -89,6 +96,9 @@ class UserRepository(
         if (existingUser == null) {
             // Crear usuario local sin contraseña (login solo via Firebase)
             userDao.insertUser(UserEntity(email, name, ""))
+        } else if (existingUser.name != name && name != "Usuario") {
+            // Actualizar nombre si cambió
+            userDao.insertUser(UserEntity(email, name, existingUser.password))
         }
     }
 

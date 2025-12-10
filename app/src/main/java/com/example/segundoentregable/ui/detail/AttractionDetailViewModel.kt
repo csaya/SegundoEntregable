@@ -99,6 +99,11 @@ class AttractionDetailViewModel(
                         currentUserEmail = userEmail
                     )
                 }
+
+                Log.d(TAG, "Current user email: $userEmail")
+                reviews.forEach { review ->
+                    Log.d(TAG, "Review by: ${review.userEmail}, Match: ${review.userEmail == userEmail}")
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error cargando datos", e)
                 _uiState.update { it.copy(isLoading = false) }
@@ -184,38 +189,47 @@ class AttractionDetailViewModel(
     fun submitReview(rating: Float, comment: String) {
         viewModelScope.launch {
             val userEmail = userRepo.getCurrentUserEmail() ?: return@launch
-            // Obtenemos el nombre del usuario (idealmente esto vendría del objeto User,
-            // aquí simulamos una llamada rápida o usamos el email si no hay nombre cargado)
-            val user = userRepo.getUser(userEmail)
-            val userName = user?.name ?: "Usuario"
+
+            val localUser = userRepo.getUser(userEmail)
+
+            val firebaseDisplayName = userRepo.getFirebaseAuthService().getCurrentUserDisplayName()
+
+            val userName = when {
+                !localUser?.name.isNullOrBlank() -> localUser!!.name
+                !firebaseDisplayName.isNullOrBlank() -> firebaseDisplayName
+                else -> userEmail.split("@").first().replaceFirstChar { it.uppercase() }
+            }
 
             _uiState.update { it.copy(isSubmittingReview = true) }
 
             try {
-                // Guardamos en BD
                 attractionRepo.addReview(
                     attractionId = attractionId,
-                    userEmail = userEmail, // Aunque ReviewEntity no guarda email, lo usamos para lógica
+                    userEmail = userEmail,
                     userName = userName,
                     rating = rating,
                     comment = comment
                 )
 
-                // Recargamos los datos para ver la nueva review
-                loadData()
+                val newRating = attractionRepo.calculateAverageRating(attractionId)
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        atractivo = currentState.atractivo?.copy(rating = newRating)
+                    )
+                }
 
-                // Cerramos diálogo
+                loadData()
                 _uiState.update { it.copy(isReviewDialogVisible = false) }
+                _snackbarEvent.value = "¡Reseña publicada!"
             } catch (e: Exception) {
                 e.printStackTrace()
+                _snackbarEvent.value = "Error al publicar reseña"
             } finally {
                 _uiState.update { it.copy(isSubmittingReview = false) }
             }
         }
     }
-    
-    // ========== CALIFICACIÓN DE RESEÑAS ==========
-    
+
     fun onLikeReview(reviewId: String) {
         viewModelScope.launch {
             val userEmail = userRepo.getCurrentUserEmail()

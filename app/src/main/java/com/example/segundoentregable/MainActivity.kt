@@ -1,24 +1,31 @@
 package com.example.segundoentregable
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels // <-- Importar
+import androidx.activity.viewModels
 import androidx.navigation.compose.rememberNavController
 import com.example.segundoentregable.navigation.AppNavGraph
 import com.example.segundoentregable.ui.session.SessionViewModel
-import com.example.segundoentregable.ui.session.SessionViewModelFactory // <-- IMPORTANTE: Importar el Factory
+import com.example.segundoentregable.ui.session.SessionViewModelFactory
 import com.example.segundoentregable.ui.theme.SegundoEntregableTheme
+import com.example.segundoentregable.utils.DeepLinkHandler
+
+private const val TAG = "MainActivity"
 
 class MainActivity : ComponentActivity() {
 
-    // 1. CORRECCIÓN: Usamos el Factory para inyectar el repositorio
     private val sessionViewModel: SessionViewModel by viewModels {
         SessionViewModelFactory(application)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        handleIntent(intent)
+
         setContent {
             SegundoEntregableTheme {
                 val navController = rememberNavController()
@@ -28,6 +35,26 @@ class MainActivity : ComponentActivity() {
                     sessionViewModel = sessionViewModel
                 )
             }
+        }
+    }
+
+    /**
+     * Manejar nuevos intents cuando la app ya está en foreground
+     */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    /**
+     * Procesar intents de notificaciones y extraer attraction_id
+     */
+    private fun handleIntent(intent: Intent?) {
+        val attractionId = intent?.getStringExtra("attraction_id")
+        if (attractionId != null) {
+            Log.d(TAG, "🔔 Deep link detectado: attraction_id=$attractionId")
+            DeepLinkHandler.setAttractionId(attractionId)
         }
     }
 }

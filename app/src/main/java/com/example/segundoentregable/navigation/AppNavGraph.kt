@@ -1,6 +1,7 @@
 package com.example.segundoentregable.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
@@ -22,13 +23,33 @@ import com.example.segundoentregable.ui.routes.MisRutasScreen
 import com.example.segundoentregable.ui.routes.RutaDetalleScreen
 import com.example.segundoentregable.ui.routes.RutasScreen
 import com.example.segundoentregable.ui.session.SessionViewModel
+import kotlinx.coroutines.delay
+import com.example.segundoentregable.utils.DeepLinkHandler
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
     sessionViewModel: SessionViewModel
 ) {
+    val pendingAttractionId by DeepLinkHandler.pendingAttractionId.collectAsState()
+
     val isLoggedIn by sessionViewModel.isLoggedIn.collectAsState()
+
+    LaunchedEffect(pendingAttractionId) {
+        pendingAttractionId?.let { id ->
+            // Pequeño delay para asegurar que NavHost esté completamente inicializado
+            delay(300)
+
+            // Navegar al detalle
+            navController.navigate("detail/$id?origin=notification") {
+                // Opcional: limpiar backstack
+                popUpTo("home") { inclusive = false }
+            }
+
+            // Limpiar el deep link después de navegar
+            DeepLinkHandler.clearAttractionId()
+        }
+    }
 
     NavHost(
         navController = navController,

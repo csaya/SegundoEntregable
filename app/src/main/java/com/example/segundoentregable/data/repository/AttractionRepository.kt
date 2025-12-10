@@ -12,8 +12,13 @@ import com.example.segundoentregable.data.local.entity.ReviewVoteEntity
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.model.Review
 import com.example.segundoentregable.data.model.toDomainModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class AttractionRepository(
     private val atractivoDao: AtractivoDao,
@@ -90,6 +95,20 @@ class AttractionRepository(
     }
 
     /**
+     * Calcula el rating promedio de un atractivo basado en sus reseñas
+     */
+    suspend fun calculateAverageRating(attractionId: String): Float {
+        return withContext(Dispatchers.IO) {
+            val reviews = reviewDao.getReviewsByAttraction(attractionId)
+            if (reviews.isEmpty()) {
+                5.0f // Default si no hay reseñas
+            } else {
+                reviews.map { it.rating }.average().toFloat()
+            }
+        }
+    }
+
+    /**
      * Versión suspend para obtener atractivo completo (sin Flow)
      */
     suspend fun getAtractivoCompletoSync(atractivoId: String, userEmail: String): AtractivoTuristico? {
@@ -98,11 +117,13 @@ class AttractionRepository(
         val actividades = actividadDao.getActividadesByAtractivoIdSync(atractivoId)
         val isFavorito = favoritoDao.isFavorito(userEmail, atractivoId) > 0
 
+        val dynamicRating = calculateAverageRating(atractivoId)
+
         return atractivo.toDomainModel(
             galeria = galeria.map { it.toDomainModel() },
             actividades = actividades.map { it.toDomainModel() },
             isFavorito = isFavorito
-        )
+        ).copy(rating = dynamicRating)
     }
 
     suspend fun getReviewsForAttraction(attractionId: String): List<Review> {
@@ -129,15 +150,18 @@ class AttractionRepository(
             id = java.util.UUID.randomUUID().toString(),
             attractionId = attractionId,
             userName = userName,
-            date = "Hace un momento",
+            userEmail = userEmail, // ✅ AGREGAR ESTA LÍNEA
+            date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),
             rating = rating,
             comment = comment,
             likes = 0,
-            dislikes = 0
+            dislikes = 0,
+            isSynced = false,
+            createdAt = System.currentTimeMillis()
         )
-        reviewDao.insertReviews(listOf(newReview))
+        reviewDao.insertReview(newReview) // Cambiar a singular si existe en el DAO
     }
-    
+
     // ========== CALIFICACIÓN DE RESEÑAS ==========
     
     /**

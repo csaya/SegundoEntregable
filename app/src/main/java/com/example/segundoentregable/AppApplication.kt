@@ -24,6 +24,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+
 
 private const val TAG = "AppApplication"
 private const val PREFS_NAME = "app_prefs"
@@ -92,12 +96,32 @@ class AppApplication : Application() {
         // Importar datos desde assets si no se ha hecho antes
         importDataIfNeeded()
 
+        // ✅ NUEVO: Restaurar servicio de proximidad si estaba activo
+        CoroutineScope(Dispatchers.Main).launch {
+            _isDataReady.collect { ready ->
+                if (ready) {
+                    val wasEnabled = getSharedPreferences("proximity_prefs", MODE_PRIVATE)
+                        .getBoolean("monitoring_enabled", false)
+
+                    if (wasEnabled && ActivityCompat.checkSelfPermission(
+                            this@AppApplication,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        proximityService.startMonitoring()
+                        Log.d(TAG, "🔔 Monitoreo de proximidad restaurado")
+                    }
+                }
+            }
+        }
+
         // Programar sincronización periódica
         ReviewSyncWorker.schedulePeriodicSync(this)
         FavoriteSyncWorker.schedulePeriodicSync(this)
         RutaSyncWorker.schedulePeriodicSync(this)
         Log.d(TAG, "WorkManager configurado para sincronización")
     }
+
 
     private fun importDataIfNeeded() {
         val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
