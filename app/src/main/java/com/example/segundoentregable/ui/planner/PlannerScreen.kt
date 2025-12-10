@@ -70,7 +70,8 @@ fun PlannerScreen(
             savedRoutes = uiState.savedRoutes,
             onDismiss = { viewModel.hideLoadDialog() },
             onLoad = { routeId -> viewModel.loadSavedRoute(routeId) },
-            onDelete = { routeId -> viewModel.deleteSavedRoute(routeId) }
+            onDelete = { routeId -> viewModel.deleteSavedRoute(routeId) },
+            onEdit = { routeId, name, desc -> viewModel.editSavedRoute(routeId, name, desc) }
         )
     }
 
@@ -556,9 +557,11 @@ private fun LoadRouteDialog(
     savedRoutes: List<RutaEntity>,
     onDismiss: () -> Unit,
     onLoad: (String) -> Unit,
-    onDelete: (String) -> Unit
+    onDelete: (String) -> Unit,
+    onEdit: (String, String, String) -> Unit
 ) {
     var routeToDelete by remember { mutableStateOf<RutaEntity?>(null) }
+    var routeToEdit by remember { mutableStateOf<RutaEntity?>(null) }
 
     // Diálogo de confirmación para eliminar
     routeToDelete?.let { route ->
@@ -581,6 +584,18 @@ private fun LoadRouteDialog(
                 TextButton(onClick = { routeToDelete = null }) {
                     Text("Cancelar")
                 }
+            }
+        )
+    }
+
+    // Diálogo para editar
+    routeToEdit?.let { route ->
+        EditRouteDialog(
+            route = route,
+            onDismiss = { routeToEdit = null },
+            onSave = { newName, newDesc ->
+                onEdit(route.id, newName, newDesc)
+                routeToEdit = null
             }
         )
     }
@@ -614,6 +629,7 @@ private fun LoadRouteDialog(
                         SavedRouteItem(
                             route = route,
                             onLoad = { onLoad(route.id) },
+                            onEdit = { routeToEdit = route },
                             onDelete = { routeToDelete = route }
                         )
                     }
@@ -629,9 +645,56 @@ private fun LoadRouteDialog(
 }
 
 @Composable
+private fun EditRouteDialog(
+    route: RutaEntity,
+    onDismiss: () -> Unit,
+    onSave: (String, String) -> Unit
+) {
+    var nombre by remember { mutableStateOf(route.nombre) }
+    var descripcion by remember { mutableStateOf(route.descripcion) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Editar Ruta", fontWeight = FontWeight.Bold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = nombre,
+                    onValueChange = { nombre = it },
+                    label = { Text("Nombre") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = descripcion,
+                    onValueChange = { descripcion = it },
+                    label = { Text("Descripción (opcional)") },
+                    maxLines = 3,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onSave(nombre, descripcion) },
+                enabled = nombre.isNotBlank()
+            ) {
+                Text("Guardar")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    )
+}
+
+@Composable
 private fun SavedRouteItem(
     route: RutaEntity,
     onLoad: () -> Unit,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
@@ -677,6 +740,13 @@ private fun SavedRouteItem(
                         color = Color.Gray
                     )
                 }
+            }
+            IconButton(onClick = onEdit) {
+                Icon(
+                    Icons.Filled.Edit,
+                    contentDescription = "Editar",
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
             IconButton(onClick = onDelete) {
                 Icon(

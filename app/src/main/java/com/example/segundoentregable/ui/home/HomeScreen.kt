@@ -24,11 +24,17 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.segundoentregable.AppApplication
+import com.example.segundoentregable.data.local.entity.RutaEntity
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.ui.components.AppBottomBar
 import com.example.segundoentregable.ui.components.CercanoItemRow
 import com.example.segundoentregable.ui.components.RecomendacionCard
 import com.example.segundoentregable.ui.components.SearchBar
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -149,9 +155,13 @@ fun HomeScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                // RUTAS TURÍSTICAS
-                RutasSection(
-                    onVerRutas = { navController.navigate("rutas") }
+                // RUTAS TURÍSTICAS DESTACADAS
+                RutasDestacadasSection(
+                    rutas = uiState.rutasDestacadas,
+                    onRutaClicked = { rutaId -> 
+                        navController.navigate("ruta_detalle/$rutaId") 
+                    },
+                    onVerTodas = { navController.navigate("rutas") }
                 )
 
                 Spacer(Modifier.height(16.dp))
@@ -238,37 +248,143 @@ private fun CercanosSection(
 }
 
 @Composable
-private fun RutasSection(
-    onVerRutas: () -> Unit
+private fun RutasDestacadasSection(
+    rutas: List<RutaEntity>,
+    onRutaClicked: (String) -> Unit,
+    onVerTodas: () -> Unit
+) {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Rutas Turísticas",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+            TextButton(onClick = onVerTodas) {
+                Text("Ver todas")
+            }
+        }
+        
+        Spacer(Modifier.height(12.dp))
+        
+        if (rutas.isEmpty()) {
+            // Mostrar placeholder si no hay rutas
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "🗺️",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "Descubre rutas curadas",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "Explora las mejores rutas turísticas de Arequipa",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    Button(onClick = onVerTodas) {
+                        Text("Explorar rutas")
+                    }
+                }
+            }
+        } else {
+            // Mostrar carrusel de rutas
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(rutas) { ruta ->
+                    RutaCard(
+                        ruta = ruta,
+                        onClick = { onRutaClicked(ruta.id) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RutaCard(
+    ruta: RutaEntity,
+    onClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-        )
+        modifier = Modifier
+            .width(280.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "🗺️ Rutas Turísticas",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+        Column {
+            // Imagen de la ruta
+            AsyncImage(
+                model = ruta.imagenPrincipal.ifEmpty { 
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Arequipa%2C_Plaza_de_Armas_and_Volc%C3%A1n_Misti_-_panoramio.jpg/1280px-Arequipa%2C_Plaza_de_Armas_and_Volc%C3%A1n_Misti_-_panoramio.jpg"
+                },
+                contentDescription = ruta.nombre,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                contentScale = ContentScale.Crop
+            )
+            
+            Column(modifier = Modifier.padding(12.dp)) {
+                // Categoría chip
+                AssistChip(
+                    onClick = { },
+                    label = { 
+                        Text(
+                            ruta.categoria.replaceFirstChar { it.uppercase() },
+                            style = MaterialTheme.typography.labelSmall
+                        ) 
+                    },
+                    modifier = Modifier.height(24.dp)
                 )
+                
                 Spacer(Modifier.height(4.dp))
+                
                 Text(
-                    text = "Explora rutas curadas por expertos locales",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    ruta.nombre,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
                 )
-            }
-            Button(onClick = onVerRutas) {
-                Text("Ver rutas")
+                
+                Spacer(Modifier.height(4.dp))
+                
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        "⏱️ ${ruta.duracionEstimada}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                    Text(
+                        "📍 ${ruta.dificultad}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                }
             }
         }
     }

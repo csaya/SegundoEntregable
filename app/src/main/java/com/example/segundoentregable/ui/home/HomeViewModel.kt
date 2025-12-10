@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.data.location.LocationService
+import com.example.segundoentregable.data.local.entity.RutaEntity
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.data.repository.AttractionRepository
+import com.example.segundoentregable.data.repository.RutaRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,12 +22,14 @@ private const val TAG = "HomeViewModel"
 data class HomeUiState(
     val recomendaciones: List<AtractivoTuristico> = emptyList(),
     val cercanos: List<AtractivoTuristico> = emptyList(),
-    val isLoading: Boolean = true, // Iniciar en true
+    val rutasDestacadas: List<RutaEntity> = emptyList(),
+    val isLoading: Boolean = true,
     val isEmpty: Boolean = false
 )
 
 class HomeViewModel(
     private val repo: AttractionRepository,
+    private val rutaRepository: RutaRepository,
     private val locationService: LocationService,
     private val isDataReadyFlow: StateFlow<Boolean>
 ) : ViewModel() {
@@ -56,13 +60,20 @@ class HomeViewModel(
             val cercanos = withContext(Dispatchers.IO) {
                 repo.getCercanos()
             }
+            // Cargar rutas destacadas (predefinidas)
+            val rutasDestacadas = withContext(Dispatchers.IO) {
+                rutaRepository.getAllRutasList()
+                    .filter { it.tipo == RutaEntity.TIPO_PREDEFINIDA }
+                    .take(4) // Mostrar máximo 4 en Home
+            }
 
-            Log.d(TAG, "Cargados: ${recomendaciones.size} recomendaciones, ${cercanos.size} cercanos")
+            Log.d(TAG, "Cargados: ${recomendaciones.size} recomendaciones, ${cercanos.size} cercanos, ${rutasDestacadas.size} rutas")
 
             _uiState.update {
                 it.copy(
                     recomendaciones = recomendaciones,
                     cercanos = cercanos,
+                    rutasDestacadas = rutasDestacadas,
                     isLoading = false,
                     isEmpty = recomendaciones.isEmpty() && cercanos.isEmpty()
                 )

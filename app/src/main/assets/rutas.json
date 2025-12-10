@@ -61,50 +61,106 @@
     {
       "id": "p_sillar_1",
       "rutaId": "ruta_sillar",
-      "atractivoId": "plaza_armas",
+      "atractivoId": "mincetur_972",
       "orden": 1,
       "tiempoSugerido": "30 min",
-      "notas": "Punto de encuentro y partida"
+      "notas": "Punto de encuentro - Plaza de Armas"
     },
     {
       "id": "p_sillar_2",
       "rutaId": "ruta_sillar",
-      "atractivoId": "monasterio_santa_catalina",
+      "atractivoId": "mincetur_974",
       "orden": 2,
       "tiempoSugerido": "1 hora",
-      "notas": "Observar el uso del sillar en la arquitectura"
+      "notas": "Monasterio Santa Catalina - observar sillar"
+    },
+    {
+      "id": "p_sillar_3",
+      "rutaId": "ruta_sillar",
+      "atractivoId": "mincetur_3941",
+      "orden": 3,
+      "tiempoSugerido": "2 horas",
+      "notas": "Canteras de Añashuayco - origen del sillar"
     },
     {
       "id": "p_centro_1",
       "rutaId": "ruta_centro_historico",
-      "atractivoId": "plaza_armas",
+      "atractivoId": "mincetur_972",
       "orden": 1,
       "tiempoSugerido": "45 min",
-      "notas": "Catedral y portales coloniales"
+      "notas": "Plaza de Armas y Catedral"
     },
     {
       "id": "p_centro_2",
       "rutaId": "ruta_centro_historico",
-      "atractivoId": "monasterio_santa_catalina",
+      "atractivoId": "mincetur_973",
       "orden": 2,
-      "tiempoSugerido": "2 horas",
-      "notas": "Ciudad dentro de la ciudad"
+      "tiempoSugerido": "45 min",
+      "notas": "Basílica Catedral de Arequipa"
     },
     {
       "id": "p_centro_3",
       "rutaId": "ruta_centro_historico",
-      "atractivoId": "yanahuara",
+      "atractivoId": "mincetur_974",
       "orden": 3,
+      "tiempoSugerido": "2 horas",
+      "notas": "Monasterio Santa Catalina"
+    },
+    {
+      "id": "p_centro_4",
+      "rutaId": "ruta_centro_historico",
+      "atractivoId": "mincetur_975",
+      "orden": 4,
       "tiempoSugerido": "30 min",
-      "notas": "Mirador con vista al Misti"
+      "notas": "Iglesia de la Compañía"
+    },
+    {
+      "id": "p_centro_5",
+      "rutaId": "ruta_centro_historico",
+      "atractivoId": "mincetur_597",
+      "orden": 5,
+      "tiempoSugerido": "30 min",
+      "notas": "Mirador de Yanahuara"
+    },
+    {
+      "id": "p_centro_6",
+      "rutaId": "ruta_centro_historico",
+      "atractivoId": "mincetur_989",
+      "orden": 6,
+      "tiempoSugerido": "30 min",
+      "notas": "Barrio de San Lázaro"
+    },
+    {
+      "id": "p_gastro_1",
+      "rutaId": "ruta_gastronomica",
+      "atractivoId": "mincetur_985",
+      "orden": 1,
+      "tiempoSugerido": "1 hora",
+      "notas": "Centro Artesanal Fundo El Fierro"
+    },
+    {
+      "id": "p_gastro_2",
+      "rutaId": "ruta_gastronomica",
+      "atractivoId": "mincetur_972",
+      "orden": 2,
+      "tiempoSugerido": "30 min",
+      "notas": "Plaza de Armas - cafés tradicionales"
     },
     {
       "id": "p_campiña_1",
       "rutaId": "ruta_campiña",
-      "atractivoId": "molino_sabandia",
+      "atractivoId": "mincetur_596",
       "orden": 1,
+      "tiempoSugerido": "1.5 horas",
+      "notas": "Mansión del Fundador"
+    },
+    {
+      "id": "p_campiña_2",
+      "rutaId": "ruta_campiña",
+      "atractivoId": "mincetur_589",
+      "orden": 2,
       "tiempoSugerido": "1 hora",
-      "notas": "Molino colonial del siglo XVII"
+      "notas": "Pueblo de Characato"
     }
   ]
 }

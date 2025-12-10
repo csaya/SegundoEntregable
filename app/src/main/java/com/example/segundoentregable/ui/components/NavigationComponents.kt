@@ -56,9 +56,8 @@ fun AppBottomBar(navController: NavController) {
                             (currentRoute?.startsWith("mapa") == true && mapOrigin == "home")
                 }
                 BottomBarScreen.Mapa -> {
-                    currentRoute == "mapa" ||
-                            ((currentRoute?.startsWith("mapa?") == true) &&
-                                    (mapOrigin.isNullOrBlank() || mapOrigin == "mapa")) ||
+                    currentRoute?.startsWith("mapa") == true &&
+                            (mapOrigin.isNullOrBlank() || mapOrigin == "mapa") ||
                             (currentRoute?.startsWith("detail/") == true && detailOrigin == "mapa")
                 }
                 BottomBarScreen.Favoritos -> {
@@ -73,7 +72,7 @@ fun AppBottomBar(navController: NavController) {
 
             val isAtRoot = when (screen) {
                 BottomBarScreen.Home -> currentRoute == "home"
-                BottomBarScreen.Mapa -> currentRoute == "mapa"
+                BottomBarScreen.Mapa -> currentRoute?.startsWith("mapa") == true && mapOrigin.isNullOrBlank()
                 BottomBarScreen.Favoritos -> currentRoute == "favoritos"
                 BottomBarScreen.Perfil -> currentRoute == "perfil"
             }
@@ -83,17 +82,21 @@ fun AppBottomBar(navController: NavController) {
                 label = { Text(screen.label) },
                 selected = isSelected,
                 onClick = {
+                    // Si ya estamos en esta sección
                     if (isSelected) {
+                        // Si no estamos en la raíz, volver a la raíz de esta sección
                         if (!isAtRoot) {
-                            navController.popBackStack()
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = false
+                                }
+                                launchSingleTop = true
+                            }
                         }
+                        // Si ya estamos en la raíz, no hacer nada
                     } else {
-                        val targetRoute = when (screen) {
-                            BottomBarScreen.Mapa -> "mapa"
-                            else -> screen.route
-                        }
-
-                        navController.navigate(targetRoute) {
+                        // Navegar a la nueva sección
+                        navController.navigate(screen.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }

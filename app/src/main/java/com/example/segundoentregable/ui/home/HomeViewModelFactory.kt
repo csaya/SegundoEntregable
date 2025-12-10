@@ -15,6 +15,7 @@ class HomeViewModelFactory(
             val app = application as AppApplication
             return HomeViewModel(
                 repo = app.attractionRepository,
+                rutaRepository = app.rutaRepository,
                 locationService = app.locationService,
                 isDataReadyFlow = app.isDataReady
             ) as T

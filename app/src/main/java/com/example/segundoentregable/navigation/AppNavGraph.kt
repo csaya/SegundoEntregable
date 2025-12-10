@@ -39,7 +39,15 @@ fun AppNavGraph(
             HomeScreen(navController = navController)
         }
 
-        // Mapa - ruta única con parámetros opcionales
+        // Mapa - ruta base (sin parámetros, para BottomBar)
+        composable(BottomBarScreen.Mapa.route) {
+            MapScreen(
+                navController = navController,
+                focusAttractionId = null
+            )
+        }
+        
+        // Mapa - con parámetros (desde detalle, favoritos, etc.)
         composable(
             route = "mapa?focusId={focusId}&origin={origin}&routeIds={routeIds}",
             arguments = listOf(

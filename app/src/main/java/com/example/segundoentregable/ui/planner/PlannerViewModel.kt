@@ -325,6 +325,24 @@ class PlannerViewModel(
         }
     }
 
+    /**
+     * Edita nombre/descripción de una ruta guardada
+     */
+    fun editSavedRoute(routeId: String, newName: String, newDescription: String) {
+        if (newName.isBlank()) return
+        
+        viewModelScope.launch {
+            try {
+                rutaRepository.updateUserRoute(routeId, newName.trim(), newDescription.trim())
+                _uiState.update { it.copy(saveSuccess = true) }
+                Log.d(TAG, "Ruta actualizada: $routeId -> $newName")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error editando ruta", e)
+                _uiState.update { it.copy(error = "Error al editar la ruta") }
+            }
+        }
+    }
+
     fun clearError() {
         _uiState.update { it.copy(error = null) }
     }
