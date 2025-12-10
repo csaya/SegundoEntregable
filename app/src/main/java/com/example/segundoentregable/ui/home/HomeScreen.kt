@@ -4,72 +4,59 @@ import android.Manifest
 import android.app.Application
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.segundoentregable.AppApplication
 import com.example.segundoentregable.data.local.entity.RutaEntity
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.ui.components.AppBottomBar
 import com.example.segundoentregable.ui.components.CercanoItemRow
 import com.example.segundoentregable.ui.components.RecomendacionCard
-import com.example.segundoentregable.ui.components.SearchBar
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
-    navController: NavController
-) {
-    // 1. Obtener contexto y Application para la Factory
+fun HomeScreen(navController: NavController) {
     val context = LocalContext.current
     val application = context.applicationContext as Application
-
-    // 2. Inyectar el ViewModel usando la Factory
-    val homeViewModel: HomeViewModel = viewModel(
-        factory = HomeViewModelFactory(application)
-    )
-
+    val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(application))
     val uiState by homeViewModel.uiState.collectAsState()
-    var searchQuery by remember { mutableStateOf("") }
 
-    // Obtener ProximityService para notificaciones
+    var searchQuery by remember { mutableStateOf("") }
     val app = application as AppApplication
 
+    // Solicitar permisos de ubicación
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         val isGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
                 permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-
         if (isGranted) {
-            // Actualizar ubicación y activar notificaciones de proximidad
             homeViewModel.updateLocation()
             app.proximityService.startMonitoring()
         }
     }
 
-    // Al iniciar la pantalla, pedimos permiso si no lo tenemos
     LaunchedEffect(Unit) {
         locationPermissionLauncher.launch(
             arrayOf(
@@ -79,13 +66,26 @@ fun HomeScreen(
         )
     }
 
+    // ✅ BÚSQUEDA AUTOMÁTICA - Navegar cuando el usuario escribe
+    LaunchedEffect(searchQuery) {
+        if (searchQuery.length >= 3) {
+            // Debounce de 500ms
+            kotlinx.coroutines.delay(500)
+            navController.navigate("list?query=$searchQuery")
+        }
+    }
+
     Scaffold(
-        topBar = { HomeTopBar() },
+        topBar = {
+            ModernHomeTopBar(
+                searchQuery = searchQuery,
+                onSearchQueryChange = { searchQuery = it }
+            )
+        },
         bottomBar = { AppBottomBar(navController = navController) }
     ) { innerPadding ->
 
         if (uiState.isLoading) {
-            // Mostrar loading centrado mientras se cargan los datos
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -95,7 +95,11 @@ fun HomeScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     CircularProgressIndicator()
                     Spacer(Modifier.height(16.dp))
-                    Text("Cargando atractivos...", color = Color.Gray)
+                    Text(
+                        "Cargando experiencias...",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         } else {
@@ -103,33 +107,15 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(horizontal = 16.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                Spacer(Modifier.height(16.dp))
-
-                SearchBar(
-                    query = searchQuery,
-                    onQueryChange = { searchQuery = it },
-                    onSearchClicked = {
-                        // Navegamos a la lista pasando el query para filtrar
-                        if (searchQuery.isNotEmpty()) {
-                            navController.navigate("list?query=$searchQuery")
-                        } else {
-                            navController.navigate("list")
-                        }
-                    },
-                    placeholder = "Buscar atractivos, restaurantes..."
-                )
-
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(8.dp))
 
                 // RECOMENDACIONES
                 if (uiState.recomendaciones.isNotEmpty()) {
                     RecomendacionesSection(
                         lista = uiState.recomendaciones,
                         onAtractivoClicked = { atractivoId ->
-                            // ✅ CAMBIO: De "detail/$atractivoId" a esto:
                             navController.navigate("detail/$atractivoId?origin=home")
                         }
                     )
@@ -141,59 +127,111 @@ fun HomeScreen(
                     CercanosSection(
                         lista = uiState.cercanos,
                         onAtractivoClicked = { atractivoId ->
-                            // ✅ CAMBIO: De "detail/$atractivoId" a esto:
                             navController.navigate("detail/$atractivoId?origin=home")
                         }
                     )
                     Spacer(Modifier.height(24.dp))
                 }
 
-                // PLANIFICADOR Y MIS RUTAS
+                // PLANIFICADOR
                 PlanificadorSection(
                     onNuevaRuta = { navController.navigate("planner") },
                     onMisRutas = { navController.navigate("mis_rutas") }
                 )
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(24.dp))
 
-                // RUTAS TURÍSTICAS DESTACADAS
+                // RUTAS DESTACADAS
                 RutasDestacadasSection(
                     rutas = uiState.rutasDestacadas,
-                    onRutaClicked = { rutaId -> 
-                        navController.navigate("ruta_detalle/$rutaId") 
+                    onRutaClicked = { rutaId ->
+                        navController.navigate("ruta_detalle/$rutaId")
                     },
                     onVerTodas = { navController.navigate("rutas") }
                 )
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(100.dp))
             }
         }
     }
 }
 
+// ✅ TOP BAR MODERNA CON BÚSQUEDA INTEGRADA
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeTopBar() {
-    TopAppBar(
-        title = {
-            Text(
-                "Arequipa",
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = { /* TODO: Abrir Drawer */ }) {
-                Icon(Icons.Filled.Menu, contentDescription = "Menú")
+private fun ModernHomeTopBar(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit
+) {
+    Column {
+        // Header
+        Surface(
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 0.dp
+        ) {
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Spacer(Modifier.height(16.dp))
+
+                Text(
+                    "Descubre Arequipa",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    "La Ciudad Blanca te espera",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                // Barra de búsqueda moderna
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChange,
+                    placeholder = {
+                        Text(
+                            "Buscar atractivos, restaurantes...",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = "Buscar",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { onSearchQueryChange("") }) {
+                                Icon(
+                                    Icons.Default.Clear,
+                                    contentDescription = "Limpiar",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(28.dp),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                    )
+                )
+
+                Spacer(Modifier.height(16.dp))
             }
-        },
-        actions = {
-            IconButton(onClick = { /* TODO: Nav a Perfil */ }) {
-                Icon(Icons.Filled.Person, contentDescription = "Perfil")
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-    )
+        }
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+    }
 }
 
 @Composable
@@ -201,8 +239,19 @@ private fun RecomendacionesSection(
     lista: List<AtractivoTuristico>,
     onAtractivoClicked: (String) -> Unit
 ) {
-    Column {
-        Text("Recomendaciones", style = MaterialTheme.typography.titleLarge)
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Recomendados para ti",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
         Spacer(Modifier.height(12.dp))
 
         LazyRow(
@@ -211,10 +260,7 @@ private fun RecomendacionesSection(
             items(lista) { atractivo ->
                 RecomendacionCard(
                     atractivo,
-                    onClick = {
-                        // ✅ CAMBIO AQUÍ: Agregar ?origin=home
-                        onAtractivoClicked(atractivo.id)
-                    }
+                    onClick = { onAtractivoClicked(atractivo.id) }
                 )
             }
         }
@@ -227,20 +273,19 @@ private fun CercanosSection(
     onAtractivoClicked: (String) -> Unit
 ) {
     if (lista.isNotEmpty()) {
-        Column {
-            Text("Cercanos a ti", style = MaterialTheme.typography.titleLarge)
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Text(
+                "Cerca de ti",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
             Spacer(Modifier.height(12.dp))
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 lista.forEach { atractivo ->
                     CercanoItemRow(
                         atractivo,
-                        onClick = {
-                            // ✅ CAMBIO AQUÍ: Agregar ?origin=home
-                            onAtractivoClicked(atractivo.id)
-                        }
+                        onClick = { onAtractivoClicked(atractivo.id) }
                     )
                 }
             }
@@ -254,14 +299,14 @@ private fun RutasDestacadasSection(
     onRutaClicked: (String) -> Unit,
     onVerTodas: () -> Unit
 ) {
-    Column {
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                "Rutas Turísticas",
+                "🗺️ Rutas Turísticas",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -269,54 +314,56 @@ private fun RutasDestacadasSection(
                 Text("Ver todas")
             }
         }
-        
+
         Spacer(Modifier.height(12.dp))
-        
+
         if (rutas.isEmpty()) {
-            // Mostrar placeholder si no hay rutas
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        "🗺️",
-                        style = MaterialTheme.typography.headlineLarge
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        "Descubre rutas curadas",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        "Explora las mejores rutas turísticas de Arequipa",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    Button(onClick = onVerTodas) {
-                        Text("Explorar rutas")
-                    }
-                }
-            }
+            EmptyRoutesPlaceholder(onVerTodas)
         } else {
-            // Mostrar carrusel de rutas
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(rutas) { ruta ->
                     RutaCard(
                         ruta = ruta,
                         onClick = { onRutaClicked(ruta.id) }
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptyRoutesPlaceholder(onExplore: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        ),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "🗺️",
+                style = MaterialTheme.typography.displayMedium
+            )
+            Spacer(Modifier.height(16.dp))
+            Text(
+                "Descubre rutas curadas",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "Explora las mejores rutas turísticas de Arequipa",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(16.dp))
+            FilledTonalButton(onClick = onExplore) {
+                Text("Explorar rutas")
             }
         }
     }
@@ -332,58 +379,54 @@ private fun RutaCard(
             .width(280.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
-            // Imagen de la ruta
             AsyncImage(
-                model = ruta.imagenPrincipal.ifEmpty { 
+                model = ruta.imagenPrincipal.ifEmpty {
                     "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Arequipa%2C_Plaza_de_Armas_and_Volc%C3%A1n_Misti_-_panoramio.jpg/1280px-Arequipa%2C_Plaza_de_Armas_and_Volc%C3%A1n_Misti_-_panoramio.jpg"
                 },
                 contentDescription = ruta.nombre,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
+                    .height(140.dp)
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
                 contentScale = ContentScale.Crop
             )
-            
-            Column(modifier = Modifier.padding(12.dp)) {
-                // Categoría chip
+
+            Column(modifier = Modifier.padding(16.dp)) {
                 AssistChip(
                     onClick = { },
-                    label = { 
+                    label = {
                         Text(
                             ruta.categoria.replaceFirstChar { it.uppercase() },
                             style = MaterialTheme.typography.labelSmall
-                        ) 
+                        )
                     },
-                    modifier = Modifier.height(24.dp)
+                    modifier = Modifier.height(28.dp)
                 )
-                
-                Spacer(Modifier.height(4.dp))
-                
+
+                Spacer(Modifier.height(8.dp))
+
                 Text(
                     ruta.nombre,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 1
+                    maxLines = 2
                 )
-                
-                Spacer(Modifier.height(4.dp))
-                
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
+
+                Spacer(Modifier.height(8.dp))
+
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(
                         "⏱️ ${ruta.duracionEstimada}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         "📍 ${ruta.dificultad}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -396,36 +439,39 @@ private fun PlanificadorSection(
     onNuevaRuta: () -> Unit,
     onMisRutas: () -> Unit
 ) {
-    Column {
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Text(
             "Planifica tu Recorrido",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
         Spacer(Modifier.height(12.dp))
-        
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Crear nueva ruta
             Card(
-                modifier = Modifier.weight(1f).clickable(onClick = onNuevaRuta),
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable(onClick = onNuevaRuta),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                ),
+                shape = RoundedCornerShape(16.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("➕", style = MaterialTheme.typography.headlineMedium)
-                    Spacer(Modifier.height(8.dp))
+                    Text("➕", style = MaterialTheme.typography.displaySmall)
+                    Spacer(Modifier.height(12.dp))
                     Text(
                         "Nueva Ruta",
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
+                    Spacer(Modifier.height(4.dp))
                     Text(
                         "Crea tu recorrido",
                         style = MaterialTheme.typography.bodySmall,
@@ -433,25 +479,28 @@ private fun PlanificadorSection(
                     )
                 }
             }
-            
-            // Mis rutas guardadas
+
             Card(
-                modifier = Modifier.weight(1f).clickable(onClick = onMisRutas),
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable(onClick = onMisRutas),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer
-                )
+                ),
+                shape = RoundedCornerShape(16.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("📂", style = MaterialTheme.typography.headlineMedium)
-                    Spacer(Modifier.height(8.dp))
+                    Text("📂", style = MaterialTheme.typography.displaySmall)
+                    Spacer(Modifier.height(12.dp))
                     Text(
                         "Mis Rutas",
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
+                    Spacer(Modifier.height(4.dp))
                     Text(
                         "Ver guardadas",
                         style = MaterialTheme.typography.bodySmall,
