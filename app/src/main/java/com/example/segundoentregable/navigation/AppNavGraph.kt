@@ -34,21 +34,14 @@ fun AppNavGraph(
         startDestination = BottomBarScreen.Home.route
     ) {
 
-        // --- RUTAS PÚBLICAS ---
+        // Home
         composable(BottomBarScreen.Home.route) {
             HomeScreen(navController = navController)
         }
 
-        composable("mapa") {
-            MapScreen(
-                navController = navController,
-                focusAttractionId = null
-            )
-        }
-
-        // ✅ Mapa con parámetros opcionales: focusId y origin
+        // Mapa - ruta única con parámetros opcionales
         composable(
-            route = "mapa?focusId={focusId}&origin={origin}&routeIds={routeIds}", // ✅ Agregar &routeIds={routeIds}
+            route = "mapa?focusId={focusId}&origin={origin}&routeIds={routeIds}",
             arguments = listOf(
                 navArgument("focusId") {
                     type = NavType.StringType
@@ -63,7 +56,7 @@ fun AppNavGraph(
                 navArgument("routeIds") {
                     type = NavType.StringType
                     nullable = true
-                    defaultValue = ""  // ✅ Cambiar null por "" para consistencia
+                    defaultValue = ""
                 }
             )
         ) { backStackEntry ->
@@ -88,7 +81,7 @@ fun AppNavGraph(
             )
         }
 
-        // ✅ Detail con parámetro origin
+        // Detalle de atracción
         composable(
             route = "detail/{attractionId}?origin={origin}",
             arguments = listOf(
@@ -105,8 +98,7 @@ fun AppNavGraph(
             )
         }
 
-        // --- RUTAS HÍBRIDAS / PROTEGIDAS ---
-
+        // Favoritos
         composable(BottomBarScreen.Favoritos.route) {
             FavoritesScreen(
                 navController = navController,
@@ -131,7 +123,7 @@ fun AppNavGraph(
             }
         }
 
-        // --- AUTH ---
+        // Autenticación
         composable("login") {
             LoginScreen(
                 navController = navController,
@@ -143,7 +135,7 @@ fun AppNavGraph(
             RegisterScreen(navController = navController)
         }
 
-        // --- RUTAS TURÍSTICAS ---
+        // Rutas turísticas predefinidas
         composable("rutas") {
             RutasScreen(navController = navController)
         }
@@ -159,7 +151,7 @@ fun AppNavGraph(
             )
         }
 
-        // --- PLANIFICADOR PERSONAL ---
+        // Planificador de rutas personales
         composable("planner") {
             PlannerScreen(navController = navController)
         }

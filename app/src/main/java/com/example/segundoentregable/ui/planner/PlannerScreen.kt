@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,15 +26,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.segundoentregable.AppApplication
+import com.example.segundoentregable.data.local.entity.SavedRouteEntity
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import com.example.segundoentregable.ui.components.AttractionImage
 import com.example.segundoentregable.ui.components.ConnectivityBanner
 import com.example.segundoentregable.ui.components.rememberConnectivityState
 import com.example.segundoentregable.utils.NavigationUtils
+import com.example.segundoentregable.utils.RouteOptimizer
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * Pantalla del Planificador de Rutas Personales.
- * Muestra los lugares que el usuario ha añadido desde DetailScreen (tipo "carrito").
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,18 +54,84 @@ fun PlannerScreen(
     
     val uiState by viewModel.uiState.collectAsState()
     val isConnected = rememberConnectivityState()
+
+    // Diálogos
+    if (uiState.showSaveDialog) {
+        SaveRouteDialog(
+            onDismiss = { viewModel.hideSaveDialog() },
+            onSave = { nombre, descripcion ->
+                viewModel.saveCurrentRoute(nombre, descripcion)
+            }
+        )
+    }
+
+    if (uiState.showLoadDialog) {
+        LoadRouteDialog(
+            savedRoutes = uiState.savedRoutes,
+            onDismiss = { viewModel.hideLoadDialog() },
+            onLoad = { routeId -> viewModel.loadSavedRoute(routeId) },
+            onDelete = { routeId -> viewModel.deleteSavedRoute(routeId) }
+        )
+    }
+
+    // Snackbar host state
+    val snackbarHostState = remember { SnackbarHostState() }
+    
+    // Mostrar snackbar en éxito
+    LaunchedEffect(uiState.saveSuccess) {
+        if (uiState.saveSuccess) {
+            snackbarHostState.showSnackbar(
+                message = "Ruta guardada correctamente",
+                duration = SnackbarDuration.Short
+            )
+            viewModel.clearSaveSuccess()
+        }
+    }
+
+    // Mostrar snackbar en error
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let { error ->
+            snackbarHostState.showSnackbar(
+                message = error,
+                duration = SnackbarDuration.Short
+            )
+            viewModel.clearError()
+        }
+    }
     
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Mi Ruta de Hoy", fontWeight = FontWeight.Bold) },
+                title = { 
+                    Column {
+                        Text("Mi Ruta de Hoy", fontWeight = FontWeight.Bold)
+                        if (uiState.loadedRouteName != null) {
+                            Text(
+                                text = uiState.loadedRouteName!!,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
                     }
                 },
                 actions = {
+                    // Botón cargar rutas guardadas
+                    if (uiState.savedRoutes.isNotEmpty()) {
+                        IconButton(onClick = { viewModel.showLoadDialog() }) {
+                            Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Cargar ruta")
+                        }
+                    }
+                    // Botón guardar ruta actual
                     if (!uiState.isEmpty) {
+                        IconButton(onClick = { viewModel.showSaveDialog() }) {
+                            Icon(Icons.Filled.Save, contentDescription = "Guardar ruta")
+                        }
                         IconButton(onClick = { viewModel.clearRoute() }) {
                             Icon(Icons.Filled.DeleteSweep, contentDescription = "Limpiar ruta")
                         }
@@ -412,6 +483,204 @@ private fun RouteItemCard(
                         tint = if (isConnected) MaterialTheme.colorScheme.primary else Color.Gray
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SaveRouteDialog(
+    onDismiss: () -> Unit,
+    onSave: (String, String) -> Unit
+) {
+    var nombre by remember { mutableStateOf("") }
+    var descripcion by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Guardar Ruta", fontWeight = FontWeight.Bold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    "Guarda tu ruta actual para usarla después",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+                OutlinedTextField(
+                    value = nombre,
+                    onValueChange = { nombre = it },
+                    label = { Text("Nombre de la ruta *") },
+                    placeholder = { Text("Ej: Ruta Centro Histórico") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = descripcion,
+                    onValueChange = { descripcion = it },
+                    label = { Text("Descripción (opcional)") },
+                    placeholder = { Text("Ej: Mi recorrido favorito por el centro") },
+                    minLines = 2,
+                    maxLines = 3,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onSave(nombre, descripcion) },
+                enabled = nombre.isNotBlank()
+            ) {
+                Icon(Icons.Filled.Save, contentDescription = null, Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Guardar")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    )
+}
+
+@Composable
+private fun LoadRouteDialog(
+    savedRoutes: List<SavedRouteEntity>,
+    onDismiss: () -> Unit,
+    onLoad: (String) -> Unit,
+    onDelete: (String) -> Unit
+) {
+    var routeToDelete by remember { mutableStateOf<SavedRouteEntity?>(null) }
+
+    // Diálogo de confirmación para eliminar
+    routeToDelete?.let { route ->
+        AlertDialog(
+            onDismissRequest = { routeToDelete = null },
+            title = { Text("Eliminar ruta") },
+            text = { Text("¿Eliminar \"${route.nombre}\"? Esta acción no se puede deshacer.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onDelete(route.id)
+                        routeToDelete = null
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Eliminar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { routeToDelete = null }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Mis Rutas Guardadas", fontWeight = FontWeight.Bold) },
+        text = {
+            if (savedRoutes.isEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        Icons.Filled.FolderOpen,
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = Color.Gray
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text("No tienes rutas guardadas", color = Color.Gray)
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.heightIn(max = 400.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    itemsIndexed(savedRoutes) { _, route ->
+                        SavedRouteItem(
+                            route = route,
+                            onLoad = { onLoad(route.id) },
+                            onDelete = { routeToDelete = route }
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cerrar")
+            }
+        }
+    )
+}
+
+@Composable
+private fun SavedRouteItem(
+    route: SavedRouteEntity,
+    onLoad: () -> Unit,
+    onDelete: () -> Unit
+) {
+    val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
+    
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onLoad
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = route.nombre,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Medium
+                )
+                if (route.descripcion.isNotBlank()) {
+                    Text(
+                        text = route.descripcion,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray,
+                        maxLines = 1
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.padding(top = 4.dp)
+                ) {
+                    Text(
+                        text = "${route.itemCount} lugares",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    if (route.totalDistance > 0) {
+                        Text(
+                            text = RouteOptimizer.formatDistance(route.totalDistance.toDouble()),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.Gray
+                        )
+                    }
+                    Text(
+                        text = dateFormat.format(Date(route.createdAt)),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Gray
+                    )
+                }
+            }
+            IconButton(onClick = onDelete) {
+                Icon(
+                    Icons.Filled.Delete,
+                    contentDescription = "Eliminar",
+                    tint = Color.Gray
+                )
             }
         }
     }

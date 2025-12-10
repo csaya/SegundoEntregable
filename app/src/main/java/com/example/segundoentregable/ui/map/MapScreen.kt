@@ -74,21 +74,21 @@ fun MapScreen(
         }
     }
 
-    // ✅ Aplicar filtro de favoritos si viene de FavoritesScreen
+    // Aplicar filtro de favoritos si viene de FavoritesScreen
     LaunchedEffect(showOnlyFavorites, favoriteIds) {
         if (showOnlyFavorites && favoriteIds.isNotEmpty()) {
             mapViewModel.setShowOnlyFavorites(true, favoriteIds.toSet())
         }
     }
 
-    // ✅ Foco en atractivo específico (desde DetailScreen con focusId)
+    // Foco en atractivo específico
     LaunchedEffect(focusAttractionId) {
         if (!focusAttractionId.isNullOrBlank()) {
             mapViewModel.focusOnAttraction(focusAttractionId)
         }
     }
 
-    // ✅ Animar cámara para mostrar toda la ruta O punto específico
+    // Animar cámara para mostrar ruta o punto específico
     LaunchedEffect(uiState.shouldAnimateCamera, uiState.routeMode, uiState.focusAttraction) {
         if (uiState.shouldAnimateCamera) {
             when {
@@ -104,7 +104,6 @@ fun MapScreen(
                         }
                     }
 
-                    // ✅ Validar que hay puntos válidos antes de animar
                     if (validPoints >= 2) {
                         try {
                             val bounds = boundsBuilder.build()
@@ -161,7 +160,7 @@ fun MapScreen(
         }
     }
 
-    // ✅ Foco automático en resultados de búsqueda (cuando hay pocos resultados)
+    // Foco automático en resultados de búsqueda
     LaunchedEffect(uiState.filteredAtractivos, uiState.searchQuery) {
         // Activar solo si hay búsqueda activa Y pocos resultados
         if (uiState.searchQuery.length >= 3 &&
@@ -212,7 +211,7 @@ fun MapScreen(
         bottomSheetState = sheetState
     )
 
-    // ✅ Efecto para abrir/cerrar el sheet
+    // Abrir/cerrar el bottom sheet
     LaunchedEffect(uiState.selectedAttraction) {
         if (uiState.selectedAttraction != null) {
             sheetState.expand()
@@ -238,8 +237,8 @@ fun MapScreen(
                     onQueryChange = { mapViewModel.onSearchQueryChange(it) },
                     showingFavorites = uiState.showOnlyFavorites,
                     showingFocusedOnly = !uiState.focusedAttractionId.isNullOrBlank(),
-                    routeMode = uiState.routeMode, // ✅ NUEVO
-                    routeCount = uiState.routeAtractivos.size, // ✅ NUEVO
+                    routeMode = uiState.routeMode,
+                    routeCount = uiState.routeAtractivos.size,
                     onClearFilters = { mapViewModel.clearFilters() }
                 )
             },
@@ -272,7 +271,7 @@ fun MapScreen(
                         myLocationButtonEnabled = true
                     )
                 ) {
-                    // ✅ Dibujar polyline si estamos en modo ruta
+                    // Dibujar polyline en modo ruta
                     if (uiState.routeMode && uiState.routeAtractivos.size >= 2) {
                         val points = uiState.routeAtractivos.map {
                             LatLng(it.latitud, it.longitud)
@@ -285,7 +284,7 @@ fun MapScreen(
                         )
                     }
 
-                    // ✅ Marcadores (numerados si es ruta, normales si no)
+                    // Marcadores
                     uiState.filteredAtractivos.forEachIndexed { index, atractivo ->
                         val position = LatLng(atractivo.latitud, atractivo.longitud)
 
@@ -353,8 +352,8 @@ private fun MapTopBar(
     showingFavorites: Boolean,
     onClearFilters: () -> Unit,
     showingFocusedOnly: Boolean = false,
-    routeMode: Boolean = false, // ✅ NUEVO
-    routeCount: Int = 0 // ✅ NUEVO
+    routeMode: Boolean = false,
+    routeCount: Int = 0
 ) {
     Column {
         TopAppBar(
@@ -370,7 +369,6 @@ private fun MapTopBar(
                 )
             },
             actions = {
-                // ✅ Botón para limpiar filtros (favoritos o focus)
                 if (showingFavorites || showingFocusedOnly || routeMode) {
                     TextButton(onClick = onClearFilters) {
                         Text("Ver todos")

@@ -18,7 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 
 sealed class BottomBarScreen(val route: String, val label: String, val icon: ImageVector) {
     object Home : BottomBarScreen("home", "Home", Icons.Filled.Home)
-    object Mapa : BottomBarScreen("mapa", "Mapa", Icons.Filled.Map) // ✅ Ruta limpia sin parámetros
+    object Mapa : BottomBarScreen("mapa", "Mapa", Icons.Filled.Map)
     object Favoritos : BottomBarScreen("favoritos", "Favoritos", Icons.Filled.Favorite)
     object Perfil : BottomBarScreen("perfil", "Perfil", Icons.Filled.Person)
 }
@@ -36,7 +36,6 @@ fun AppBottomBar(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // ✅ Obtener el parámetro origin si estamos en mapa o detail
     val mapOrigin = if (currentRoute?.startsWith("mapa?") == true) {
         navBackStackEntry?.arguments?.getString("origin")
     } else null
@@ -57,10 +56,7 @@ fun AppBottomBar(navController: NavController) {
                             (currentRoute?.startsWith("mapa") == true && mapOrigin == "home")
                 }
                 BottomBarScreen.Mapa -> {
-                    // ✅ Mapa seleccionado si:
-                    // 1. Estamos en "mapa" sin parámetros (desde BottomBar)
-                    // 2. Estamos en "mapa?" con origin=mapa o sin origin
-                    currentRoute == "mapa" || // ✅ Ruta limpia
+                    currentRoute == "mapa" ||
                             ((currentRoute?.startsWith("mapa?") == true) &&
                                     (mapOrigin.isNullOrBlank() || mapOrigin == "mapa")) ||
                             (currentRoute?.startsWith("detail/") == true && detailOrigin == "mapa")
@@ -75,10 +71,9 @@ fun AppBottomBar(navController: NavController) {
                 }
             }
 
-            // ✅ Detectar si estamos en la raíz
             val isAtRoot = when (screen) {
                 BottomBarScreen.Home -> currentRoute == "home"
-                BottomBarScreen.Mapa -> currentRoute == "mapa" // ✅ Ruta limpia
+                BottomBarScreen.Mapa -> currentRoute == "mapa"
                 BottomBarScreen.Favoritos -> currentRoute == "favoritos"
                 BottomBarScreen.Perfil -> currentRoute == "perfil"
             }

@@ -186,17 +186,27 @@ class MapViewModel(
     }
 
     /**
-     * ✅ NUEVO: Carga una ruta en el mapa
-     * @param routeIds Lista de IDs de atractivos en orden
+     * Carga una ruta en el mapa.
+     * Espera a que los datos estén disponibles antes de filtrar.
      */
     fun loadRouteView(routeIds: List<String>) {
         viewModelScope.launch {
             Log.d(TAG, "Cargando vista de ruta con ${routeIds.size} puntos")
-
-            val routeAtractivos = _uiState.value.allAtractivos.filter {
-                it.id in routeIds
-            }.sortedBy { atractivo ->
-                routeIds.indexOf(atractivo.id) // Mantener el orden original
+            
+            // Esperar a que los datos estén cargados
+            if (_uiState.value.allAtractivos.isEmpty()) {
+                Log.d(TAG, "Datos no cargados aún, esperando...")
+                isDataReadyFlow.first { it }
+                // Recargar atractivos si es necesario
+                if (_uiState.value.allAtractivos.isEmpty()) {
+                    loadAtractivos()
+                }
+            }
+            
+            // Obtener atractivos por IDs, consultando BD si no están en memoria
+            val routeAtractivos = routeIds.mapNotNull { id ->
+                _uiState.value.allAtractivos.find { it.id == id }
+                    ?: withContext(Dispatchers.IO) { repo.getAtractivoPorId(id) }
             }
 
             _uiState.update {
@@ -216,7 +226,7 @@ class MapViewModel(
     }
 
     /**
-     * ✅ NUEVO: Sale del modo ruta
+     * Sale del modo ruta y muestra todos los atractivos.
      */
     fun exitRouteMode() {
         _uiState.update { state ->

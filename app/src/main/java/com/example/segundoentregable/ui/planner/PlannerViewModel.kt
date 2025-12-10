@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.segundoentregable.AppApplication
+import com.example.segundoentregable.data.local.entity.SavedRouteEntity
 import com.example.segundoentregable.data.location.LocationService
 import com.example.segundoentregable.data.model.AtractivoTuristico
+import com.example.segundoentregable.data.repository.SavedRouteRepository
 import com.example.segundoentregable.data.repository.UserRouteRepository
 import com.example.segundoentregable.utils.RouteOptimizer
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,23 +23,31 @@ private const val TAG = "PlannerViewModel"
 
 /**
  * Estado UI para el planificador de rutas personales.
- * Ahora funciona como un "carrito" - muestra los lugares añadidos desde DetailScreen.
  */
 data class PlannerUiState(
     val routeAtractivos: List<AtractivoTuristico> = emptyList(),
     val optimizedRoute: List<AtractivoTuristico> = emptyList(),
     val totalDistance: String = "",
     val estimatedTime: String = "",
+    val totalDistanceKm: Float = 0f,
+    val estimatedTimeMinutes: Int = 0,
     val userLocation: Location? = null,
     val isLoading: Boolean = true,
     val isOptimizing: Boolean = false,
     val isOptimized: Boolean = false,
     val isEmpty: Boolean = true,
-    val error: String? = null
+    val error: String? = null,
+    // Rutas guardadas
+    val savedRoutes: List<SavedRouteEntity> = emptyList(),
+    val showSaveDialog: Boolean = false,
+    val showLoadDialog: Boolean = false,
+    val saveSuccess: Boolean = false,
+    val loadedRouteName: String? = null
 )
 
 class PlannerViewModel(
     private val userRouteRepository: UserRouteRepository,
+    private val savedRouteRepository: SavedRouteRepository,
     private val locationService: LocationService,
     private val isDataReadyFlow: StateFlow<Boolean>
 ) : ViewModel() {
@@ -55,6 +65,7 @@ class PlannerViewModel(
             isDataReadyFlow.first { it }
             Log.d(TAG, "Datos listos, observando ruta del usuario...")
             observeUserRoute()
+            observeSavedRoutes()
             loadUserLocation()
         }
     }
@@ -71,13 +82,24 @@ class PlannerViewModel(
                         routeAtractivos = atractivos,
                         isLoading = false,
                         isEmpty = atractivos.isEmpty(),
-                        // Reset optimización si cambia la lista
                         isOptimized = false,
                         optimizedRoute = emptyList(),
                         totalDistance = "",
-                        estimatedTime = ""
+                        estimatedTime = "",
+                        loadedRouteName = null
                     )
                 }
+            }
+        }
+    }
+
+    /**
+     * Observa las rutas guardadas
+     */
+    private fun observeSavedRoutes() {
+        viewModelScope.launch {
+            savedRouteRepository.getAllRoutesFlow().collect { routes ->
+                _uiState.update { it.copy(savedRoutes = routes) }
             }
         }
     }
@@ -144,6 +166,8 @@ class PlannerViewModel(
                     optimizedRoute = optimized,
                     totalDistance = RouteOptimizer.formatDistance(totalDistanceKm),
                     estimatedTime = RouteOptimizer.formatTime(estimatedMinutes),
+                    totalDistanceKm = totalDistanceKm.toFloat(),
+                    estimatedTimeMinutes = estimatedMinutes,
                     isOptimizing = false,
                     isOptimized = true
                 )
@@ -178,6 +202,111 @@ class PlannerViewModel(
             state.routeAtractivos
         }
     }
+
+    // ========== FUNCIONALIDAD DE GUARDAR/CARGAR RUTAS ==========
+
+    fun showSaveDialog() {
+        _uiState.update { it.copy(showSaveDialog = true) }
+    }
+
+    fun hideSaveDialog() {
+        _uiState.update { it.copy(showSaveDialog = false) }
+    }
+
+    fun showLoadDialog() {
+        _uiState.update { it.copy(showLoadDialog = true) }
+    }
+
+    fun hideLoadDialog() {
+        _uiState.update { it.copy(showLoadDialog = false) }
+    }
+
+    /**
+     * Guarda la ruta actual con un nombre
+     */
+    fun saveCurrentRoute(nombre: String, descripcion: String = "") {
+        val state = _uiState.value
+        val atractivos = getNavigationList()
+        
+        if (atractivos.isEmpty() || nombre.isBlank()) return
+
+        viewModelScope.launch {
+            try {
+                savedRouteRepository.saveRoute(
+                    nombre = nombre.trim(),
+                    descripcion = descripcion.trim(),
+                    atractivos = atractivos,
+                    totalDistance = state.totalDistanceKm,
+                    estimatedTime = state.estimatedTimeMinutes
+                )
+                _uiState.update { 
+                    it.copy(
+                        showSaveDialog = false,
+                        saveSuccess = true,
+                        loadedRouteName = nombre.trim()
+                    ) 
+                }
+                Log.d(TAG, "Ruta guardada: $nombre")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error guardando ruta", e)
+                _uiState.update { it.copy(error = "Error al guardar la ruta") }
+            }
+        }
+    }
+
+    /**
+     * Carga una ruta guardada
+     */
+    fun loadSavedRoute(routeId: String) {
+        viewModelScope.launch {
+            try {
+                val route = savedRouteRepository.getRouteById(routeId) ?: return@launch
+                val atractivos = savedRouteRepository.getRouteAtractivos(routeId)
+                
+                if (atractivos.isEmpty()) {
+                    _uiState.update { it.copy(error = "La ruta está vacía") }
+                    return@launch
+                }
+
+                // Limpiar ruta actual y cargar la guardada
+                userRouteRepository.clearRoute()
+                userRouteRepository.createRouteFromAtractivos(atractivos.map { it.id })
+                
+                _uiState.update { 
+                    it.copy(
+                        showLoadDialog = false,
+                        loadedRouteName = route.nombre
+                    ) 
+                }
+                Log.d(TAG, "Ruta cargada: ${route.nombre}")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error cargando ruta", e)
+                _uiState.update { it.copy(error = "Error al cargar la ruta") }
+            }
+        }
+    }
+
+    /**
+     * Elimina una ruta guardada
+     */
+    fun deleteSavedRoute(routeId: String) {
+        viewModelScope.launch {
+            try {
+                savedRouteRepository.deleteRoute(routeId)
+                Log.d(TAG, "Ruta eliminada: $routeId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error eliminando ruta", e)
+            }
+        }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(error = null) }
+    }
+
+    fun clearSaveSuccess() {
+        _uiState.update { it.copy(saveSuccess = false) }
+    }
 }
 
 class PlannerViewModelFactory(
@@ -188,6 +317,7 @@ class PlannerViewModelFactory(
         if (modelClass.isAssignableFrom(PlannerViewModel::class.java)) {
             return PlannerViewModel(
                 userRouteRepository = app.userRouteRepository,
+                savedRouteRepository = app.savedRouteRepository,
                 locationService = app.locationService,
                 isDataReadyFlow = app.isDataReady
             ) as T
