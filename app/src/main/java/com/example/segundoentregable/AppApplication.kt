@@ -10,6 +10,7 @@ import com.example.segundoentregable.data.repository.FavoriteRepository
 import com.example.segundoentregable.data.repository.RutaRepository
 import com.example.segundoentregable.data.repository.UserRepository
 import com.example.segundoentregable.data.repository.UserRouteRepository
+import com.example.segundoentregable.data.repository.ReviewRepository
 import com.example.segundoentregable.data.location.LocationService
 import com.example.segundoentregable.data.location.ProximityService
 import com.example.segundoentregable.data.sync.FavoriteSyncWorker
@@ -45,14 +46,21 @@ class AppApplication : Application() {
         UserRepository(database.userDao(), this)
     }
 
+    val reviewRepository by lazy {
+        ReviewRepository(
+            reviewDao = database.reviewDao(),
+            reviewVoteDao = database.reviewVoteDao(),
+            context = this
+        )
+    }
+
     val attractionRepository by lazy {
         AttractionRepository(
-            database.atractivoDao(),
-            database.reviewDao(),
-            database.galeriaFotoDao(),
-            database.actividadDao(),
-            database.favoritoDao(),
-            database.reviewVoteDao()
+            atractivoDao = database.atractivoDao(),
+            galeriaFotoDao = database.galeriaFotoDao(),
+            actividadDao = database.actividadDao(),
+            favoritoDao = database.favoritoDao(),
+            reviewRepository = reviewRepository
         )
     }
 

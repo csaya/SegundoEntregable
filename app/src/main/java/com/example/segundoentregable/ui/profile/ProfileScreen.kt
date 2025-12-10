@@ -524,7 +524,7 @@ private fun ProximityInfoBadge() {
         )
         Spacer(Modifier.width(8.dp))
         Text(
-            "Radio de detección: 5 km",
+            "Radio de detección: 500 metros",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

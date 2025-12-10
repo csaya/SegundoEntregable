@@ -22,11 +22,10 @@ import java.util.Locale
 
 class AttractionRepository(
     private val atractivoDao: AtractivoDao,
-    private val reviewDao: ReviewDao,
     private val galeriaFotoDao: GaleriaFotoDao,
     private val actividadDao: ActividadDao,
     private val favoritoDao: FavoritoDao,
-    private val reviewVoteDao: ReviewVoteDao? = null
+    private val reviewRepository: ReviewRepository
 ) {
 
     // Ya no se necesita initializeData() porque DataImporter carga los datos desde JSON
@@ -98,14 +97,7 @@ class AttractionRepository(
      * Calcula el rating promedio de un atractivo basado en sus reseñas
      */
     suspend fun calculateAverageRating(attractionId: String): Float {
-        return withContext(Dispatchers.IO) {
-            val reviews = reviewDao.getReviewsByAttraction(attractionId)
-            if (reviews.isEmpty()) {
-                5.0f // Default si no hay reseñas
-            } else {
-                reviews.map { it.rating }.average().toFloat()
-            }
-        }
+        return reviewRepository.calculateAverageRating(attractionId)
     }
 
     /**
@@ -127,7 +119,7 @@ class AttractionRepository(
     }
 
     suspend fun getReviewsForAttraction(attractionId: String): List<Review> {
-        return reviewDao.getReviewsByAttraction(attractionId).map { it.toModel() }
+        return reviewRepository.getReviewsForAttraction(attractionId)
     }
 
     suspend fun searchAtractivos(query: String): List<AtractivoTuristico> {
@@ -143,107 +135,6 @@ class AttractionRepository(
             .map { it.categoria }
             .distinct()
             .sorted()
-    }
-
-    suspend fun addReview(attractionId: String, userEmail: String, userName: String, rating: Float, comment: String) {
-        val newReview = ReviewEntity(
-            id = java.util.UUID.randomUUID().toString(),
-            attractionId = attractionId,
-            userName = userName,
-            userEmail = userEmail, // ✅ AGREGAR ESTA LÍNEA
-            date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),
-            rating = rating,
-            comment = comment,
-            likes = 0,
-            dislikes = 0,
-            isSynced = false,
-            createdAt = System.currentTimeMillis()
-        )
-        reviewDao.insertReview(newReview) // Cambiar a singular si existe en el DAO
-    }
-
-    // ========== CALIFICACIÓN DE RESEÑAS ==========
-    
-    /**
-     * Obtiene el voto actual del usuario para una reseña.
-     * @return true = like, false = dislike, null = no ha votado
-     */
-    suspend fun getUserVote(reviewId: String, userEmail: String): Boolean? {
-        return reviewVoteDao?.getUserVoteType(reviewId, userEmail)
-    }
-    
-    /**
-     * Dar like a una reseña. Si ya dio like, lo quita. Si dio dislike, cambia a like.
-     * @return El nuevo estado: true = liked, false = removed like, null = error
-     */
-    suspend fun toggleLikeReview(reviewId: String, userEmail: String): Boolean? {
-        val voteDao = reviewVoteDao ?: return null
-        
-        val currentVote = voteDao.getVote(reviewId, userEmail)
-        
-        return when {
-            // Ya dio like -> quitar voto
-            currentVote?.isLike == true -> {
-                voteDao.deleteVote(reviewId, userEmail)
-                reviewDao.decrementLikes(reviewId)
-                false
-            }
-            // Dio dislike -> cambiar a like
-            currentVote?.isLike == false -> {
-                voteDao.insertVote(ReviewVoteEntity(reviewId, userEmail, isLike = true))
-                reviewDao.decrementDislikes(reviewId)
-                reviewDao.incrementLikes(reviewId)
-                true
-            }
-            // No ha votado -> dar like
-            else -> {
-                voteDao.insertVote(ReviewVoteEntity(reviewId, userEmail, isLike = true))
-                reviewDao.incrementLikes(reviewId)
-                true
-            }
-        }
-    }
-    
-    /**
-     * Dar dislike a una reseña. Si ya dio dislike, lo quita. Si dio like, cambia a dislike.
-     * @return El nuevo estado: true = disliked, false = removed dislike, null = error
-     */
-    suspend fun toggleDislikeReview(reviewId: String, userEmail: String): Boolean? {
-        val voteDao = reviewVoteDao ?: return null
-        
-        val currentVote = voteDao.getVote(reviewId, userEmail)
-        
-        return when {
-            // Ya dio dislike -> quitar voto
-            currentVote?.isLike == false -> {
-                voteDao.deleteVote(reviewId, userEmail)
-                reviewDao.decrementDislikes(reviewId)
-                false
-            }
-            // Dio like -> cambiar a dislike
-            currentVote?.isLike == true -> {
-                voteDao.insertVote(ReviewVoteEntity(reviewId, userEmail, isLike = false))
-                reviewDao.decrementLikes(reviewId)
-                reviewDao.incrementDislikes(reviewId)
-                true
-            }
-            // No ha votado -> dar dislike
-            else -> {
-                voteDao.insertVote(ReviewVoteEntity(reviewId, userEmail, isLike = false))
-                reviewDao.incrementDislikes(reviewId)
-                true
-            }
-        }
-    }
-    
-    // ========== EDICIÓN/ELIMINACIÓN DE RESEÑAS ==========
-    
-    suspend fun updateReview(reviewId: String, rating: Float, comment: String) {
-        reviewDao.updateReview(reviewId, rating, comment)
-    }
-    
-    suspend fun deleteReview(reviewId: String) {
-        reviewDao.deleteReview(reviewId)
     }
 
     private fun ReviewEntity.toModel(): Review {

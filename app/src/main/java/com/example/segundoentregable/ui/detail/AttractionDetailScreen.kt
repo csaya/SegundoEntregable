@@ -62,17 +62,17 @@ import com.example.segundoentregable.utils.NavigationUtils
 @Composable
 fun AttractionDetailScreen(
     navController: NavController,
-    isUserLoggedIn: Boolean
+    isUserLoggedIn: Boolean,
+    attractionId: String
 ) {
     val context = LocalContext.current
     val application = context.applicationContext as Application
 
-    // ✅ Obtener el origin de los argumentos
     val navBackStackEntry = navController.currentBackStackEntry
     val origin = navBackStackEntry?.arguments?.getString("origin") ?: "home"
 
     val viewModel: AttractionDetailViewModel = viewModel(
-        factory = AttractionDetailViewModelFactory(application)
+        factory = AttractionDetailViewModelFactory(application, attractionId)
     )
 
     val uiState by viewModel.uiState.collectAsState()
@@ -85,7 +85,10 @@ fun AttractionDetailScreen(
     // Mostrar snackbar cuando hay evento
     LaunchedEffect(snackbarEvent) {
         snackbarEvent?.let { message ->
-            snackbarHostState.showSnackbar(message)
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Short
+            )
             viewModel.clearSnackbarEvent()
         }
     }
@@ -109,7 +112,8 @@ fun AttractionDetailScreen(
 
     Scaffold(
         topBar = { DetailTopBar(navController = navController) },
-        bottomBar = { AppBottomBar(navController = navController) }
+        bottomBar = { AppBottomBar(navController = navController) },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
         if (atractivo == null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

@@ -167,22 +167,28 @@ fun MapScreen(
         }
     }
 
-    // ✅ Configurar clustering cuando el mapa esté listo
-    LaunchedEffect(mapInstance, uiState.filteredAtractivos) {
-        if (mapInstance != null && uiState.filteredAtractivos.isNotEmpty() && !uiState.routeMode) {
-            setupClustering(
-                context = context,
-                map = mapInstance!!,
-                attractions = uiState.filteredAtractivos,
-                onClusterManagerCreated = { manager ->
-                    clusterManager = manager
-                },
-                onMarkerClick = { attraction ->
-                    mapViewModel.selectAttraction(attraction)
-                }
-            )
+    LaunchedEffect(mapInstance, uiState.filteredAtractivos, uiState.routeMode) {
+        if (mapInstance != null) {
+            if (uiState.routeMode) {
+                clusterManager?.clearItems()
+                clusterManager?.cluster()
+                clusterManager = null
+            } else if (uiState.filteredAtractivos.isNotEmpty()) {
+                setupClustering(
+                    context = context,
+                    map = mapInstance!!,
+                    attractions = uiState.filteredAtractivos,
+                    onClusterManagerCreated = { manager ->
+                        clusterManager = manager
+                    },
+                    onMarkerClick = { attraction ->
+                        mapViewModel.selectAttraction(attraction)
+                    }
+                )
+            }
         }
     }
+
 
     // Animar cámara
     LaunchedEffect(uiState.shouldAnimateCamera, uiState.routeMode, uiState.focusAttraction) {
@@ -298,7 +304,6 @@ fun MapScreen(
                         bottom = bottomNavHeight
                     )
             ) {
-                // ✅ GoogleMap con Clustering
                 GoogleMap(
                     modifier = Modifier.fillMaxSize(),
                     cameraPositionState = cameraPositionState,
@@ -308,25 +313,27 @@ fun MapScreen(
                         myLocationButtonEnabled = true
                     ),
                     onMapLoaded = {
-                        // Mapa cargado, listo para clustering
+                        // Mapa cargado
                     }
                 ) {
-                    // ✅ Polyline de ruta (solo en modo ruta)
+                    // ✅ SOLO mostrar marcadores de ruta en modo ruta
                     if (uiState.routeMode && uiState.routeAtractivos.isNotEmpty()) {
+                        // Polyline de ruta
                         RoutePolyline(
                             routeAtractivos = uiState.routeAtractivos,
                             userLatitude = uiState.userLatitude,
                             userLongitude = uiState.userLongitude
                         )
 
-                        // Marcadores numerados para ruta
+                        // Marcadores numerados para ruta (con iconos emoji)
                         uiState.routeAtractivos.forEachIndexed { index, atractivo ->
                             val position = LatLng(atractivo.latitud, atractivo.longitud)
                             val markerNumber = index + 1
+
                             val markerTitle = when (index) {
-                                0 -> "① INICIO: ${atractivo.nombre}"
-                                uiState.routeAtractivos.lastIndex -> "⓿ FIN: ${atractivo.nombre}"
-                                else -> "② Parada $markerNumber: ${atractivo.nombre}"
+                                0 -> "INICIO: ${atractivo.nombre}"
+                                uiState.routeAtractivos.lastIndex -> "FIN: ${atractivo.nombre}"
+                                else -> "Parada $markerNumber: ${atractivo.nombre}"
                             }
 
                             val markerState = rememberMarkerState(position = position)
@@ -334,27 +341,36 @@ fun MapScreen(
                             Marker(
                                 state = markerState,
                                 title = markerTitle,
-                                snippet = "Parada #$markerNumber · ${atractivo.categoria}",
+                                snippet = "${atractivo.categoria} · ${atractivo.tipo}",
                                 onClick = {
                                     mapViewModel.selectAttraction(atractivo)
                                     false
                                 },
                                 icon = BitmapDescriptorFactory.defaultMarker(
                                     when (index) {
-                                        0 -> BitmapDescriptorFactory.HUE_GREEN
-                                        uiState.routeAtractivos.lastIndex -> BitmapDescriptorFactory.HUE_RED
-                                        else -> BitmapDescriptorFactory.HUE_ORANGE
+                                        0 -> BitmapDescriptorFactory.HUE_GREEN  // Inicio
+                                        uiState.routeAtractivos.lastIndex -> BitmapDescriptorFactory.HUE_RED  // Fin
+                                        else -> when(atractivo.categoria.lowercase()) {
+                                            "aventura" -> BitmapDescriptorFactory.HUE_BLUE
+                                            "cultural" -> BitmapDescriptorFactory.HUE_ORANGE
+                                            "natural" -> BitmapDescriptorFactory.HUE_GREEN
+                                            "gastronomía" -> BitmapDescriptorFactory.HUE_YELLOW
+                                            else -> BitmapDescriptorFactory.HUE_VIOLET
+                                        }
                                     }
                                 )
                             )
                         }
                     }
 
-                    // ✅ Capturar instancia del mapa para clustering
-                    MapEffect(key1 = uiState.filteredAtractivos.size) { map ->
-                        mapInstance = map
+                    // ✅ Capturar instancia del mapa para clustering (SOLO si NO está en modo ruta)
+                    if (!uiState.routeMode) {
+                        MapEffect(key1 = uiState.filteredAtractivos.size) { map ->
+                            mapInstance = map
+                        }
                     }
                 }
+
 
                 // Badge de resultados
                 if ((uiState.searchQuery.isNotBlank() || uiState.showOnlyFavorites) &&

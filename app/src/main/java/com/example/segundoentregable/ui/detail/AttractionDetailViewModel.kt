@@ -10,6 +10,7 @@ import com.example.segundoentregable.data.repository.AttractionRepository
 import com.example.segundoentregable.data.repository.FavoriteRepository
 import com.example.segundoentregable.data.repository.UserRepository
 import com.example.segundoentregable.data.repository.UserRouteRepository
+import com.example.segundoentregable.data.repository.ReviewRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,6 +43,7 @@ class AttractionDetailViewModel(
     private val favoriteRepo: FavoriteRepository,
     private val userRepo: UserRepository,
     private val userRouteRepo: UserRouteRepository,
+    private val reviewRepo: ReviewRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -203,7 +205,7 @@ class AttractionDetailViewModel(
             _uiState.update { it.copy(isSubmittingReview = true) }
 
             try {
-                attractionRepo.addReview(
+                reviewRepo.addReview(
                     attractionId = attractionId,
                     userEmail = userEmail,
                     userName = userName,
@@ -240,9 +242,9 @@ class AttractionDetailViewModel(
             
             try {
                 val result = withContext(Dispatchers.IO) {
-                    attractionRepo.toggleLikeReview(reviewId, userEmail)
+                    reviewRepo.toggleLikeReview(reviewId, userEmail)
                 }
-                loadData() // Recargar para ver cambios
+                loadData()
                 
                 when (result) {
                     true -> _snackbarEvent.value = "Te gustó esta reseña"
@@ -266,7 +268,7 @@ class AttractionDetailViewModel(
             
             try {
                 val result = withContext(Dispatchers.IO) {
-                    attractionRepo.toggleDislikeReview(reviewId, userEmail)
+                    reviewRepo.toggleDislikeReview(reviewId, userEmail)
                 }
                 loadData()
                 
@@ -296,7 +298,7 @@ class AttractionDetailViewModel(
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    attractionRepo.updateReview(reviewId, newRating, newComment)
+                    reviewRepo.updateReview(reviewId, newRating, newComment)
                 }
                 _uiState.update { it.copy(editingReview = null) }
                 _snackbarEvent.value = "Reseña actualizada"
@@ -322,7 +324,7 @@ class AttractionDetailViewModel(
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    attractionRepo.deleteReview(reviewId)
+                    reviewRepo.deleteReview(reviewId)
                 }
                 _uiState.update { it.copy(showDeleteConfirmation = null) }
                 _snackbarEvent.value = "Reseña eliminada"

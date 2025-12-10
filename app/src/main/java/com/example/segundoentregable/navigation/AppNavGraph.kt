@@ -29,7 +29,7 @@ import com.example.segundoentregable.utils.DeepLinkHandler
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
-    sessionViewModel: SessionViewModel
+    sessionViewModel: SessionViewModel,
 ) {
     val pendingAttractionId by DeepLinkHandler.pendingAttractionId.collectAsState()
 
@@ -121,10 +121,13 @@ fun AppNavGraph(
                     defaultValue = "home"
                 }
             )
-        ) {
+        ) { backStackEntry ->
+            val attractionId = backStackEntry.arguments?.getString("attractionId") ?: ""
+
             AttractionDetailScreen(
                 navController = navController,
-                isUserLoggedIn = isLoggedIn
+                isUserLoggedIn = isLoggedIn,
+                attractionId = attractionId
             )
         }
 

@@ -1,9 +1,12 @@
 package com.example.segundoentregable.data.firebase
 
+import android.util.Log
 import com.example.segundoentregable.data.local.entity.ReviewEntity
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 /**
  * Servicio para sincronizar reseñas con Firestore.
@@ -158,6 +161,21 @@ class FirestoreReviewService {
             Result.success(reviews)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    suspend fun deleteReview(reviewId: String): Result<Unit> {
+        return withContext(Dispatchers.IO) {
+            try {
+                firestore.collection("reviews")
+                    .document(reviewId)
+                    .delete()
+                    .await()
+
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
         }
     }
 }
