@@ -64,7 +64,7 @@ class HomeViewModel(
             val rutasDestacadas = withContext(Dispatchers.IO) {
                 rutaRepository.getAllRutasList()
                     .filter { it.tipo == RutaEntity.TIPO_PREDEFINIDA }
-                    .take(4) // Mostrar máximo 4 en Home
+                    .take(5) // Mostrar máximo 4 en Home
             }
 
             Log.d(TAG, "Cargados: ${recomendaciones.size} recomendaciones, ${cercanos.size} cercanos, ${rutasDestacadas.size} rutas")

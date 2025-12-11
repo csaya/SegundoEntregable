@@ -83,7 +83,13 @@ class UserRepository(
 
     fun setCurrentUser(email: String?) {
         prefs.setCurrentUserEmail(email)
+        if (email != null) {
+            // Aquí puedes hacer algo si necesitas, pero no es necesario para Firebase Auth
+        } else {
+            firebaseAuth.logout()
+        }
     }
+
 
     fun getCurrentUserEmail(): String? = prefs.getCurrentUserEmail()
 

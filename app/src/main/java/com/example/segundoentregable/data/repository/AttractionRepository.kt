@@ -32,7 +32,7 @@ class AttractionRepository(
 
     suspend fun getRecomendaciones(): List<AtractivoTuristico> {
         return atractivoDao.getAllAtractivos()
-            .take(4)
+            .take(10)
             .map { it.toDomainModel() }
     }
 
@@ -42,7 +42,7 @@ class AttractionRepository(
 
     suspend fun getCercanos(): List<AtractivoTuristico> {
         return atractivoDao.getAllAtractivos()
-            .take(5)
+            .take(6)
             .map { it.toDomainModel() }
     }
 
@@ -65,7 +65,7 @@ class AttractionRepository(
             model.copy(distanciaTexto = distanciaTexto) to distanciaMetros
         }
             .sortedBy { it.second }
-            .take(5)
+            .take(6)
             .map { it.first }
     }
 

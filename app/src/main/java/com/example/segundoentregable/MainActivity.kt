@@ -38,6 +38,17 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val isLoggedIn by sessionViewModel.isLoggedIn.collectAsState()
 
+                LaunchedEffect(Unit) {
+                    val firebaseAuth = app.userRepository.getFirebaseAuthService()
+                    if (firebaseAuth.isAuthenticated()) {
+                        val email = firebaseAuth.getCurrentUserEmail()
+                        if (email != null) {
+                            app.userRepository.setCurrentUser(email)
+                            sessionViewModel.login()
+                        }
+                    }
+                }
+
                 LaunchedEffect(isLoggedIn) {
                     if (isLoggedIn) {
                         FavoriteSyncWorker.syncNow(app)

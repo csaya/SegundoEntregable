@@ -304,90 +304,108 @@ fun MapScreen(
                         bottom = bottomNavHeight
                     )
             ) {
-                GoogleMap(
-                    modifier = Modifier.fillMaxSize(),
-                    cameraPositionState = cameraPositionState,
-                    properties = MapProperties(isMyLocationEnabled = true),
-                    uiSettings = MapUiSettings(
-                        zoomControlsEnabled = false,
-                        myLocationButtonEnabled = true
-                    ),
-                    onMapLoaded = {
-                        // Mapa cargado
-                    }
-                ) {
-                    // ✅ SOLO mostrar marcadores de ruta en modo ruta
-                    if (uiState.routeMode && uiState.routeAtractivos.isNotEmpty()) {
-                        // Polyline de ruta
-                        RoutePolyline(
-                            routeAtractivos = uiState.routeAtractivos,
-                            userLatitude = uiState.userLatitude,
-                            userLongitude = uiState.userLongitude
-                        )
-
-                        // Marcadores numerados para ruta (con iconos emoji)
-                        uiState.routeAtractivos.forEachIndexed { index, atractivo ->
-                            val position = LatLng(atractivo.latitud, atractivo.longitud)
-                            val markerNumber = index + 1
-
-                            val markerTitle = when (index) {
-                                0 -> "INICIO: ${atractivo.nombre}"
-                                uiState.routeAtractivos.lastIndex -> "FIN: ${atractivo.nombre}"
-                                else -> "Parada $markerNumber: ${atractivo.nombre}"
-                            }
-
-                            val markerState = rememberMarkerState(position = position)
-
-                            Marker(
-                                state = markerState,
-                                title = markerTitle,
-                                snippet = "${atractivo.categoria} · ${atractivo.tipo}",
-                                onClick = {
-                                    mapViewModel.selectAttraction(atractivo)
-                                    false
-                                },
-                                icon = BitmapDescriptorFactory.defaultMarker(
-                                    when (index) {
-                                        0 -> BitmapDescriptorFactory.HUE_GREEN  // Inicio
-                                        uiState.routeAtractivos.lastIndex -> BitmapDescriptorFactory.HUE_RED  // Fin
-                                        else -> when(atractivo.categoria.lowercase()) {
-                                            "aventura" -> BitmapDescriptorFactory.HUE_BLUE
-                                            "cultural" -> BitmapDescriptorFactory.HUE_ORANGE
-                                            "natural" -> BitmapDescriptorFactory.HUE_GREEN
-                                            "gastronomía" -> BitmapDescriptorFactory.HUE_YELLOW
-                                            else -> BitmapDescriptorFactory.HUE_VIOLET
-                                        }
-                                    }
-                                )
+                // ✅ Mostrar loading mientras carga el mapa
+                if (uiState.isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator()
+                            Spacer(Modifier.height(16.dp))
+                            Text(
+                                "Cargando mapa...",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
+                } else {
+                    GoogleMap(
+                        modifier = Modifier.fillMaxSize(),
+                        cameraPositionState = cameraPositionState,
+                        properties = MapProperties(isMyLocationEnabled = true),
+                        uiSettings = MapUiSettings(
+                            zoomControlsEnabled = false,
+                            myLocationButtonEnabled = true
+                        ),
+                        onMapLoaded = {
+                            // Mapa cargado
+                        }
+                    ) {
+                        // ✅ SOLO mostrar marcadores de ruta en modo ruta
+                        if (uiState.routeMode && uiState.routeAtractivos.isNotEmpty()) {
+                            // Polyline de ruta
+                            RoutePolyline(
+                                routeAtractivos = uiState.routeAtractivos,
+                                userLatitude = uiState.userLatitude,
+                                userLongitude = uiState.userLongitude
+                            )
 
-                    // ✅ Capturar instancia del mapa para clustering (SOLO si NO está en modo ruta)
-                    if (!uiState.routeMode) {
-                        MapEffect(key1 = uiState.filteredAtractivos.size) { map ->
-                            mapInstance = map
+                            // Marcadores numerados para ruta (con iconos emoji)
+                            uiState.routeAtractivos.forEachIndexed { index, atractivo ->
+                                val position = LatLng(atractivo.latitud, atractivo.longitud)
+                                val markerNumber = index + 1
+
+                                val markerTitle = when (index) {
+                                    0 -> "INICIO: ${atractivo.nombre}"
+                                    uiState.routeAtractivos.lastIndex -> "FIN: ${atractivo.nombre}"
+                                    else -> "Parada $markerNumber: ${atractivo.nombre}"
+                                }
+
+                                val markerState = rememberMarkerState(position = position)
+
+                                Marker(
+                                    state = markerState,
+                                    title = markerTitle,
+                                    snippet = "${atractivo.categoria} · ${atractivo.tipo}",
+                                    onClick = {
+                                        mapViewModel.selectAttraction(atractivo)
+                                        false
+                                    },
+                                    icon = BitmapDescriptorFactory.defaultMarker(
+                                        when (index) {
+                                            0 -> BitmapDescriptorFactory.HUE_GREEN  // Inicio
+                                            uiState.routeAtractivos.lastIndex -> BitmapDescriptorFactory.HUE_RED  // Fin
+                                            else -> when(atractivo.categoria.lowercase()) {
+                                                "aventura" -> BitmapDescriptorFactory.HUE_BLUE
+                                                "cultural" -> BitmapDescriptorFactory.HUE_ORANGE
+                                                "natural" -> BitmapDescriptorFactory.HUE_GREEN
+                                                "gastronomía" -> BitmapDescriptorFactory.HUE_YELLOW
+                                                else -> BitmapDescriptorFactory.HUE_VIOLET
+                                            }
+                                        }
+                                    )
+                                )
+                            }
+                        }
+
+                        // ✅ Capturar instancia del mapa para clustering (SOLO si NO está en modo ruta)
+                        if (!uiState.routeMode) {
+                            MapEffect(key1 = uiState.filteredAtractivos.size) { map ->
+                                mapInstance = map
+                            }
                         }
                     }
-                }
 
 
-                // Badge de resultados
-                if ((uiState.searchQuery.isNotBlank() || uiState.showOnlyFavorites) &&
-                    uiState.focusedAttractionId.isNullOrBlank() &&
-                    !uiState.routeMode) {
-                    Surface(
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .padding(top = 8.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer
-                    ) {
-                        Text(
-                            text = "${uiState.filteredAtractivos.size} resultados",
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            style = MaterialTheme.typography.labelMedium
-                        )
+                    // Badge de resultados
+                    if ((uiState.searchQuery.isNotBlank() || uiState.showOnlyFavorites) &&
+                        uiState.focusedAttractionId.isNullOrBlank() &&
+                        !uiState.routeMode) {
+                        Surface(
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = 8.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer
+                        ) {
+                            Text(
+                                text = "${uiState.filteredAtractivos.size} resultados",
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
                     }
                 }
             }

@@ -46,11 +46,8 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         loginViewModel.loginSuccessEvent.collect {
             onLoginSuccess()
-            val success = navController.popBackStack()
-            if (!success) {
-                navController.navigate("home") {
-                    popUpTo("login") { inclusive = true }
-                }
+            navController.navigate("home") {
+                popUpTo("login") { inclusive = true }
             }
         }
     }

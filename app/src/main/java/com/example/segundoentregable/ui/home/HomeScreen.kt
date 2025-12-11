@@ -84,8 +84,7 @@ fun HomeScreen(navController: NavController) {
         },
         bottomBar = { AppBottomBar(navController = navController) }
     ) { innerPadding ->
-
-        if (uiState.isLoading) {
+        if (uiState.isLoading && uiState.recomendaciones.isEmpty() && uiState.cercanos.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -155,6 +154,7 @@ fun HomeScreen(navController: NavController) {
         }
     }
 }
+
 
 // ✅ TOP BAR MODERNA CON BÚSQUEDA INTEGRADA
 @OptIn(ExperimentalMaterial3Api::class)
@@ -306,7 +306,7 @@ private fun RutasDestacadasSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                "🗺️ Rutas Turísticas",
+                "Rutas Turísticas",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )

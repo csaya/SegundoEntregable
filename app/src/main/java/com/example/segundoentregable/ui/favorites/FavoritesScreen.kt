@@ -41,7 +41,6 @@ import com.example.segundoentregable.ui.components.FavoriteListItem
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreen(
     navController: NavController,
@@ -56,7 +55,7 @@ fun FavoritesScreen(
     )
 
     val uiState by viewModel.uiState.collectAsState()
-    
+
     // Estado de selección múltiple
     var isSelectionMode by remember { mutableStateOf(false) }
     var selectedIds by remember { mutableStateOf(setOf<String>()) }
@@ -69,7 +68,7 @@ fun FavoritesScreen(
     }
 
     Scaffold(
-        topBar = { 
+        topBar = {
             FavoritesTopBar(
                 isSelectionMode = isSelectionMode,
                 selectedCount = selectedIds.size,
@@ -158,7 +157,6 @@ fun FavoritesScreen(
                             FavoriteListItem(
                                 atractivo = atractivo,
                                 onItemClick = {
-                                    // ✅ CAMBIO: De "detail/${atractivo.id}" a esto:
                                     navController.navigate("detail/${atractivo.id}?origin=favoritos")
                                 },
                                 onFavoriteClick = {

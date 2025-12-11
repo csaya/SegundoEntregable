@@ -15,7 +15,6 @@ class SessionViewModel(
     private val _isLoggedIn = MutableStateFlow(repo.isUserLoggedIn())
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
 
-    // CORRECCIÓN: Renombrado a 'login' para coincidir con tu NavGraph
     fun login() {
         _isLoggedIn.value = true
     }
