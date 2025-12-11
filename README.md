@@ -1,4 +1,4 @@
-# Guía de Turismo Arequipa (Prototipo Funcional)
+# Guía de Turismo Arequipa
 
 Este repositorio contiene el código fuente de una aplicación móvil de guía turística de **Arequipa**, desarrollada como parte de un proyecto académico. La aplicación está construida **de forma nativa para Android** utilizando **Jetpack Compose** y una arquitectura **MVVM (Model-View-ViewModel)**. La idea es centralizar la información turística de Arequipa y ofrecer una experiencia fluida para los usuarios.
 
