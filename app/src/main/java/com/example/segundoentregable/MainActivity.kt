@@ -53,17 +53,21 @@ class MainActivity : ComponentActivity() {
 
                 LaunchedEffect(Unit) {
                     val firebaseAuth = app.userRepository.getFirebaseAuthService()
+                    val firebaseUser = firebaseAuth.getCurrentUserEmail()
 
-                    // ✅ Limpiar estado persistente de Firebase y SharedPrefs
-                    // para que no interfiera con la lógica de la app
-                    if (firebaseAuth.isAuthenticated()) {
-                        // Firebase tiene un usuario, pero nosotros NO lo consideramos logueado
-                        // hasta que pase por login explícito
-                        Log.d(TAG, "⚠️ Firebase tiene sesión persistente, pero se ignora hasta login explícito")
+                    if (firebaseUser != null) {
+                        val localUser = app.userRepository.getUser(firebaseUser)
+                        if (localUser != null) {
+                            app.userRepository.setCurrentUser(firebaseUser)
+                            sessionViewModel.login()
+                        } else {
+                            app.userRepository.clearCurrentUser()
+                            sessionViewModel.logout()
+                        }
+                    } else {
+                        app.userRepository.clearCurrentUser()
+                        sessionViewModel.logout()
                     }
-
-                    // Limpiar SharedPrefs para evitar inconsistencias
-                    app.userRepository.clearCurrentUser()
                 }
 
                 // Sincronizar SOLO si está realmente logueado
