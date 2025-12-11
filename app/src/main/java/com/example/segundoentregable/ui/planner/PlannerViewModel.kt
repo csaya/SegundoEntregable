@@ -143,14 +143,15 @@ class PlannerViewModel(
     fun removeFromRoute(atractivoId: String) {
         viewModelScope.launch {
             try {
-                userRouteRepository.removeFromRoute(atractivoId)
+                val userEmail = userRepository.getCurrentUserEmail()
+                userRouteRepository.removeFromRoute(atractivoId, userEmail)
                 Log.d(TAG, "Eliminado de la ruta: $atractivoId")
             } catch (e: Exception) {
                 Log.e(TAG, "Error eliminando de la ruta", e)
             }
         }
     }
-    
+
     /**
      * Optimiza el orden de la ruta usando el algoritmo del vecino más cercano
      */

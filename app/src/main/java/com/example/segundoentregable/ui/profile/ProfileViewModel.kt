@@ -102,5 +102,7 @@ class ProfileViewModel(
     // NUEVO: Función para cerrar sesión real
     fun logout() {
         repo.logout()
+        // Forzar recarga del perfil después de logout
+        loadUserProfile()
     }
 }

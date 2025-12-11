@@ -13,7 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -35,6 +34,8 @@ import com.example.segundoentregable.AppApplication
 import com.example.segundoentregable.ui.components.AppBottomBar
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.ui.res.painterResource
 import com.example.segundoentregable.R
 import com.example.segundoentregable.ui.theme.ThemePreference
@@ -91,8 +92,16 @@ fun ProfileScreen(
                     viewModel.logout()
                     onLogout()
                 },
-                onMisRutas = { navController.navigate("mis_rutas") },
-                onFavoritos = { navController.navigate("favoritos") },
+                onMisRutas = {
+                    if (uiState.isLoggedIn) {
+                        navController.navigate("mis_rutas")
+                    }
+                },
+                onFavoritos = {
+                    if (uiState.isLoggedIn) {
+                        navController.navigate("favoritos")
+                    }
+                },
                 onThemeChange = onThemeChange,
                 modifier = Modifier.padding(innerPadding)
             )
@@ -229,7 +238,7 @@ private fun AuthButtons(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
             .height(56.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Icon(Icons.Default.Login, contentDescription = null)
+        Icon(Icons.AutoMirrored.Filled.Login, contentDescription = null)
         Spacer(Modifier.width(8.dp))
         Text("Iniciar Sesión", fontSize = 16.sp)
     }

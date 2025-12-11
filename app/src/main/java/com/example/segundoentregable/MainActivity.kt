@@ -26,7 +26,6 @@ import com.example.segundoentregable.ui.theme.ThemePreference
 import com.example.segundoentregable.ui.theme.loadThemePreference
 import com.example.segundoentregable.ui.theme.saveThemePreference
 
-
 private const val TAG = "MainActivity"
 
 class MainActivity : ComponentActivity() {
@@ -37,7 +36,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         handleIntent(intent)
 
         setContent {
@@ -49,17 +47,26 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val isLoggedIn by sessionViewModel.isLoggedIn.collectAsState()
 
+                // ✅ ELIMINADO: auto-login desde Firebase
+                // La app siempre arranca como "no logueado"
+                // Solo se marca como logueado tras pasar por LoginScreen
+
                 LaunchedEffect(Unit) {
                     val firebaseAuth = app.userRepository.getFirebaseAuthService()
+
+                    // ✅ Limpiar estado persistente de Firebase y SharedPrefs
+                    // para que no interfiera con la lógica de la app
                     if (firebaseAuth.isAuthenticated()) {
-                        val email = firebaseAuth.getCurrentUserEmail()
-                        if (email != null) {
-                            app.userRepository.setCurrentUser(email)
-                            sessionViewModel.login()
-                        }
+                        // Firebase tiene un usuario, pero nosotros NO lo consideramos logueado
+                        // hasta que pase por login explícito
+                        Log.d(TAG, "⚠️ Firebase tiene sesión persistente, pero se ignora hasta login explícito")
                     }
+
+                    // Limpiar SharedPrefs para evitar inconsistencias
+                    app.userRepository.clearCurrentUser()
                 }
 
+                // Sincronizar SOLO si está realmente logueado
                 LaunchedEffect(isLoggedIn) {
                     if (isLoggedIn) {
                         FavoriteSyncWorker.syncNow(app)

@@ -36,12 +36,11 @@ class UserRepository(
         userDao.insertUser(UserEntity(user.email, user.name, user.password))
 
         if (connectivityObserver.isCurrentlyConnected()) {
-            val result = firebaseAuth.register(user.email, user.password, user.name) // ✅ Pasar nombre
+            val result = firebaseAuth.register(user.email, user.password, user.name)
             result.onFailure {
                 // Log silencioso, el usuario está registrado localmente
             }
         }
-
         return true
     }
 
@@ -58,7 +57,6 @@ class UserRepository(
 
         if (connectivityObserver.isCurrentlyConnected()) {
             val result = firebaseAuth.login(email, password)
-
             result.onSuccess { firebaseUser ->
                 val firebaseName = firebaseUser.displayName
                 val roomName = user?.name
@@ -75,7 +73,6 @@ class UserRepository(
         return true
     }
 
-
     suspend fun getUser(email: String): User? {
         val userEntity = userDao.getUserByEmail(email)
         return userEntity?.let { User(it.name, it.email, it.password) }
@@ -83,15 +80,14 @@ class UserRepository(
 
     fun setCurrentUser(email: String?) {
         prefs.setCurrentUserEmail(email)
-        if (email != null) {
-            // Aquí puedes hacer algo si necesitas, pero no es necesario para Firebase Auth
-        } else {
-            firebaseAuth.logout()
-        }
     }
 
-
     fun getCurrentUserEmail(): String? = prefs.getCurrentUserEmail()
+
+    // ✅ Nuevo método para limpiar usuario actual
+    fun clearCurrentUser() {
+        prefs.setCurrentUserEmail(null)
+    }
 
     /**
      * Asegurar que el usuario exista en Room (crear si no existe).
@@ -116,15 +112,15 @@ class UserRepository(
      * Logout: Cerrar sesión local y en Firebase
      */
     fun logout() {
-        setCurrentUser(null)
+        clearCurrentUser()
         firebaseAuth.logout()
     }
-    
+
     /**
      * Verificar si el usuario está autenticado en Firebase
      */
     fun isFirebaseAuthenticated(): Boolean = firebaseAuth.isAuthenticated()
-    
+
     /**
      * Obtener el servicio de Firebase Auth para operaciones avanzadas
      */

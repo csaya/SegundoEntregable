@@ -156,16 +156,16 @@ class AttractionDetailViewModel(
     fun onToggleRoute() {
         viewModelScope.launch {
             val userEmail = userRepo.getCurrentUserEmail()
-            
+
             // Verificar si está logueado
             if (userEmail == null) {
                 _uiState.update { it.copy(requiresLogin = true) }
                 _snackbarEvent.value = "Inicia sesión para crear rutas"
                 return@launch
             }
-            
+
             try {
-                val wasAdded = userRouteRepo.toggleInRoute(attractionId)
+                val wasAdded = userRouteRepo.toggleInRoute(attractionId, userEmail)
                 val message = if (wasAdded) "Añadido a tu ruta" else "Quitado de tu ruta"
                 _snackbarEvent.value = message
                 Log.d(TAG, "Ruta actualizada: $wasAdded para $attractionId")
@@ -175,6 +175,7 @@ class AttractionDetailViewModel(
             }
         }
     }
+
 
     fun clearSnackbarEvent() {
         _snackbarEvent.value = null

@@ -12,7 +12,7 @@ class SessionViewModel(
     private val repo: UserRepository
 ) : ViewModel() {
 
-    private val _isLoggedIn = MutableStateFlow(repo.isUserLoggedIn())
+    private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
 
     fun login() {

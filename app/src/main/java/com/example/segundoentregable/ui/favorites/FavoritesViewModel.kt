@@ -39,9 +39,13 @@ class FavoritesViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                // Usamos "guest_user" si es nulo para no romper la app en pruebas,
-                // o puedes dejarlo nulo si prefieres que no muestre nada.
-                val userEmail = userRepo.getCurrentUserEmail() ?: "guest_user"
+                val userEmail = userRepo.getCurrentUserEmail()
+                if (userEmail == null) {
+                    _uiState.update {
+                        it.copy(favoritesList = emptyList(), isLoading = false)
+                    }
+                    return@launch
+                }
 
                 // 1. Obtener IDs
                 val favoritoIds = favoriteRepo.getFavoritosByUser(userEmail)
@@ -64,7 +68,7 @@ class FavoritesViewModel(
     fun onToggleFavorite(attractionId: String) {
         viewModelScope.launch {
             try {
-                val userEmail = userRepo.getCurrentUserEmail() ?: "guest_user"
+                val userEmail = userRepo.getCurrentUserEmail() ?: return@launch
 
                 favoriteRepo.toggleFavorito(userEmail, attractionId)
 
@@ -82,6 +86,8 @@ class FavoritesViewModel(
     fun createRouteFromFavorites(selectedIds: List<String>, userRouteRepo: UserRouteRepository) {
         viewModelScope.launch {
             try {
+                val userEmail = userRepo.getCurrentUserEmail() ?: return@launch
+
                 // Limpiar ruta anterior y agregar los seleccionados
                 userRouteRepo.createRouteFromAtractivos(selectedIds)
                 Log.d("FavoritesVM", "Ruta creada con ${selectedIds.size} favoritos")

@@ -49,11 +49,12 @@ class ReviewRepository(
      */
     suspend fun addReview(
         attractionId: String,
-        userEmail: String,
+        userEmail: String?,
         userName: String,
         rating: Float,
         comment: String
     ) {
+        if (userEmail == null) return
         val newReview = ReviewEntity(
             id = UUID.randomUUID().toString(),
             attractionId = attractionId,
@@ -71,7 +72,7 @@ class ReviewRepository(
         // 1. Guardar localmente
         reviewDao.insertReview(newReview)
 
-        // 2. ✅ Sincronizar inmediatamente con Firebase
+        // 2. Sincronizar inmediatamente con Firebase
         try {
             firestoreService.uploadReviews(listOf(newReview))
             reviewDao.markAsSynced(newReview.id)

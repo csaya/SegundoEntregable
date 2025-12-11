@@ -40,7 +40,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import com.example.segundoentregable.R
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, MapsComposeExperimentalApi::class)
 @Composable
 fun MapScreen(
     navController: NavController,

@@ -13,7 +13,9 @@ class UserRouteRepository(
     /**
      * Añade un atractivo a la ruta del usuario
      */
-    suspend fun addToRoute(atractivoId: String) {
+    suspend fun addToRoute(atractivoId: String, userEmail: String?) {
+        // ✅ Validar usuario
+        if (userEmail == null) return
         val item = UserRouteItemEntity(
             atractivoId = atractivoId,
             addedAt = System.currentTimeMillis()
@@ -24,7 +26,8 @@ class UserRouteRepository(
     /**
      * Elimina un atractivo de la ruta
      */
-    suspend fun removeFromRoute(atractivoId: String) {
+    suspend fun removeFromRoute(atractivoId: String, userEmail: String?) {
+        if (userEmail == null) return
         userRouteDao.removeFromRoute(atractivoId)
     }
 
@@ -32,13 +35,14 @@ class UserRouteRepository(
      * Alterna el estado de un atractivo en la ruta (añadir/quitar)
      * @return true si se añadió, false si se quitó
      */
-    suspend fun toggleInRoute(atractivoId: String): Boolean {
+    suspend fun toggleInRoute(atractivoId: String, userEmail: String?): Boolean {
+        if (userEmail == null) return false
         val isInRoute = userRouteDao.isInRoute(atractivoId)
         if (isInRoute) {
             userRouteDao.removeFromRoute(atractivoId)
             return false
         } else {
-            addToRoute(atractivoId)
+            addToRoute(atractivoId, userEmail)
             return true
         }
     }
@@ -46,7 +50,8 @@ class UserRouteRepository(
     /**
      * Verifica si un atractivo está en la ruta
      */
-    suspend fun isInRoute(atractivoId: String): Boolean {
+    suspend fun isInRoute(atractivoId: String, userEmail: String?): Boolean {
+        if (userEmail == null) return false
         return userRouteDao.isInRoute(atractivoId)
     }
 
