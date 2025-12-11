@@ -6,7 +6,13 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.compose.rememberNavController
+import com.example.segundoentregable.data.sync.FavoriteSyncWorker
+import com.example.segundoentregable.data.sync.ReviewSyncWorker
+import com.example.segundoentregable.data.sync.RutaSyncWorker
 import com.example.segundoentregable.navigation.AppNavGraph
 import com.example.segundoentregable.ui.session.SessionViewModel
 import com.example.segundoentregable.ui.session.SessionViewModelFactory
@@ -28,7 +34,17 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SegundoEntregableTheme {
+                val app = application as AppApplication
                 val navController = rememberNavController()
+                val isLoggedIn by sessionViewModel.isLoggedIn.collectAsState()
+
+                LaunchedEffect(isLoggedIn) {
+                    if (isLoggedIn) {
+                        FavoriteSyncWorker.syncNow(app)
+                        RutaSyncWorker.syncNow(app)
+                        ReviewSyncWorker.syncNow(app)
+                    }
+                }
 
                 AppNavGraph(
                     navController = navController,
@@ -36,6 +52,7 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+
     }
 
     /**
