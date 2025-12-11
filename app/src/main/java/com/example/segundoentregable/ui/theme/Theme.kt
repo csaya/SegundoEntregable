@@ -31,18 +31,19 @@ private val LightColors = lightColorScheme(
 )
 
 @Composable
-fun SegundoEntregableTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+fun ArequipaExplorerTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(), // por si luego añades DarkColors
     content: @Composable () -> Unit
 ) {
-    val colorScheme = LightColors // Por ahora solo tema claro
-    
+    val colorScheme = LightColors // solo tema claro por ahora
+
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+            WindowCompat.getInsetsController(window, view)
+                .isAppearanceLightStatusBars = false
         }
     }
 

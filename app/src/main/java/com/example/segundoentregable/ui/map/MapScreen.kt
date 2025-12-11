@@ -36,6 +36,9 @@ import com.google.android.gms.maps.model.*
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.compose.*
 import kotlinx.coroutines.delay
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.segundoentregable.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -515,10 +518,10 @@ private fun MapTopBar(
         TopAppBar(
             title = {
                 Text(
-                    when {
-                        routeMode -> "Mi Ruta ($routeCount puntos)"
-                        showingFocusedOnly -> "Mapa - Vista detalle"
-                        showingFavorites -> "Mapa - Favoritos"
+                    text = when {
+                        routeMode -> "Mapa · Mi Ruta ($routeCount)"
+                        showingFocusedOnly -> "Mapa · Detalle"
+                        showingFavorites -> "Mapa · Favoritos"
                         else -> "Mapa"
                     },
                     fontWeight = FontWeight.Bold
@@ -530,6 +533,13 @@ private fun MapTopBar(
                         Text("Ver todos")
                     }
                 }
+                Image(
+                    painter = painterResource(R.drawable.logo_arequipa_explorer),
+                    contentDescription = "Arequipa Explorer",
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(end = 8.dp)
+                )
             },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)

@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Application
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -19,9 +20,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import com.example.segundoentregable.R
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -155,8 +157,6 @@ fun HomeScreen(navController: NavController) {
     }
 }
 
-
-// ✅ TOP BAR MODERNA CON BÚSQUEDA INTEGRADA
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ModernHomeTopBar(
@@ -164,21 +164,27 @@ private fun ModernHomeTopBar(
     onSearchQueryChange: (String) -> Unit
 ) {
     Column {
-        // Header
         Surface(
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp
         ) {
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Spacer(Modifier.height(16.dp))
-
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.logo_arequipa_explorer),
+                    contentDescription = "Arequipa Explorer",
+                    modifier = Modifier.size(80.dp)
+                )
+                Spacer(Modifier.height(8.dp))
                 Text(
-                    "Descubre Arequipa",
-                    style = MaterialTheme.typography.headlineMedium,
+                    "Arequipa Explorer",
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-
                 Text(
                     "La Ciudad Blanca te espera",
                     style = MaterialTheme.typography.bodyMedium,

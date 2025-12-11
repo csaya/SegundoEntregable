@@ -1,6 +1,7 @@
 package com.example.segundoentregable.ui.favorites
 
 import android.app.Application
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -40,6 +41,9 @@ import com.example.segundoentregable.ui.components.AttractionImage
 import com.example.segundoentregable.ui.components.FavoriteListItem
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.ui.res.painterResource
+import com.example.segundoentregable.R
+
 
 @Composable
 fun FavoritesScreen(
@@ -362,9 +366,9 @@ private fun FavoritesTopBar(
     onCancelSelection: () -> Unit
 ) {
     TopAppBar(
-        title = { 
+        title = {
             Text(
-                text = if (isSelectionMode) "Seleccionar ($selectedCount)" else "Favoritos",
+                text = if (isSelectionMode) "Favoritos · $selectedCount" else "Favoritos",
                 fontWeight = FontWeight.Bold
             )
         },
@@ -375,6 +379,17 @@ private fun FavoritesTopBar(
                 }
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+        actions = {
+            Image(
+                painter = painterResource(R.drawable.logo_arequipa_explorer),
+                contentDescription = "Arequipa Explorer",
+                modifier = Modifier
+                    .size(48.dp)
+                    .padding(end = 8.dp)
+            )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+        )
     )
 }

@@ -33,6 +33,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.segundoentregable.AppApplication
 import com.example.segundoentregable.ui.components.AppBottomBar
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.segundoentregable.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +52,18 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Perfil", fontWeight = FontWeight.Bold) },
+                title = {
+                    Text("Perfil", fontWeight = FontWeight.Bold)
+                },
+                actions = {
+                    Image(
+                        painter = painterResource(R.drawable.logo_arequipa_explorer),
+                        contentDescription = "Arequipa Explorer",
+                        modifier = Modifier
+                            .size(48.dp)
+                            .padding(end = 8.dp)
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )

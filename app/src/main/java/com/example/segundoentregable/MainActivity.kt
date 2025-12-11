@@ -16,7 +16,7 @@ import com.example.segundoentregable.data.sync.RutaSyncWorker
 import com.example.segundoentregable.navigation.AppNavGraph
 import com.example.segundoentregable.ui.session.SessionViewModel
 import com.example.segundoentregable.ui.session.SessionViewModelFactory
-import com.example.segundoentregable.ui.theme.SegundoEntregableTheme
+import com.example.segundoentregable.ui.theme.ArequipaExplorerTheme
 import com.example.segundoentregable.utils.DeepLinkHandler
 
 private const val TAG = "MainActivity"
@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         handleIntent(intent)
 
         setContent {
-            SegundoEntregableTheme {
+            ArequipaExplorerTheme {
                 val app = application as AppApplication
                 val navController = rememberNavController()
                 val isLoggedIn by sessionViewModel.isLoggedIn.collectAsState()
