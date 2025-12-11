@@ -23,6 +23,7 @@ import com.example.segundoentregable.ui.routes.MisRutasScreen
 import com.example.segundoentregable.ui.routes.RutaDetalleScreen
 import com.example.segundoentregable.ui.routes.RutasScreen
 import com.example.segundoentregable.ui.session.SessionViewModel
+import com.example.segundoentregable.ui.theme.ThemePreference
 import kotlinx.coroutines.delay
 import com.example.segundoentregable.utils.DeepLinkHandler
 
@@ -30,6 +31,7 @@ import com.example.segundoentregable.utils.DeepLinkHandler
 fun AppNavGraph(
     navController: NavHostController,
     sessionViewModel: SessionViewModel,
+    onThemeChange: (ThemePreference) -> Unit
 ) {
     val pendingAttractionId by DeepLinkHandler.pendingAttractionId.collectAsState()
 
@@ -146,7 +148,8 @@ fun AppNavGraph(
                     onLogout = {
                         sessionViewModel.logout()
                         navController.navigate("login") { popUpTo(0) }
-                    }
+                    },
+                    onThemeChange = onThemeChange
                 )
             } else {
                 LoginScreen(

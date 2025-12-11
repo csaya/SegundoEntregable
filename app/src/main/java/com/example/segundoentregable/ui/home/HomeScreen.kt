@@ -25,6 +25,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -68,20 +69,12 @@ fun HomeScreen(navController: NavController) {
         )
     }
 
-    // ✅ BÚSQUEDA AUTOMÁTICA - Navegar cuando el usuario escribe
-    LaunchedEffect(searchQuery) {
-        if (searchQuery.length >= 3) {
-            // Debounce de 500ms
-            kotlinx.coroutines.delay(500)
-            navController.navigate("list?query=$searchQuery")
-        }
-    }
-
     Scaffold(
         topBar = {
             ModernHomeTopBar(
-                searchQuery = searchQuery,
-                onSearchQueryChange = { searchQuery = it }
+                onSearchBarClick = {
+                    navController.navigate("list?query=")
+                }
             )
         },
         bottomBar = { AppBottomBar(navController = navController) }
@@ -160,8 +153,7 @@ fun HomeScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ModernHomeTopBar(
-    searchQuery: String,
-    onSearchQueryChange: (String) -> Unit
+    onSearchBarClick: () -> Unit
 ) {
     Column {
         Surface(
@@ -193,44 +185,33 @@ private fun ModernHomeTopBar(
 
                 Spacer(Modifier.height(16.dp))
 
-                // Barra de búsqueda moderna
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = onSearchQueryChange,
-                    placeholder = {
-                        Text(
-                            "Buscar atractivos, restaurantes...",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    },
-                    leadingIcon = {
+                // Barra de búsqueda simulada
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onSearchBarClick() },
+                    shape = RoundedCornerShape(28.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    tonalElevation = 1.dp
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
                             Icons.Default.Search,
                             contentDescription = "Buscar",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                    },
-                    trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { onSearchQueryChange("") }) {
-                                Icon(
-                                    Icons.Default.Clear,
-                                    contentDescription = "Limpiar",
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(28.dp),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-                        focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest
-                    )
-                )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            "Buscar atractivos, restaurantes...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
 
                 Spacer(Modifier.height(16.dp))
             }
@@ -383,15 +364,14 @@ private fun RutaCard(
     Card(
         modifier = Modifier
             .width(280.dp)
+            .height(280.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
             AsyncImage(
-                model = ruta.imagenPrincipal.ifEmpty {
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Arequipa%2C_Plaza_de_Armas_and_Volc%C3%A1n_Misti_-_panoramio.jpg/1280px-Arequipa%2C_Plaza_de_Armas_and_Volc%C3%A1n_Misti_-_panoramio.jpg"
-                },
+                model = ruta.imagenPrincipal.ifEmpty { /* ... */ },
                 contentDescription = ruta.nombre,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -418,7 +398,8 @@ private fun RutaCard(
                     ruta.nombre,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 2
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(Modifier.height(8.dp))
@@ -427,12 +408,16 @@ private fun RutaCard(
                     Text(
                         "⏱️ ${ruta.duracionEstimada}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         "📍 ${ruta.dificultad}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }

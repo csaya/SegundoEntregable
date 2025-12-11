@@ -34,14 +34,20 @@ import androidx.navigation.NavController
 import com.example.segundoentregable.AppApplication
 import com.example.segundoentregable.ui.components.AppBottomBar
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.res.painterResource
 import com.example.segundoentregable.R
+import com.example.segundoentregable.ui.theme.ThemePreference
+import com.example.segundoentregable.ui.theme.loadThemePreference
+import com.example.segundoentregable.ui.theme.saveThemePreference
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onThemeChange: (ThemePreference) -> Unit
 ) {
     val context = LocalContext.current
     val viewModel: ProfileViewModel = viewModel(
@@ -87,6 +93,7 @@ fun ProfileScreen(
                 },
                 onMisRutas = { navController.navigate("mis_rutas") },
                 onFavoritos = { navController.navigate("favoritos") },
+                onThemeChange = onThemeChange,
                 modifier = Modifier.padding(innerPadding)
             )
         }
@@ -251,6 +258,7 @@ private fun LoggedInView(
     onLogout: () -> Unit,
     onMisRutas: () -> Unit,
     onFavoritos: () -> Unit,
+    onThemeChange: (ThemePreference) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -267,6 +275,9 @@ private fun LoggedInView(
         Spacer(Modifier.height(32.dp))
 
         AppInfoCard()
+        Spacer(Modifier.height(16.dp))
+
+        ThemePreferenceCard(onThemeChange)   // ← nueva tarjeta
         Spacer(Modifier.height(16.dp))
 
         ProximityNotificationCard()
@@ -645,4 +656,76 @@ private fun enableProximityService(app: AppApplication, prefs: android.content.S
 private fun disableProximityService(app: AppApplication, prefs: android.content.SharedPreferences) {
     app.proximityService.stopMonitoring()
     prefs.edit().putBoolean("monitoring_enabled", false).apply()
+}
+
+@Composable
+private fun ThemePreferenceCard(onThemeChange: (ThemePreference) -> Unit) {
+    val context = LocalContext.current
+    var selected by remember { mutableStateOf(loadThemePreference(context)) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                "Tema de la app",
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            ThemeOptionRow(
+                title = "Seguir tema del sistema",
+                selected = selected == ThemePreference.SYSTEM,
+                onSelected = {
+                    selected = ThemePreference.SYSTEM
+                    onThemeChange(ThemePreference.SYSTEM)
+                    saveThemePreference(context, ThemePreference.SYSTEM)
+                }
+            )
+            ThemeOptionRow(
+                title = "Modo claro",
+                selected = selected == ThemePreference.LIGHT,
+                onSelected = {
+                    selected = ThemePreference.LIGHT
+                    onThemeChange(ThemePreference.LIGHT)
+                    saveThemePreference(context, ThemePreference.LIGHT)
+                }
+            )
+            ThemeOptionRow(
+                title = "Modo oscuro",
+                selected = selected == ThemePreference.DARK,
+                onSelected = {
+                    selected = ThemePreference.DARK
+                    onThemeChange(ThemePreference.DARK)
+                    saveThemePreference(context, ThemePreference.DARK)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ThemeOptionRow(
+    title: String,
+    selected: Boolean,
+    onSelected: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clickable(onClick = onSelected),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = selected,
+            onClick = onSelected
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(title, style = MaterialTheme.typography.bodyMedium)
+    }
 }

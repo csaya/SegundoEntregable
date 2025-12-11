@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.segundoentregable.data.model.AtractivoTuristico
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.ui.text.style.TextOverflow
 
 @Composable
 fun RecomendacionCard(
@@ -26,11 +27,11 @@ fun RecomendacionCard(
     Card(
         modifier = Modifier
             .width(220.dp)
-            .clickable { onClick() },
+            .height(300.dp)
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column {
-            // Imagen real con AttractionImage
             AttractionImage(
                 imageUrl = atractivo.imagenPrincipal,
                 contentDescription = atractivo.nombre,
@@ -41,9 +42,20 @@ fun RecomendacionCard(
             )
 
             Column(Modifier.padding(12.dp)) {
-                Text(atractivo.nombre, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = atractivo.nombre,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
                 Spacer(Modifier.height(4.dp))
-                Text(atractivo.descripcionCorta, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+                Text(
+                    text = atractivo.descripcionCorta,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray,
+                    maxLines = 4,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }

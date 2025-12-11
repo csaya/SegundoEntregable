@@ -18,6 +18,14 @@ import com.example.segundoentregable.ui.session.SessionViewModel
 import com.example.segundoentregable.ui.session.SessionViewModelFactory
 import com.example.segundoentregable.ui.theme.ArequipaExplorerTheme
 import com.example.segundoentregable.utils.DeepLinkHandler
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import com.example.segundoentregable.ui.theme.ThemePreference
+import com.example.segundoentregable.ui.theme.loadThemePreference
+import com.example.segundoentregable.ui.theme.saveThemePreference
+
 
 private const val TAG = "MainActivity"
 
@@ -33,7 +41,10 @@ class MainActivity : ComponentActivity() {
         handleIntent(intent)
 
         setContent {
-            ArequipaExplorerTheme {
+            val context = LocalContext.current
+            var themePref by remember { mutableStateOf(loadThemePreference(context)) }
+
+            ArequipaExplorerTheme(themePreference = themePref) {
                 val app = application as AppApplication
                 val navController = rememberNavController()
                 val isLoggedIn by sessionViewModel.isLoggedIn.collectAsState()
@@ -59,11 +70,14 @@ class MainActivity : ComponentActivity() {
 
                 AppNavGraph(
                     navController = navController,
-                    sessionViewModel = sessionViewModel
+                    sessionViewModel = sessionViewModel,
+                    onThemeChange = { newPref ->
+                        themePref = newPref
+                        saveThemePreference(context, newPref)
+                    }
                 )
             }
         }
-
     }
 
     /**
