@@ -61,6 +61,11 @@ La arquitectura sigue el principio de **"paquete por funcionalidad"**, donde cad
 
 ## Cómo Probar
 
+### Usuario de Prueba
+
+* Correo: test@test.com
+* Contraseña: test123
+
 ### Flujo Principal
 
 La app inicia en **HomeScreen** con sesión de invitado.
