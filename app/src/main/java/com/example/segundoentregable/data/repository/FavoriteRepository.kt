@@ -6,7 +6,9 @@ import com.example.segundoentregable.data.firebase.FirestoreFavoriteService
 import com.example.segundoentregable.data.local.dao.FavoritoDao
 import com.example.segundoentregable.data.local.entity.FavoritoEntity
 import com.example.segundoentregable.data.sync.FavoriteSyncWorker
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private const val TAG = "FavoriteRepository"
@@ -41,8 +43,7 @@ class FavoriteRepository(
             val favoriteId = generateFavoriteId(userEmail, attractionId)
             favoritoDao.deleteFavorito(userEmail, attractionId)
 
-            // Intentar eliminar de Firebase inmediatamente
-            withContext(Dispatchers.IO) {
+            CoroutineScope(Dispatchers.IO).launch {
                 try {
                     firestoreService.deleteFavorite(favoriteId)
                     Log.d(TAG, "Favorito eliminado de Firebase: $favoriteId")

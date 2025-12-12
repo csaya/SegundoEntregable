@@ -134,7 +134,16 @@ fun AppNavGraph(
         }
 
         // Favoritos
-        composable(BottomBarScreen.Favoritos.route) {
+        composable(
+            route = "favoritos?origin={origin}",
+            arguments = listOf(
+                navArgument("origin") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = true
+                }
+            )
+        ) {
             FavoritesScreen(
                 navController = navController,
                 isUserLoggedIn = isLoggedIn
@@ -193,7 +202,16 @@ fun AppNavGraph(
         }
         
         // Mis Rutas guardadas (CRUD completo)
-        composable("mis_rutas") {
+        composable(
+            route = "mis_rutas?origin={origin}",
+            arguments = listOf(
+                navArgument("origin") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = true
+                }
+            )
+        ) {
             MisRutasScreen(navController = navController)
         }
     }

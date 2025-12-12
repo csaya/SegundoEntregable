@@ -40,12 +40,11 @@ fun AppBottomBar(navController: NavController) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     // Obtener origin desde los argumentos
-    val mapOrigin = navBackStackEntry?.arguments?.getString("origin")
-    val detailOrigin = navBackStackEntry?.arguments?.getString("origin")
+    val origin = navBackStackEntry?.arguments?.getString("origin")
     val routeIds = navBackStackEntry?.arguments?.getString("routeIds")
 
     // Log para debug
-    Log.d(TAG, "currentRoute=$currentRoute, mapOrigin=$mapOrigin, routeIds=$routeIds")
+    Log.d(TAG, "currentRoute=$currentRoute, origin=$origin, routeIds=$routeIds")
 
     NavigationBar {
         bottomBarScreens.forEach { screen ->
@@ -57,23 +56,26 @@ fun AppBottomBar(navController: NavController) {
                     currentRoute == "home" ||
                             currentRoute?.startsWith("rutas") == true ||
                             currentRoute?.startsWith("planner") == true ||
-                            currentRoute == "mis_rutas" ||
-                            (currentRoute?.startsWith("detail/") == true && detailOrigin == "home") ||
+                            (currentRoute?.startsWith("mis_rutas") == true && origin != "perfil") ||
+                            (currentRoute?.startsWith("detail/") == true && origin == "home") ||
                             (currentRoute?.startsWith("list") == true) ||
-                            (currentRoute?.startsWith("mapa") == true && (mapOrigin == "home" || isMapFromRoutes))
+                            (currentRoute?.startsWith("mapa") == true && (origin == "home" || isMapFromRoutes))
                 }
                 BottomBarScreen.Mapa -> {
                     currentRoute?.startsWith("mapa") == true &&
-                            mapOrigin.isNullOrBlank() && routeIds.isNullOrBlank() ||
-                            (currentRoute?.startsWith("detail/") == true && detailOrigin == "mapa")
+                            origin.isNullOrBlank() && routeIds.isNullOrBlank() ||
+                            (currentRoute?.startsWith("detail/") == true && origin == "mapa")
                 }
                 BottomBarScreen.Favoritos -> {
-                    currentRoute == "favoritos" ||
-                            (currentRoute?.startsWith("detail/") == true && detailOrigin == "favoritos") ||
-                            (currentRoute?.startsWith("mapa") == true && mapOrigin == "favoritos")
+                    (currentRoute?.startsWith("favoritos") == true && origin != "perfil") ||
+                            (currentRoute?.startsWith("detail/") == true && origin == "favoritos") ||
+                            (currentRoute?.startsWith("mapa") == true && origin == "favoritos")
                 }
                 BottomBarScreen.Perfil -> {
-                    currentRoute == "perfil" || currentRoute == "login"
+                    currentRoute == "perfil" ||
+                            currentRoute == "login" ||
+                            (currentRoute?.startsWith("favoritos") == true && origin == "perfil") ||
+                            (currentRoute?.startsWith("mis_rutas") == true && origin == "perfil")
                 }
             }
 
@@ -81,8 +83,8 @@ fun AppBottomBar(navController: NavController) {
 
             val isAtRoot = when (screen) {
                 BottomBarScreen.Home -> currentRoute == "home"
-                BottomBarScreen.Mapa -> currentRoute == "mapa" && mapOrigin.isNullOrBlank() && routeIds.isNullOrBlank()
-                BottomBarScreen.Favoritos -> currentRoute == "favoritos"
+                BottomBarScreen.Mapa -> currentRoute == "mapa" && origin.isNullOrBlank() && routeIds.isNullOrBlank()
+                BottomBarScreen.Favoritos -> currentRoute == "favoritos" && origin != "perfil"
                 BottomBarScreen.Perfil -> currentRoute == "perfil"
             }
 

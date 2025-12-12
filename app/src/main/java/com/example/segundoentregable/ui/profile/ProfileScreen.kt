@@ -94,12 +94,12 @@ fun ProfileScreen(
                 },
                 onMisRutas = {
                     if (uiState.isLoggedIn) {
-                        navController.navigate("mis_rutas")
+                        navController.navigate("mis_rutas?origin=perfil")
                     }
                 },
                 onFavoritos = {
                     if (uiState.isLoggedIn) {
-                        navController.navigate("favoritos")
+                        navController.navigate("favoritos?origin=perfil")
                     }
                 },
                 onThemeChange = onThemeChange,

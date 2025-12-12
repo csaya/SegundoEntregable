@@ -103,6 +103,7 @@ fun AttractionDetailScreen(
 
     if (uiState.isReviewDialogVisible) {
         AddReviewDialog(
+            isSubmitting = uiState.isSubmittingReview,
             onDismiss = { viewModel.hideReviewDialog() },
             onSubmit = { rating, comment ->
                 viewModel.submitReview(rating, comment)
@@ -201,6 +202,7 @@ fun AttractionDetailScreen(
             // Botones de acción
             item {
                 ActionButtonsSection(
+                    uiState = uiState,
                     isFavorito = uiState.isFavorito,
                     isInRoute = uiState.isInRoute,
                     onToggleFavorite = {
@@ -500,6 +502,7 @@ private fun InfoAdicionalSection(atractivo: AtractivoTuristico) {
 
 @Composable
 private fun ActionButtonsSection(
+    uiState: DetailUiState,
     isFavorito: Boolean,
     isInRoute: Boolean,
     onToggleFavorite: () -> Unit,
@@ -521,16 +524,24 @@ private fun ActionButtonsSection(
         ) {
             OutlinedButton(
                 onClick = onToggleFavorite,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                enabled = !uiState.isTogglingFavorite
             ) {
-                Icon(
-                    if (isFavorito) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                    contentDescription = "Guardar",
-                    modifier = Modifier.size(ButtonDefaults.IconSize),
-                    tint = if (isFavorito) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                )
+                if (uiState.isTogglingFavorite) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(ButtonDefaults.IconSize),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        if (uiState.isFavorito) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                        contentDescription = "Guardar",
+                        modifier = Modifier.size(ButtonDefaults.IconSize),
+                        tint = if (uiState.isFavorito) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    )
+                }
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(if (isFavorito) "Guardado" else "Guardar")
+                Text(if (uiState.isFavorito) "Guardado" else "Guardar")
             }
 
             // Botón de Añadir a Mi Ruta
@@ -597,6 +608,7 @@ private fun ActionButtonsSection(
 
 @Composable
 fun AddReviewDialog(
+    isSubmitting: Boolean,
     onDismiss: () -> Unit,
     onSubmit: (Float, String) -> Unit
 ) {
@@ -673,19 +685,27 @@ fun AddReviewDialog(
         confirmButton = {
             Button(
                 onClick = { onSubmit(rating, comment) },
-                shape = RoundedCornerShape(8.dp)
+                enabled = !isSubmitting && comment.isNotBlank()
             ) {
-                Icon(Icons.Filled.Star, null, Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Publicar Reseña")
+                if (isSubmitting) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Spacer(Modifier.width(8.dp))
+                }
+                Text("Publicar")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                enabled = !isSubmitting
+            ) {
                 Text("Cancelar")
             }
-        },
-        shape = RoundedCornerShape(16.dp)
+        }
     )
 }
 

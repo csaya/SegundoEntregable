@@ -25,6 +25,7 @@ data class DetailUiState(
     val atractivo: AtractivoTuristico? = null,
     val reviews: List<Review> = emptyList(),
     val isFavorito: Boolean = false,
+    val isTogglingFavorite: Boolean = false,
     val isInRoute: Boolean = false,
     val isLoading: Boolean = false,
     val isReviewDialogVisible: Boolean = false,
@@ -116,24 +117,27 @@ class AttractionDetailViewModel(
     fun onToggleFavorite() {
         viewModelScope.launch {
             val userEmail = userRepo.getCurrentUserEmail()
-            
-            // Verificar si está logueado
+
             if (userEmail == null) {
                 _uiState.update { it.copy(requiresLogin = true) }
                 _snackbarEvent.value = "Inicia sesión para guardar favoritos"
                 return@launch
             }
 
+            _uiState.update { it.copy(isTogglingFavorite = true) }
+
             try {
                 // 1. Ejecutar el cambio en base de datos
-                favoriteRepo.toggleFavorito(userEmail, attractionId)
+                val nuevoEstado = favoriteRepo.toggleFavorito(userEmail, attractionId)
 
-                // 2. Leer el nuevo estado
-                val nuevoEstado = favoriteRepo.isFavorito(userEmail, attractionId)
+                // 2. Actualizar la UI con el nuevo estado
+                _uiState.update {
+                    it.copy(
+                        isFavorito = nuevoEstado,
+                        isTogglingFavorite = false
+                    )
+                }
 
-                // 3. Actualizar la UI
-                _uiState.update { it.copy(isFavorito = nuevoEstado) }
-                
                 val msg = if (nuevoEstado) "Añadido a favoritos" else "Eliminado de favoritos"
                 _snackbarEvent.value = msg
 
@@ -141,11 +145,13 @@ class AttractionDetailViewModel(
 
             } catch (e: Exception) {
                 Log.e(TAG, "Error al cambiar favorito", e)
+                _uiState.update { it.copy(isTogglingFavorite = false) }
                 _snackbarEvent.value = "Error al guardar favorito"
             }
         }
     }
-    
+
+
     fun clearRequiresLogin() {
         _uiState.update { it.copy(requiresLogin = false) }
     }
@@ -191,10 +197,14 @@ class AttractionDetailViewModel(
 
     fun submitReview(rating: Float, comment: String) {
         viewModelScope.launch {
+            if (comment.isBlank()) {
+                _snackbarEvent.value = "Escribe un comentario para publicar"
+                return@launch
+            }
+
             val userEmail = userRepo.getCurrentUserEmail() ?: return@launch
 
             val localUser = userRepo.getUser(userEmail)
-
             val firebaseDisplayName = userRepo.getFirebaseAuthService().getCurrentUserDisplayName()
 
             val userName = when {
@@ -214,21 +224,29 @@ class AttractionDetailViewModel(
                     comment = comment
                 )
 
+                val updatedReviews = reviewRepo.getReviewsForAttraction(attractionId)
                 val newRating = attractionRepo.calculateAverageRating(attractionId)
+
                 _uiState.update { currentState ->
                     currentState.copy(
-                        atractivo = currentState.atractivo?.copy(rating = newRating)
+                        reviews = updatedReviews,
+                        atractivo = currentState.atractivo?.copy(rating = newRating),
+                        isReviewDialogVisible = false,
+                        isSubmittingReview = false
                     )
                 }
 
-                loadData()
-                _uiState.update { it.copy(isReviewDialogVisible = false) }
                 _snackbarEvent.value = "¡Reseña publicada!"
+
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e(TAG, "Error al publicar reseña", e)
+                _uiState.update {
+                    it.copy(
+                        isSubmittingReview = false,
+                        isReviewDialogVisible = false
+                    )
+                }
                 _snackbarEvent.value = "Error al publicar reseña"
-            } finally {
-                _uiState.update { it.copy(isSubmittingReview = false) }
             }
         }
     }

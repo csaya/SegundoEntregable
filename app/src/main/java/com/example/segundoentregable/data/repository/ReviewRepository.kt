@@ -9,7 +9,9 @@ import com.example.segundoentregable.data.local.entity.ReviewEntity
 import com.example.segundoentregable.data.local.entity.ReviewVoteEntity
 import com.example.segundoentregable.data.model.Review
 import com.example.segundoentregable.data.sync.ReviewSyncWorker
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
@@ -72,13 +74,15 @@ class ReviewRepository(
         // 1. Guardar localmente
         reviewDao.insertReview(newReview)
 
-        // 2. Sincronizar inmediatamente con Firebase
-        try {
-            firestoreService.uploadReviews(listOf(newReview))
-            reviewDao.markAsSynced(newReview.id)
-            Log.d(TAG, "Review sincronizada inmediatamente: ${newReview.id}")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error sincronizando review inmediatamente, se reintentará", e)
+        // 2. ✅ Sincronizar en segundo plano sin esperar
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                firestoreService.uploadReviews(listOf(newReview))
+                reviewDao.markAsSynced(newReview.id)
+                Log.d(TAG, "Review sincronizada inmediatamente: ${newReview.id}")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error sincronizando review inmediatamente, se reintentará", e)
+            }
         }
 
         // 3. Disparar WorkManager para sincronización posterior
